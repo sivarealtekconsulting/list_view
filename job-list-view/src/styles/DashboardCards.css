@@ -1,0 +1,9 @@
+/* ═══════════════════════════════════════════
+   DashboardCards.css — Cosmetic only
+   All column/row layout handled by antd Row/Col in JSX.
+   Commenting this file removes padding only — layout stays intact.
+═══════════════════════════════════════════ */
+
+.dashboard-wrapper {
+  padding: 0 24px 16px;
+}
