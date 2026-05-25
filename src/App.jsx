@@ -8,7 +8,7 @@ export default function App() {
         token: {
           colorPrimary: '#1677ff',
           borderRadius: 8,
-          fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: 'Inter, sans-serif',
         },
       }}
     >

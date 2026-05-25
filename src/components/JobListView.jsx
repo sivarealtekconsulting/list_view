@@ -1,21 +1,37 @@
 import { useState, useMemo } from 'react';
 import {
-  Table, Input, Button, Space, Typography, Tooltip, Dropdown, theme,
+  Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
 } from 'antd';
 import {
-  EyeOutlined, BookFilled, LinkedinFilled,
-  FilterOutlined, PlusOutlined, UnorderedListOutlined, DownOutlined,
+  BookFilled, LinkedinFilled,
+  FilterOutlined, PlusOutlined, DownOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
+import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
+import frameIcon from './images/common/frame.svg';
+import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
 
 const { Text, Link } = Typography;
-const { useToken } = theme;
 
+const MY_JOBS_COUNT = 6;
 const ALL_JOBS_COUNT = 2456;
+
+const columnOptions = [
+  { key: 'createdAt', label: 'Created Date' },
+  { key: 'jobsGroup', label: 'Jobs' },
+  { key: 'location', label: 'Location' },
+  { key: 'experience', label: 'Experience' },
+  { key: 'clientRate', label: 'Client Rate' },
+  { key: 'status', label: 'Status' },
+  { key: 'targetSub', label: 'Target Sub' },
+  { key: 'pipeline', label: 'Pipeline' },
+];
+
+const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
 
 const actionsMenu = {
   items: [
@@ -26,11 +42,12 @@ const actionsMenu = {
 };
 
 export default function JobListView() {
-  const { token } = useToken();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
+  const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
+  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -50,31 +67,41 @@ export default function JobListView() {
 
   const columns = [
     {
+      dataIndex: 'icons',
+      key: 'icons',
+      visibilityKey: 'jobsGroup',
+      //width: '100%',
+      width: 60,
+      render: (title, record) => (
+        <Space size={4} className="job-row-icons">
+          <Tooltip title="Preview">
+            <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
+          </Tooltip>
+          {record.hasBookmark && (
+            <Tooltip title="Bookmarked">
+              <BookFilled className="job-row-bookmark-icon" />
+            </Tooltip>
+          )}
+          {record.hasLinkedIn && (
+            <Tooltip title="LinkedIn">
+              <LinkedinFilled className="job-row-linkedin-icon" />
+            </Tooltip>
+          )}
+        </Space>
+      ),
+    },
+    {
       title: 'Jobs',
       dataIndex: 'title',
       key: 'title',
+      visibilityKey: 'jobsGroup',
       sorter: (a, b) => a.title.localeCompare(b.title),
-      width: '22%',
+      width: 190,
       render: (title, record) => (
-        <Space align="start" size={6}>
-          <Space size={4} style={{ marginTop: 2, flexShrink: 0 }}>
-            <Tooltip title="Preview">
-              <EyeOutlined style={{ color: '#aaa', cursor: 'pointer', fontSize: 13 }} />
-            </Tooltip>
-            {record.hasBookmark && (
-              <Tooltip title="Bookmarked">
-                <BookFilled style={{ color: '#ef4444', cursor: 'pointer', fontSize: 13 }} />
-              </Tooltip>
-            )}
-            {record.hasLinkedIn && (
-              <Tooltip title="LinkedIn">
-                <LinkedinFilled style={{ color: '#0077b5', cursor: 'pointer', fontSize: 13 }} />
-              </Tooltip>
-            )}
-          </Space>
+        <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <Link style={{ fontSize: 13, color: '#1677ff', fontWeight: 500 }}>{title}</Link>
-            <Text type="secondary" style={{ fontSize: 11 }}>{record.client}</Text>
+            <Link className="job-cell-link">{title}</Link>
+            <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
           </Space>
         </Space>
       ),
@@ -84,11 +111,11 @@ export default function JobListView() {
       dataIndex: 'location',
       key: 'location',
       sorter: (a, b) => a.location.localeCompare(b.location),
-      width: '10%',
+      width: '100%',
       render: (loc, record) => (
         <Space direction="vertical" size={2}>
-          <Text style={{ fontSize: 13 }}>{loc}</Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>{record.locationType}</Text>
+          <Text className="job-cell-primary">{loc}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.locationType}</Text>
         </Space>
       ),
     },
@@ -97,11 +124,11 @@ export default function JobListView() {
       dataIndex: 'experience',
       key: 'experience',
       sorter: (a, b) => a.experience.localeCompare(b.experience),
-      width: '10%',
+      width: '100%',
       render: (exp, record) => (
         <Space direction="vertical" size={2}>
-          <Text style={{ fontSize: 13 }}>{exp}</Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>{record.employmentType}</Text>
+          <Text className="job-cell-primary">{exp}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.employmentType}</Text>
         </Space>
       ),
     },
@@ -110,17 +137,19 @@ export default function JobListView() {
       dataIndex: 'clientRate',
       key: 'clientRate',
       sorter: (a, b) => a.clientRate - b.clientRate,
-      width: '11%',
-      render: (rate) => <Text style={{ fontSize: 13 }}>${rate}</Text>,
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
+      render: (rate) => <Text className="job-cell-primary">${rate}</Text>,
     },
     {
       title: 'Target Sub',
       dataIndex: 'targetSub',
       key: 'targetSub',
       sorter: (a, b) => a.targetSub.filled - b.targetSub.filled,
-      width: '9%',
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
       render: (sub) => (
-        <Text style={{ fontSize: 13 }}>{sub.filled} of {sub.total}</Text>
+        <Text className="job-cell-primary">{sub.filled} of {sub.total}</Text>
       ),
     },
     {
@@ -128,15 +157,14 @@ export default function JobListView() {
       dataIndex: 'pipeline',
       key: 'pipeline',
       sorter: (a, b) => a.pipeline - b.pipeline,
-      align: 'center',
-      width: '8%',
-      render: (val) => <Text style={{ fontSize: 13 }}>{val}</Text>,
+      width: '100%',
+      render: (val) => <Text className="job-cell-primary">{val}</Text>,
     },
     {
       title: 'Assignee',
       dataIndex: 'assignees',
       key: 'assignees',
-      width: '9%',
+      width: '100%',
       render: (assignees, record) => (
         <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
       ),
@@ -146,7 +174,8 @@ export default function JobListView() {
       dataIndex: 'status',
       key: 'status',
       sorter: (a, b) => a.status.localeCompare(b.status),
-      width: '13%',
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
       render: (status) => <StatusBadge status={status} />,
     },
     {
@@ -154,172 +183,168 @@ export default function JobListView() {
       dataIndex: 'createdAt',
       key: 'createdAt',
       sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-      defaultSortOrder: 'descend',
-      width: '11%',
+      width: '100%',
       render: (date, record) => (
         <Space direction="vertical" size={2}>
-          <Text style={{ fontSize: 13 }}>{date}</Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>{record.createdAgo}</Text>
+          <Text className="job-cell-primary">{date}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.createdAgo}</Text>
         </Space>
       ),
     },
   ];
 
-  const rowSelection = { selectedRowKeys, onChange: setSelectedRowKeys };
+  const visibleColumns = useMemo(
+    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
+    [columns, visibleColumnKeys],
+  );
 
-  const tabBtn = (key, label, count) => {
-    const isActive = activeTab === key;
-    return (
-      <div
-        key={key}
-        role="tab"
-        tabIndex={0}
-        onClick={() => { setActiveTab(key); setPagination({ ...pagination, current: 1 }); }}
-        onKeyDown={(e) => e.key === 'Enter' && setActiveTab(key)}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          height: 46,
-          padding: '0 16px 0 4px',
-          boxSizing: 'border-box',
-          borderBottom: isActive ? '2px solid #1677ff' : '2px solid transparent',
-          cursor: 'pointer',
-          fontSize: 14,
-          fontWeight: isActive ? 600 : 400,
-          color: isActive ? '#1677ff' : '#595959',
-          userSelect: 'none',
-          whiteSpace: 'nowrap',
-          transition: 'color 0.2s, border-color 0.2s',
+  const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
+  const someColumnsVisible = visibleColumnKeys.length > 0 && !allColumnsVisible;
+
+  const toggleColumn = (key, checked) => {
+    setVisibleColumnKeys((current) => {
+      if (checked) {
+        return current.includes(key) ? current : [...current, key];
+      }
+
+      return current.filter((columnKey) => columnKey !== key);
+    });
+  };
+
+  const columnVisibilityContent = (
+    <div className="column-visibility-menu" onClick={(event) => event.stopPropagation()}>
+      <Checkbox
+        checked={allColumnsVisible}
+        indeterminate={someColumnsVisible}
+        onChange={(event) => {
+          setVisibleColumnKeys(event.target.checked ? defaultVisibleColumnKeys : []);
         }}
       >
-        {label}
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: isActive ? '#1677ff' : '#f0f0f0',
-            color: isActive ? '#fff' : '#595959',
-            borderRadius: 5,
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '2px 7px',
-            lineHeight: '16px',
-            minWidth: 20,
-          }}
+        Select All
+      </Checkbox>
+      {columnOptions.map((column) => (
+        <Checkbox
+          key={column.key}
+          checked={visibleColumnKeys.includes(column.key)}
+          onChange={(event) => toggleColumn(column.key, event.target.checked)}
         >
-          {count}
-        </span>
-      </div>
-    );
+          {column.label}
+        </Checkbox>
+      ))}
+    </div>
+  );
+
+  const rowSelection = {
+    type: 'checkbox',
+    selectedRowKeys,
+    onChange: setSelectedRowKeys,
   };
 
-  const card = {
-    background: '#fff',
-    borderRadius: 12,
-    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-    overflow: 'hidden',
-  };
+  const tabLabel = (label, count) => (
+    <Space size={6}>
+      <span>{label}</span>
+      <Badge count={count} overflowCount={9999} />
+    </Space>
+  );
+
+  const tabItems = [
+    { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
+    { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
+  ];
 
   return (
-    <div style={{ padding: 24, minHeight: '100vh', background: '#f5f6fa', display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className="antd">
 
-      {/* ═══ CARD 1 — My Jobs / All Jobs tabs + Toolbar ═══ */}
-      <div style={card}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 16px',
-          height: 52,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', flexShrink: 0 }}>
-            {tabBtn('my',  'My Jobs',  MOCK_JOBS.length)}
-            {tabBtn('all', 'All Jobs', ALL_JOBS_COUNT.toLocaleString())}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      {/* Top toolbar */}
+      <Card>
+        <Flex align="center" justify="space-between">
+          <Tabs
+            activeKey={activeTab}
+            items={tabItems}
+            onChange={(key) => {
+              setActiveTab(key);
+              setPagination({ ...pagination, current: 1 });
+            }}
+          />
+          <Flex align="center" gap={8}>
             <Input
-              prefix={<SearchOutlined style={{ color: '#bbb' }} />}
+              prefix={<SearchOutlined className="job-search-icon" />}
               placeholder="Min 3 Chars to search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
               allowClear
-              style={{ width: 220, borderRadius: 8, fontSize: 13 }}
+              className="job-search-input"
             />
             <Tooltip title="Filter">
-              <Button icon={<FilterOutlined />} style={{ borderRadius: 8, color: '#595959' }} />
+              <Button className="job-toolbar-icon-button" icon={<FilterOutlined />} />
             </Tooltip>
             <Tooltip title="Add">
-              <Button icon={<PlusOutlined />} style={{ borderRadius: 8, color: '#595959' }} />
+              <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
             </Tooltip>
-            <Button type="primary" style={{ borderRadius: 8, fontWeight: 500 }}>
+            <Button type="primary" className="job-summary-button">
               View Summary
             </Button>
-          </div>
-        </div>
-      </div>
+          </Flex>
+        </Flex>
+      </Card>
 
-      {/* ═══ CARD 2 — Actions / Selected toolbar ═══ */}
-      <div style={card}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          padding: '6px 12px',
-          minHeight: 38,
-        }}>
-          <Button
-            type="text"
-            icon={<UnorderedListOutlined />}
-            size="small"
-            style={{ color: '#8c8c8c', fontSize: 13 }}
-          />
+      {/* Actions toolbar */}
+      <Card>
+        <Flex align="center" gap={3}>
+          <Dropdown
+            open={columnMenuOpen}
+            onOpenChange={setColumnMenuOpen}
+            trigger={['click']}
+            dropdownRender={() => columnVisibilityContent}
+            placement="bottomLeft"
+            overlayClassName="column-visibility-dropdown"
+          >
+            <Button
+              type="text"
+              icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
+              size="small"
+              className="job-actions-button"
+            />
+          </Dropdown>
           <Dropdown menu={actionsMenu} trigger={['click']}>
             <Button
               type="text"
               size="small"
-              style={{ color: '#8c8c8c', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}
+              className="job-actions-button job-actions-menu-button"
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              Actions <DownOutlined style={{ fontSize: 10 }} />
+              <img src={frameIcon} alt="" className="job-actions-frame-icon" />
+              Actions <DownOutlined className="job-actions-caret" />
             </Button>
           </Dropdown>
           {selectedRowKeys.length > 0 && (
-            <Text style={{ color: '#1677ff', fontWeight: 500, fontSize: 13, marginLeft: 4 }}>
+            <Text className="job-selected-count">
               Selected ({selectedRowKeys.length})
             </Text>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Card>
 
-      {/* ═══ CARD 3 — Table Grid ═══ */}
-      <div style={card}>
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={pagedData}
-          size="middle"
-          scroll={{ x: 'max-content' }}
-          className="job-table"
-          rowClassName={(_, index) => (index % 2 === 0 ? 'row-even' : 'row-odd')}
-          showSorterTooltip={false}
-          tableLayout="fixed"
-          pagination={false}
-          style={{ borderRadius: 0 }}
-        />
+      {/* Table grid */}
+      <Table
+        rowSelection={rowSelection}
+        columns={visibleColumns}
+        dataSource={pagedData}
+        size="middle"
+        scroll={{ x: '100%' }}
+        showSorterTooltip={false}
+        tableLayout="fixed"
+        pagination={false}
+        className="job-list-table"
+      />
 
-        {/* Custom professional pagination */}
-        <CustomPagination
-          current={pagination.current}
-          pageSize={pagination.pageSize}
-          total={filtered.length}
-          onChange={(page) => setPagination(p => ({ ...p, current: page }))}
-          onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
-        />
-      </div>
+      {/* Pagination */}
+      <CustomPagination
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={filtered.length}
+        onChange={(page) => setPagination(p => ({ ...p, current: page }))}
+        onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
+      />
 
     </div>
   );
