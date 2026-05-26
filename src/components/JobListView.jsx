@@ -88,28 +88,28 @@ export default function JobListView() {
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
-  const valueOptionsByField = useMemo(() => {
-    const fields = [
-      'title',
-      'client',
-      'location',
-      'locationType',
-      'experience',
-      'employmentType',
-      'clientRate',
-      'status',
-      'createdAt',
-    ];
+  // const valueOptionsByField = useMemo(() => {
+  //   const fields = [
+  //     'title',
+  //     'client',
+  //     'location',
+  //     'locationType',
+  //     'experience',
+  //     'employmentType',
+  //     'clientRate',
+  //     'status',
+  //     'createdAt',
+  //   ];
 
-    return fields.reduce((options, field) => {
-      const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
+  //   return fields.reduce((options, field) => {
+  //     const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
 
-      return {
-        ...options,
-        [field]: uniqueValues.map((value) => ({ label: value, value })),
-      };
-    }, {});
-  }, []);
+  //     return {
+  //       ...options,
+  //       [field]: uniqueValues.map((value) => ({ label: value, value })),
+  //     };
+  //   }, {});
+  // }, []);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -440,7 +440,7 @@ export default function JobListView() {
       <JobFilters
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        valueOptionsByField={valueOptionsByField}
+        // valueOptionsByField={valueOptionsByField}
         onApply={({ filters }) => {
           setAppliedFilterRows(filters);
           setPagination((current) => ({ ...current, current: 1 }));

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   Button,
   Drawer,
@@ -6,25 +5,12 @@ import {
   Form,
   Select,
   Space,
+  Spin,
+  Alert,
 } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-
-const fieldResponses = {
-  jobs: {
-    status: true,
-    data: [
-      { label: 'Job Title', value: 'title', type: 'text' },
-      { label: 'Client', value: 'client', type: 'text' },
-      { label: 'Job Location', value: 'location', type: 'text' },
-      { label: 'Remote Status', value: 'locationType', type: 'text' },
-      { label: 'Experience', value: 'experience', type: 'text' },
-      { label: 'Employment Type', value: 'employmentType', type: 'text' },
-      { label: 'Client Rate', value: 'clientRate', type: 'text' },
-      { label: 'Job Status', value: 'status', type: 'text' },
-      { label: 'Created Date', value: 'createdAt', type: 'text' },
-    ],
-  },
-};
+import { useDropdownFields } from '../../hooks/useDropdownFields';
+import { useDropdownValues } from '../../hooks/useDropdownValues';
 
 const operatorOptions = [
   { label: 'AND', value: 'and' },
@@ -33,35 +19,23 @@ const operatorOptions = [
   { label: 'Not Empty', value: 'notEmpty' },
 ];
 
-const defaultFilterRow = {
-  operator: 'and',
-  field: undefined,
-  values: [],
-};
+const defaultFilterRow = { operator: 'and', field: undefined, values: [] };
 
 export default function DynamicFieldFilter({
   moduleName,
   open = false,
   onClose,
   onApply,
-  valueOptionsByField = {},
 }) {
   const [form] = Form.useForm();
   const filterRows = Form.useWatch('filters', form) ?? [];
 
-  const fieldOptions = fieldResponses[moduleName]?.data ?? [];
+  // Fetch field list only while drawer is open to avoid unnecessary requests
+  const { fields: apiFields, loading: fieldsLoading, error: fieldsError } = useDropdownFields(
+    open ? moduleName : null,
+  );
 
-  const fallbackValueOptions = useMemo(() => (
-    Object.values(valueOptionsByField)
-      .flat()
-      .filter((option, index, options) => (
-        options.findIndex((item) => item.value === option.value) === index
-      ))
-  ), [valueOptionsByField]);
-
-  function getValueOptions(fieldName) {
-    return valueOptionsByField[fieldName] ?? fallbackValueOptions;
-  }
+  const { valuesByField, loadingFields, fetchValues } = useDropdownValues(moduleName);
 
   function handleReset() {
     form.setFieldsValue({ filters: [defaultFilterRow] });
@@ -69,21 +43,19 @@ export default function DynamicFieldFilter({
 
   function handleApply() {
     const values = form.getFieldsValue();
-    onApply?.({
-      moduleName,
-      filters: values.filters ?? [],
-    });
+    onApply?.({ moduleName, filters: values.filters ?? [] });
     onClose?.();
   }
 
-  function handleFieldChange(rowName) {
+  function handleFieldChange(rowName, newField) {
+    // Clear previously selected values when field changes
     const currentFilters = form.getFieldValue('filters') ?? [];
     form.setFieldValue(
       'filters',
-      currentFilters.map((row, index) => (
-        index === rowName ? { ...row, values: [] } : row
-      )),
+      currentFilters.map((row, index) => (index === rowName ? { ...row, values: [] } : row)),
     );
+    // Eagerly load values for the newly selected field
+    if (newField) fetchValues(newField);
   }
 
   return (
@@ -100,92 +72,116 @@ export default function DynamicFieldFilter({
         </Space>
       )}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{ filters: [defaultFilterRow] }}
-      >
-        <Form.List name="filters">
-          {(fields, { add, remove }) => (
-            <Space direction="vertical" style={{ width: '100%' }}>
-              {fields.map((field, index) => {
-                const selectedField = filterRows[index]?.field;
-                const selectedOperator = filterRows[index]?.operator;
-                const disableValues = !selectedField || selectedOperator === 'isEmpty' || selectedOperator === 'notEmpty';
+      {fieldsError && (
+        <Alert
+          type="error"
+          message="Could not load filter fields"
+          description={fieldsError}
+          style={{ marginBottom: 16 }}
+          showIcon
+        />
+      )}
 
-                return (
-                  <Space key={field.key} direction="vertical" style={{ width: '100%' }}>
-                    {index > 0 && (
-                      <Flex justify="center">
+      <Spin spinning={fieldsLoading} tip="Loading fields…">
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ filters: [defaultFilterRow] }}
+        >
+          <Form.List name="filters">
+            {(formFields, { add, remove }) => (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                {formFields.map((formField, index) => {
+                  const selectedField = filterRows[index]?.field;
+                  const selectedOperator = filterRows[index]?.operator;
+                  const disableValues = !selectedField
+                    || selectedOperator === 'isEmpty'
+                    || selectedOperator === 'notEmpty';
+
+                  const valueOptions = valuesByField[selectedField] ?? [];
+                  const valuesLoading = loadingFields.has(selectedField);
+
+                  return (
+                    <Space key={formField.key} direction="vertical" style={{ width: '100%' }}>
+                      {index > 0 && (
+                        <Flex justify="center">
+                          <Form.Item
+                            name={[formField.name, 'operator']}
+                            rules={[{ required: true, message: 'Select condition' }]}
+                          >
+                            <Select options={operatorOptions} placeholder="Condition" />
+                          </Form.Item>
+                        </Flex>
+                      )}
+
+                      <Flex align="end" gap="middle" wrap>
                         <Form.Item
-                          name={[field.name, 'operator']}
-                          rules={[{ required: true, message: 'Select condition' }]}
+                          label="Field"
+                          name={[formField.name, 'field']}
+                          rules={[{ required: true, message: 'Select field' }]}
+                          style={{ flex: 1, minWidth: 220 }}
                         >
                           <Select
-                            options={operatorOptions}
-                            placeholder="Condition"
+                            allowClear
+                            showSearch
+                            placeholder="Select field"
+                            options={apiFields}
+                            optionFilterProp="label"
+                            loading={fieldsLoading}
+                            onChange={(val) => handleFieldChange(formField.name, val)}
                           />
                         </Form.Item>
+
+                        <Form.Item
+                          label="Values"
+                          name={[formField.name, 'values']}
+                          style={{ flex: 1, minWidth: 220 }}
+                        >
+                          <Select
+                            allowClear
+                            disabled={disableValues}
+                            loading={valuesLoading}
+                            mode="multiple"
+                            options={valueOptions}
+                            placeholder={selectedField ? 'Select values' : 'Select field first'}
+                            showSearch
+                            // Server-side search — disable client filter, call API on type
+                            filterOption={false}
+                            onSearch={(search) => {
+                              if (selectedField) fetchValues(selectedField, search);
+                            }}
+                            // Reload full list when dropdown opens (clears any search)
+                            onDropdownVisibleChange={(visible) => {
+                              if (visible && selectedField) fetchValues(selectedField);
+                            }}
+                          />
+                        </Form.Item>
+
+                        {formFields.length > 1 && (
+                          <Button
+                            danger
+                            htmlType="button"
+                            icon={<DeleteOutlined />}
+                            onClick={() => remove(formField.name)}
+                          />
+                        )}
                       </Flex>
-                    )}
+                    </Space>
+                  );
+                })}
 
-                    <Flex align="end" gap="middle" wrap>
-                      <Form.Item
-                        label="Field"
-                        name={[field.name, 'field']}
-                        rules={[{ required: true, message: 'Select field' }]}
-                        style={{ flex: 1, minWidth: 220 }}
-                      >
-                        <Select
-                          allowClear
-                          showSearch
-                          placeholder="Select field"
-                          options={fieldOptions}
-                          optionFilterProp="label"
-                          onChange={() => handleFieldChange(field.name)}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        label="Values"
-                        name={[field.name, 'values']}
-                        style={{ flex: 1, minWidth: 220 }}
-                      >
-                        <Select
-                          allowClear
-                          disabled={disableValues}
-                          mode="multiple"
-                          optionFilterProp="label"
-                          options={getValueOptions(selectedField)}
-                          placeholder={selectedField ? 'Select values' : 'Select field first'}
-                          showSearch
-                        />
-                      </Form.Item>
-
-                      {fields.length > 1 && (
-                        <Button
-                          danger
-                          htmlType="button"
-                          icon={<DeleteOutlined />}
-                          onClick={() => remove(field.name)}
-                        />
-                      )}
-                    </Flex>
-                  </Space>
-                );
-              })}
-
-              <Button
-                htmlType="button"
-                icon={<PlusOutlined />}
-                onClick={() => add(defaultFilterRow)}
-              >
-                Add Row
-              </Button>
-            </Space>
-          )}
-        </Form.List>
-      </Form>
+                <Button
+                  htmlType="button"
+                  icon={<PlusOutlined />}
+                  onClick={() => add(defaultFilterRow)}
+                >
+                  Add Row
+                </Button>
+              </Space>
+            )}
+          </Form.List>
+        </Form>
+      </Spin>
     </Drawer>
   );
 }
