@@ -404,14 +404,16 @@ export const validationRules = {
         message: VALIDATION_MESSAGES.INVALID_DESIGNATION,
     }),
 
-    dob: () => ({
+    dob: (required = true) => ({
         validator: (_, value) => {
 
             // Required check
             if (!value) {
-                return Promise.reject(
-                    new Error("Date of Birth is required.")
-                );
+                return required
+                    ? Promise.reject(
+                        new Error("Date of Birth is required.")
+                    )
+                    : Promise.resolve();
             }
 
             // MM/DD/YYYY regex check
@@ -433,7 +435,7 @@ export const validationRules = {
             if (!dob.isValid()) {
                 return Promise.reject(
                     new Error(
-                        VALIDATION_MESSAGES.INVALID_DATE
+                        VALIDATION_MESSAGES.INVALID_DOB
                     )
                 );
             }
@@ -444,7 +446,7 @@ export const validationRules = {
             if (dob.isAfter(today)) {
                 return Promise.reject(
                     new Error(
-                        VALIDATION_MESSAGES.FUTURE_DOB
+                        "Date of Birth cannot be a future date."
                     )
                 );
             }
@@ -455,7 +457,7 @@ export const validationRules = {
             if (age < 21) {
                 return Promise.reject(
                     new Error(
-                        VALIDATION_MESSAGES.INVALID_AGE
+                        "Age must be at least 21 years."
                     )
                 );
             }

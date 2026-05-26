@@ -5,6 +5,7 @@ import JobListView from './components/JobListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
+import DemoSamplePage from './pages/DemoSamplePage';
 import JobDetailPage from './pages/JobDetailPage';
 import UserForm from './components/form/forms';
 import NewDashboard from './components/cards/NewDashboard';
@@ -33,6 +34,7 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/demosample" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
