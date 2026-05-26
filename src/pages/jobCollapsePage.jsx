@@ -1,29 +1,22 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
-  Badge,
   Button,
   Card,
   Col,
-  Flex,
+  Form,
   Input,
   Row,
   Select,
   Space,
   Statistic,
-  Table,
-  Tabs,
   Typography,
 } from 'antd';
 import {
   CalendarOutlined,
   FilterOutlined,
-  SearchOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import AssigneeAvatars from '../components/AssigneeAvatars';
-import CustomPagination from '../components/CustomPagination';
 import JobListView from '../components/JobListView';
-import StatusBadge from '../components/StatusBadge';
 import JobFilters from '../components/filters';
 import CalendarCard from '../components/cards/CalendarCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
@@ -31,7 +24,7 @@ import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import OnboardingCard from '../components/cards/OnboardingCard';
 import StatsCards from '../components/cards/StatsCards';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
-import { MOCK_JOBS } from '../data/jobs';
+import { formatters, validationRules } from '../components/form/validation';
 
 const { Text } = Typography;
 
@@ -42,39 +35,6 @@ const summaryCards = [
   { title: 'Aging jobs', value: 13, suffix: 'over 30 days' },
 ];
 
-const pipelineRows = [
-  {
-    key: '1',
-    job: 'Cloud Data Engineer',
-    client: 'Vertex Analytics',
-    location: 'Austin, TX',
-    status: 'Open',
-    submissions: '3 of 6',
-    assignees: MOCK_JOBS[0].assignees,
-    extraAssignees: 2,
-  },
-  {
-    key: '2',
-    job: 'QA Automation Lead',
-    client: 'Summit Retail',
-    location: 'Phoenix, AZ',
-    status: 'Partially Fulfilled',
-    submissions: '7 of 12',
-    assignees: MOCK_JOBS[1].assignees,
-    extraAssignees: 1,
-  },
-  {
-    key: '3',
-    job: 'Workday Integration Consultant',
-    client: 'Harbor Health',
-    location: 'Boston, MA',
-    status: 'Fulfilled',
-    submissions: '4 of 4',
-    assignees: MOCK_JOBS[2].assignees,
-    extraAssignees: 0,
-  },
-];
-
 const activityItems = [
   '5 cloud profiles moved to technical review',
   'Client feedback received for QA Automation Lead',
@@ -83,149 +43,13 @@ const activityItems = [
 ];
 
 export default function JobCollapsePage() {
+  const [form] = Form.useForm();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(7);
-  const [activeTab, setActiveTab] = useState('overview');
 
-  const filteredJobs = useMemo(() => {
-    const q = search.trim().toLowerCase();
-
-    if (q.length < 3) {
-      return MOCK_JOBS;
-    }
-
-    return MOCK_JOBS.filter((job) => (
-      job.title.toLowerCase().includes(q)
-      || job.client.toLowerCase().includes(q)
-      || job.location.toLowerCase().includes(q)
-      || job.status.toLowerCase().includes(q)
-    ));
-  }, [search]);
-
-  const compactRows = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredJobs.slice(start, start + pageSize);
-  }, [filteredJobs, page, pageSize]);
-
-  const pipelineColumns = [
-    {
-      title: 'Job',
-      dataIndex: 'job',
-      render: (job, record) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>{job}</Text>
-          <Text type="secondary">{record.client}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-    },
-    {
-      title: 'Assignee',
-      dataIndex: 'assignees',
-      render: (assignees, record) => (
-        <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
-      ),
-    },
-    {
-      title: 'Submissions',
-      dataIndex: 'submissions',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (status) => <StatusBadge status={status} />,
-    },
-  ];
-
-  const compactColumns = [
-    {
-      title: 'Job',
-      dataIndex: 'title',
-      render: (title, record) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>{title}</Text>
-          <Text type="secondary">{record.client}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-      render: (location, record) => (
-        <Space direction="vertical" size={0}>
-          <Text>{location}</Text>
-          <Text type="secondary">{record.locationType}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Assignee',
-      dataIndex: 'assignees',
-      render: (assignees, record) => (
-        <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (status) => <StatusBadge status={status} />,
-    },
-    {
-      title: 'Created',
-      dataIndex: 'createdAt',
-    },
-  ];
-
-  const tabItems = [
-    {
-      key: 'overview',
-      label: 'Pipeline overview',
-      children: (
-        <Space direction="vertical" size={16}>
-          <Card
-            title="Priority pipeline"
-            extra={<Badge count={pipelineRows.length} showZero />}
-          >
-            <Table
-              columns={pipelineColumns}
-              dataSource={pipelineRows}
-              pagination={false}
-              size="middle"
-            />
-          </Card>
-
-          <Card title="Filtered jobs preview">
-            <Table
-              columns={compactColumns}
-              dataSource={compactRows}
-              pagination={false}
-              size="middle"
-            />
-            <CustomPagination
-              current={page}
-              pageSize={pageSize}
-              total={filteredJobs.length}
-              onChange={setPage}
-              onPageSizeChange={(nextSize) => {
-                setPageSize(nextSize);
-                setPage(1);
-              }}
-            />
-          </Card>
-        </Space>
-      ),
-    },
-    {
-      key: 'jobs',
-      label: 'Full job list',
-      children: <JobListView />,
-    },
-  ];
+  const handleQuickJobSubmit = (values) => {
+    console.log('Quick job intake:', values);
+    form.resetFields();
+  };
 
   return (
     <>
@@ -293,11 +117,11 @@ export default function JobCollapsePage() {
               title={(
                 <Space>
                   <TeamOutlined />
-                  <Text strong>Jobs command center</Text>
+                  <Text strong>Jobs List</Text>
                 </Space>
               )}
             >
-              <Tabs activeKey={activeTab} items={tabItems} onChange={setActiveTab} />
+              <JobListView />
             </Card>
           </Col>
         </Row>
@@ -308,9 +132,126 @@ export default function JobCollapsePage() {
                <OnboardingCard />
           </Col>
           <Col xs={24} xl={12}>
-            <StickyNotesCard />
+            <Space direction="vertical" size={16}>
+              <StickyNotesCard />
+             
+            </Space>
           </Col>
         </Row>
+         <Card title="Quick job intake">
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={handleQuickJobSubmit}
+                  autoComplete="off"
+                >
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Job Title"
+                        name="jobTitle"
+                        rules={[
+                          validationRules.required('Job Title'),
+                          validationRules.startsWithCapital(),
+                        ]}
+                      >
+                        <Input
+                          onChange={(event) => {
+                            form.setFieldsValue({
+                              jobTitle: formatters.capitalizeFirstLetter(event.target.value),
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Client Company"
+                        name="clientCompany"
+                        rules={[
+                          validationRules.required('Client Company'),
+                          validationRules.companyName(),
+                        ]}
+                      >
+                        <Input
+                          onChange={(event) => {
+                            form.setFieldsValue({
+                              clientCompany: formatters.removeExtraSpaces(event.target.value),
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Contact Email"
+                        name="contactEmail"
+                        rules={[
+                          validationRules.required('Contact Email'),
+                          validationRules.email(),
+                        ]}
+                      >
+                        <Input
+                          onChange={(event) => {
+                            form.setFieldsValue({
+                              contactEmail: formatters.removeSpaces(event.target.value),
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Phone Number"
+                        name="phone"
+                        rules={[
+                          validationRules.required('Phone Number'),
+                          validationRules.phone(),
+                        ]}
+                        validateTrigger={['onBlur', 'onChange']}
+                      >
+                        <Input
+                          maxLength={10}
+                          onChange={(event) => {
+                            form.setFieldsValue({
+                              phone: formatters.phoneFormatter(event.target.value),
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col span={24}>
+                      <Form.Item
+                        label="Remarks"
+                        name="remarks"
+                        rules={[
+                          validationRules.required('Remarks'),
+                          validationRules.remarks(),
+                          validationRules.remarksMinLength(),
+                          validationRules.remarksMaxLength(),
+                        ]}
+                      >
+                        <Input.TextArea rows={4} />
+                      </Form.Item>
+                    </Col>
+
+                    <Col span={24}>
+                      <Space>
+                        <Button type="primary" htmlType="submit">
+                          Submit
+                        </Button>
+                        <Button htmlType="button" onClick={() => form.resetFields()}>
+                          Reset
+                        </Button>
+                      </Space>
+                    </Col>
+                  </Row>
+                </Form>
+              </Card>
       </Space>
 
       <JobFilters
