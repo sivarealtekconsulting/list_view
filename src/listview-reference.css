@@ -1,8 +1,8 @@
 :is(.listview-shell, .antd) {
-  width: 1174px;
-  max-width: calc(100vw - 90px);
+  width: 100%;
+  /* max-width: calc(100vw - 90px); */
   min-height: auto;
-  margin: 58px auto 0;
+  /* margin: 0px 25px; */
   padding: 0;
   display: flex;
   flex-direction: column;
