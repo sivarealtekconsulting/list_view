@@ -12,6 +12,8 @@ import CmnLayout from './pages/cmnLayout';
 import NewDashboard from './components/cards/NewDashboard';
 import JobCollapsePage from './pages/jobCollapsePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
+import StickyNotesCard from './components/cards/StickyNotesCard';
+import StudentDashboardPage from './pages/StudentDashboardPage';
 
 export default function App() {
   return (
@@ -43,6 +45,11 @@ export default function App() {
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
           <Route path="/cmnlayout" element={<CmnLayout />} />
+          <Route path="/add" element={<StickyNotesCard />} />
+          <Route
+            path="/student-dashboard"
+            element={<StudentDashboardPage />}
+          />
 
 
           <Route path="/jobs" element={<JobCollapsePage />} />
