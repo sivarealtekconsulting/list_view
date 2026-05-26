@@ -101,6 +101,19 @@ export default function DynamicFieldFilter({
                   const valueOptions = valuesByField[selectedField] ?? [];
                   const valuesLoading = loadingFields.has(selectedField);
 
+                  // Fields already chosen in OTHER rows — disable them in this row's dropdown
+                  const usedElsewhere = new Set(
+                    filterRows
+                      .filter((_, i) => i !== index)
+                      .map((r) => r?.field)
+                      .filter(Boolean),
+                  );
+
+                  const fieldOptions = apiFields.map((f) => ({
+                    ...f,
+                    disabled: usedElsewhere.has(f.value),
+                  }));
+
                   return (
                     <Space key={formField.key} direction="vertical" style={{ width: '100%' }}>
                       {index > 0 && (
@@ -125,7 +138,7 @@ export default function DynamicFieldFilter({
                             allowClear
                             showSearch
                             placeholder="Select field"
-                            options={apiFields}
+                            options={fieldOptions}
                             optionFilterProp="label"
                             loading={fieldsLoading}
                             onChange={(val) => handleFieldChange(formField.name, val)}
