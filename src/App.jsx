@@ -5,8 +5,9 @@ import JobListView from './components/JobListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
+import JobsPage from './pages/JobsPage';  
 import UserForm from './components/form/forms';
-
+import SubmissionsPage from './pages/SubmissionsPage'; 
 export default function App() {
   return (
     <ConfigProvider
@@ -33,6 +34,8 @@ export default function App() {
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
+          <Route path="/pugazh"element={<JobsPage />}         />  
+          <Route path="/submissions" element={<SubmissionsPage />} /> 
 
         </Routes>
       </BrowserRouter>
