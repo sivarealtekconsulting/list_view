@@ -11,6 +11,7 @@ import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
+import JobFilters from './filters';
 import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
@@ -41,31 +42,115 @@ const actionsMenu = {
   ],
 };
 
+function getComparableValue(record, field) {
+  const value = record[field];
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  if (typeof value === 'object') {
+    return Object.values(value).join(' ');
+  }
+
+  return String(value);
+}
+
+function filterMatches(record, filterRow) {
+  const value = getComparableValue(record, filterRow.field).trim();
+
+  if (filterRow.operator === 'isEmpty') {
+    return value.length === 0;
+  }
+
+  if (filterRow.operator === 'notEmpty') {
+    return value.length > 0;
+  }
+
+  if (!filterRow.values?.length) {
+    return true;
+  }
+
+  const normalizedValue = value.toLowerCase();
+
+  return filterRow.values.some((selectedValue) => (
+    normalizedValue.includes(String(selectedValue).toLowerCase())
+  ));
+}
+
 export default function JobListView() {
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [appliedFilterRows, setAppliedFilterRows] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
+  const valueOptionsByField = useMemo(() => {
+    const fields = [
+      'title',
+      'client',
+      'location',
+      'locationType',
+      'experience',
+      'employmentType',
+      'clientRate',
+      'status',
+      'createdAt',
+    ];
+
+    return fields.reduce((options, field) => {
+      const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
+
+      return {
+        ...options,
+        [field]: uniqueValues.map((value) => ({ label: value, value })),
+      };
+    }, {});
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (!q || q.length < 3) return MOCK_JOBS;
-    return MOCK_JOBS.filter(
-      (j) =>
+    const searchableJobs = !q || q.length < 3
+      ? MOCK_JOBS
+      : MOCK_JOBS.filter(
+        (j) =>
         j.title.toLowerCase().includes(q) ||
         j.location.toLowerCase().includes(q) ||
         j.status.toLowerCase().includes(q),
-    );
-  }, [search]);
+      );
+
+    const validFilterRows = appliedFilterRows.filter((row) => row.field);
+
+    if (!validFilterRows.length) {
+      return searchableJobs;
+    }
+
+    return searchableJobs.filter((job) => (
+      validFilterRows.reduce((matches, row, index) => {
+        const rowMatches = filterMatches(job, row);
+
+        if (index === 0 || row.operator === 'and') {
+          return matches && rowMatches;
+        }
+
+        if (row.operator === 'or') {
+          return matches || rowMatches;
+        }
+
+        return matches && rowMatches;
+      }, true)
+    ));
+  }, [appliedFilterRows, search]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
     return filtered.slice(start, start + pagination.pageSize);
   }, [filtered, pagination]);
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       dataIndex: 'icons',
       key: 'icons',
@@ -191,7 +276,7 @@ export default function JobListView() {
         </Space>
       ),
     },
-  ];
+  ], []);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
@@ -276,7 +361,11 @@ export default function JobListView() {
               className="job-search-input"
             />
             <Tooltip title="Filter">
-              <Button className="job-toolbar-icon-button" icon={<FilterOutlined />} />
+              <Button
+                className="job-toolbar-icon-button"
+                icon={<FilterOutlined />}
+                onClick={() => setFiltersOpen(true)}
+              />
             </Tooltip>
             <Tooltip title="Add">
               <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
@@ -344,6 +433,16 @@ export default function JobListView() {
         total={filtered.length}
         onChange={(page) => setPagination(p => ({ ...p, current: page }))}
         onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
+      />
+
+      <JobFilters
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        valueOptionsByField={valueOptionsByField}
+        onApply={({ filters }) => {
+          setAppliedFilterRows(filters);
+          setPagination((current) => ({ ...current, current: 1 }));
+        }}
       />
 
     </div>
