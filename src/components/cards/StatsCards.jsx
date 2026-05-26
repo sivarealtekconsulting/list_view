@@ -1,6 +1,7 @@
-import { Card, Row, Col, Statistic, Typography, Space } from 'antd';
-import { FileTextOutlined, CheckCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Typography, Space, Tooltip, Button } from 'antd';
+import { FileTextOutlined, CheckCircleOutlined, UserOutlined, FilterOutlined } from '@ant-design/icons';
 import '../../styles/StatsCards.css';
+import { useState } from 'react';
 
 const { Text } = Typography;
 
@@ -11,6 +12,7 @@ const stats = [
 ];
 
 export default function StatsCards() {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   return (
     <Card>
       <Row gutter={[12, 12]}>
@@ -26,6 +28,8 @@ export default function StatsCards() {
           </Col>
         ))}
       </Row>
+     
+            
     </Card>
   );
 }
