@@ -117,9 +117,9 @@ export default function JobListView() {
       ? MOCK_JOBS
       : MOCK_JOBS.filter(
         (j) =>
-        j.title.toLowerCase().includes(q) ||
-        j.location.toLowerCase().includes(q) ||
-        j.status.toLowerCase().includes(q),
+          j.title.toLowerCase().includes(q) ||
+          j.location.toLowerCase().includes(q) ||
+          j.status.toLowerCase().includes(q),
       );
 
     const validFilterRows = appliedFilterRows.filter((row) => row.field);
@@ -368,7 +368,9 @@ export default function JobListView() {
               />
             </Tooltip>
             <Tooltip title="Add">
-              <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
+              <a href='/add'>
+                <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
+              </a>
             </Tooltip>
             <Button type="primary" className="job-summary-button">
               View Summary

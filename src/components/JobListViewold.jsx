@@ -11,6 +11,8 @@ import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
+import JobFilters from './filters';
+import { Links } from 'react-router-dom';
 
 const { Text, Link } = Typography;
 const { useToken } = theme;
@@ -25,13 +27,14 @@ const actionsMenu = {
   ],
 };
 
-export default function JobListView() {
+export default function JobListViewOld() {
   const { token } = useToken();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
-
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [appliedFilterRows, setAppliedFilterRows] = useState([]);
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     if (!q || q.length < 3) return MOCK_JOBS;
@@ -165,6 +168,64 @@ export default function JobListView() {
     },
   ];
 
+  function getComparableValue(record, field) {
+    const value = record[field];
+
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (typeof value === 'object') {
+      return Object.values(value).join(' ');
+    }
+
+    return String(value);
+  }
+
+  function filterMatches(record, filterRow) {
+    const value = getComparableValue(record, filterRow.field).trim();
+
+    if (filterRow.operator === 'isEmpty') {
+      return value.length === 0;
+    }
+
+    if (filterRow.operator === 'notEmpty') {
+      return value.length > 0;
+    }
+
+    if (!filterRow.values?.length) {
+      return true;
+    }
+
+    const normalizedValue = value.toLowerCase();
+
+    return filterRow.values.some((selectedValue) => (
+      normalizedValue.includes(String(selectedValue).toLowerCase())
+    ));
+  }
+
+  const valueOptionsByField = useMemo(() => {
+    const fields = [
+      'title',
+      'client',
+      'location',
+      'locationType',
+      'experience',
+      'employmentType',
+      'clientRate',
+      'status',
+      'createdAt',
+    ];
+
+    return fields.reduce((options, field) => {
+      const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
+
+      return {
+        ...options,
+        [field]: uniqueValues.map((value) => ({ label: value, value })),
+      };
+    }, {});
+  }, []);
   const rowSelection = { selectedRowKeys, onChange: setSelectedRowKeys };
 
   const tabBtn = (key, label, count) => {
@@ -235,7 +296,7 @@ export default function JobListView() {
           height: 52,
         }}>
           <div style={{ display: 'flex', alignItems: 'stretch', height: '100%', flexShrink: 0 }}>
-            {tabBtn('my',  'My Jobs',  MOCK_JOBS.length)}
+            {tabBtn('my', 'My Jobs', MOCK_JOBS.length)}
             {tabBtn('all', 'All Jobs', ALL_JOBS_COUNT.toLocaleString())}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -248,10 +309,18 @@ export default function JobListView() {
               style={{ width: 220, borderRadius: 8, fontSize: 13 }}
             />
             <Tooltip title="Filter">
-              <Button icon={<FilterOutlined />} style={{ borderRadius: 8, color: '#595959' }} />
+              <Button
+                className="job-toolbar-icon-button"
+                icon={<FilterOutlined />}
+                onClick={() => setFiltersOpen(true)}
+              />
             </Tooltip>
             <Tooltip title="Add">
-              <Button icon={<PlusOutlined />} style={{ borderRadius: 8, color: '#595959' }} />
+              {/* <Link to="/add"> */}
+                <a href="/add">
+                <Button icon={<PlusOutlined />} style={{ borderRadius: 8, color: '#595959' }} />
+                </a>
+              {/* </Link> */}
             </Tooltip>
             <Button type="primary" style={{ borderRadius: 8, fontWeight: 500 }}>
               View Summary
@@ -318,6 +387,17 @@ export default function JobListView() {
           total={filtered.length}
           onChange={(page) => setPagination(p => ({ ...p, current: page }))}
           onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
+        />
+
+
+        <JobFilters
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          valueOptionsByField={valueOptionsByField}
+          onApply={({ filters }) => {
+            setAppliedFilterRows(filters);
+            setPagination((current) => ({ ...current, current: 1 }));
+          }}
         />
       </div>
 

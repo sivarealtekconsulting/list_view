@@ -1,5 +1,11 @@
 import { ConfigProvider } from 'antd';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import DashboardCards from './components/cards/DashboardCards';
 import JobListView from './components/JobListView';
+import CandidatesPage from './pages/CandidatesPage';
+import AddCandidatePage from './pages/AddCandidatePage';
+import DashboardPage from './pages/DashboardPage';
+import UserForm from './components/form/forms';
 
 export default function App() {
   return (
@@ -8,11 +14,28 @@ export default function App() {
         token: {
           colorPrimary: '#1677ff',
           borderRadius: 8,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
         },
       }}
     >
-      <JobListView />
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div style={{ background: '#f5f6fa', minHeight: '100vh', paddingTop: 24, paddingBottom: 24 }}>
+                <DashboardCards />
+                <JobListView />
+              </div>
+            }
+          />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/candidates/add" element={<AddCandidatePage />} />
+          <Route path="/add" element={<UserForm />} />
+
+        </Routes>
+      </BrowserRouter>
     </ConfigProvider>
   );
 }
