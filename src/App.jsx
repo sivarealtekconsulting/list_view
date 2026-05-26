@@ -6,6 +6,7 @@ import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
 import UserForm from './components/form/forms';
+import NewDashboard from './components/cards/NewDashboard';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
