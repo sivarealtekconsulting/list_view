@@ -8,6 +8,7 @@ import {
   FilterOutlined, PlusOutlined, DownOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
@@ -80,6 +81,7 @@ function filterMatches(record, filterRow) {
 }
 
 export default function JobListView() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -279,7 +281,7 @@ export default function JobListView() {
         </Space>
       ),
     },
-  ], []);
+  ], [navigate]);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
