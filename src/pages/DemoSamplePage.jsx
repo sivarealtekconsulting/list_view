@@ -22,11 +22,17 @@ import {
   MenuOutlined,
   MoreOutlined,
   SearchOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import StatsCards from '../components/cards/StatsCards';
 import CalendarCard from '../components/cards/CalendarCard';
 import CustomPagination from '../components/CustomPagination';
 import { formatters, validationRules } from '../components/form/validation';
+import StickyNotesCard from '../components/cards/StickyNotesCard';
+import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
+import JobFilters from '../components/filters';
+import JobListView from '../components/JobListView';
+import OnboardingCard from '../components/cards/OnboardingCard';
 
 const { Text, Title } = Typography;
 
@@ -65,6 +71,8 @@ const assigneeOptions = [
 
 export default function DemoSamplePage() {
   const [form] = Form.useForm();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const handleSubmit = (values) => {
@@ -115,57 +123,13 @@ export default function DemoSamplePage() {
   return (
     <>
       <Card>
-        <Row align="middle" justify="space-between" gutter={[16, 16]}>
-          <Col>
-            <Space size={20}>
-              <Button type="text" icon={<MenuOutlined />} />
-              <Title level={4}>Dashboard</Title>
-            </Space>
-          </Col>
-          <Col>
-            <Space size={16}>
-              <Button type="text" icon={<SearchOutlined />} />
-              <Button type="text" icon={<BellOutlined />} />
-              <Text strong>SA</Text>
-              <Text>Super Admin</Text>
-            </Space>
-          </Col>
-        </Row>
 
         <Row gutter={[16, 16]}>
-          <Col xs={24} lg={6}>
-            <Card
-              title={<Space><FilterOutlined />Filters</Space>}
-              extra={<Button type="link">Reset</Button>}
-            >
-              <Form layout="vertical">
-                <Form.Item label="Date Range">
-                  <Input value="01 May 2024 - 31 May 2024" readOnly suffix={<CalendarOutlined />} />
-                </Form.Item>
-                <Form.Item label="Personality" name="filterPersonality">
-                  <Select placeholder="Select Personality" options={people.map(({ name }) => ({ value: name, label: name }))} />
-                </Form.Item>
-                <Form.Item label="Status" name="filterStatus">
-                  <Select placeholder="Select Status" options={statusOptions} />
-                </Form.Item>
-                <Form.Item label="Category" name="filterCategory">
-                  <Select placeholder="Select Category" options={categoryOptions} />
-                </Form.Item>
-                <Form.Item label="Assigned To" name="filterAssignedTo">
-                  <Select placeholder="Select User" options={assigneeOptions} />
-                </Form.Item>
-                <Row gutter={12}>
-                  <Col span={12}><Button block>Clear</Button></Col>
-                  <Col span={12}><Button block type="primary">Apply</Button></Col>
-                </Row>
-              </Form>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={18}>
+          <Col xs={24} lg={24}>
             <Row gutter={[16, 16]}>
               <Col span={24}>
                 <StatsCards />
+
               </Col>
 
               <Col xs={24} xl={10}>
@@ -261,35 +225,97 @@ export default function DemoSamplePage() {
               </Col>
             </Row>
           </Col>
+          <Col >
+            {/* <Card
+              title={<Space><FilterOutlined />Filters</Space>}
+              extra={<Button type="link">Reset</Button>}
+            >
+              <Form layout="vertical">
+                <Form.Item label="Date Range">
+                  <Input value="01 May 2024 - 31 May 2024" readOnly suffix={<CalendarOutlined />} />
+                </Form.Item>
+                <Form.Item label="Personality" name="filterPersonality">
+                  <Select placeholder="Select Personality" options={people.map(({ name }) => ({ value: name, label: name }))} />
+                </Form.Item>
+                <Form.Item label="Status" name="filterStatus">
+                  <Select placeholder="Select Status" options={statusOptions} />
+                </Form.Item>
+                <Form.Item label="Category" name="filterCategory">
+                  <Select placeholder="Select Category" options={categoryOptions} />
+                </Form.Item>
+                <Form.Item label="Assigned To" name="filterAssignedTo">
+                  <Select placeholder="Select User" options={assigneeOptions} />
+                </Form.Item>
+                <Row gutter={12}>
+                  <Col span={12}><Button block>Clear</Button></Col>
+                  <Col span={12}><Button block type="primary">Apply</Button></Col>
+                </Row>
+              </Form>
+            </Card> */}
+            <StickyNotesCard />
+
+          </Col>
+
+
+        </Row>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <OnboardingCard />
+          </Col>
+
+          <Col xs={24} md={12}>
+            <ClientSubmissionCard />
+          </Col>
+        </Row>
+        {/* <Card>
+          <Flex align="center" justify="space-between">
+            <Text>Total 128 Results</Text>
+            <Space>
+              <Button icon={<ColumnHeightOutlined />}></Button>
+              <Button icon={<DownloadOutlined />}></Button>
+            </Space>
+          </Flex>
+        </Card>
+
+        <Table
+          rowSelection={{}}
+          columns={columns}
+          dataSource={people}
+          size="middle"
+          showSorterTooltip={false}
+          tableLayout="fixed"
+          pagination={false}
+          scroll={{ x: '100%' }}
+        />
+        <CustomPagination
+          current={pagination.current}
+          pageSize={pagination.pageSize}
+          total={128}
+          onChange={(page) => setPagination((current) => ({ ...current, current: page }))}
+          onPageSizeChange={(pageSize) => setPagination({ current: 1, pageSize })}
+        /> */}
+
+        <Row>
+          <Col span={24}>
+            <Card
+              title={(
+                <Space>
+                  <TeamOutlined />
+                  <Text strong>Jobs List</Text>
+                </Space>
+              )}
+            >
+              <JobListView />
+            </Card>
+          </Col>
         </Row>
 
-          <Card>
-            <Flex align="center" justify="space-between">
-              <Text>Total 128 Results</Text>
-              <Space>
-                <Button icon={<ColumnHeightOutlined />}></Button>
-                <Button icon={<DownloadOutlined />}></Button>
-              </Space>
-            </Flex>
-          </Card>
-        
-          <Table
-            rowSelection={{}}
-            columns={columns}
-            dataSource={people}
-            size="middle"
-            showSorterTooltip={false}
-            tableLayout="fixed"
-            pagination={false}
-            scroll={{ x: '100%' }}
-          />
-          <CustomPagination
-            current={pagination.current}
-            pageSize={pagination.pageSize}
-            total={128}
-            onChange={(page) => setPagination((current) => ({ ...current, current: page }))}
-            onPageSizeChange={(pageSize) => setPagination({ current: 1, pageSize })}
-          />
+
+        <JobFilters
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          onApply={() => setFiltersOpen(false)}
+        />
       </Card>
     </>
   );
