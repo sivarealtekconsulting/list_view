@@ -5,8 +5,10 @@ import JobListView from './components/JobListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
+import JobDetailPage from './pages/JobDetailPage';
 import UserForm from './components/form/forms';
 import NewDashboard from './components/cards/NewDashboard';
+import JobCollapsePage from './pages/jobCollapsePage';
 
 export default function App() {
   return (
@@ -32,10 +34,11 @@ export default function App() {
           />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
+          <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
-
+          <Route path="/jobs" element={<JobCollapsePage />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
