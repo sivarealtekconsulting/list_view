@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
 } from 'antd';
@@ -16,7 +17,7 @@ import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 const MY_JOBS_COUNT = 6;
 const ALL_JOBS_COUNT = 2456;
@@ -185,7 +186,9 @@ export default function JobListView() {
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <Link className="job-cell-link">{title}</Link>
+            <RouterLink className="job-cell-link" to={`/jobs/${record.id}`}>
+              {title}
+            </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
           </Space>
         </Space>
