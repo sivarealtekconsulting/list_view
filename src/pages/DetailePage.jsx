@@ -161,7 +161,7 @@ function tabLabel(label, count) {
   );
 }
 
-export default function JobDetailPage() {
+export default function DetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];

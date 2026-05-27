@@ -80,7 +80,7 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function JobListView() {
+export default function ListView() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');

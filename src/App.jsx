@@ -1,7 +1,7 @@
 import { ConfigProvider } from 'antd';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import DashboardCards from './components/cards/DashboardCards';
-import JobListView from './components/JobListView';
+import ListView from './components/ListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
@@ -39,7 +39,7 @@ export default function App() {
             element={
               <div style={{ background: '#f5f6fa', minHeight: '100vh', paddingTop: 24, paddingBottom: 24 }}>
                 <DashboardCards />
-                <JobListView />
+                <ListView />
               </div>
             }
           />
