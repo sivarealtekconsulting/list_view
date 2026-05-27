@@ -18,6 +18,9 @@ import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
+import PugazhDashboard      from './pages/pugazh-dashboard';
+import PugazhListView       from './pages/pugazh-listview';
+import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
   
 
@@ -66,6 +69,10 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
+          <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
+          <Route path="/pugazh-listview" element={<PugazhListView />} />
+          <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
+          <Route path="/jobs" element={<JobCollapsePage />} />
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
