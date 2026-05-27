@@ -20,6 +20,7 @@ import AssigneeAvatars from '../components/AssigneeAvatars';
 import { validationRules } from '../components/form/validation';
 import JobFilters from '../components/filters';
 import ListView from '../components/ListView';
+import SonyListView from '../components/SonyListView';
 
 const { Text } = Typography;
 const columnOptions = [
@@ -44,7 +45,7 @@ const actionsMenu = {
 };
 const MY_JOBS_COUNT = 6;
 const ALL_JOBS_COUNT = 2456;
-export default function CmnLayout() {
+export default function SonyDashboard() {
 
     const [activeTab, setActiveTab] = useState('my');
     const [search, setSearch] = useState('');
@@ -467,7 +468,7 @@ export default function CmnLayout() {
                     </Card>
                 </div>
                 <div>
-                    <ListView />
+                    <SonyListView />
                     {/* <Tooltip title="Filter">
                     <Button
                         className="job-toolbar-icon-button"
