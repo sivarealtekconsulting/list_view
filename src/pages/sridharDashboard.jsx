@@ -29,7 +29,7 @@ export default function SridharDashboardPage() {
   };
 
   return (
-    <>
+    <div className='dashboard-wrapper'>
       <Space direction="vertical" size={24}>
         <Row gutter={[16, 16]}>
           <Col span={24}>
@@ -176,14 +176,14 @@ export default function SridharDashboardPage() {
         </Row>
 
         <Row gutter={[16, 16]} align="top">
-          <Col xs={24} xl={12}>
+          <Col xs={24} xl={8}>
             <Space direction="vertical" size={16}>
               <ClientSubmissionCard />
               <OnboardingCard />
             </Space>
           </Col>
 
-          <Col xs={24} xl={12}>
+          <Col xs={24} xl={16}>
             <Space direction="vertical" size={16}>
               <StickyNotesCard />
               <ClientDetailsCard />
@@ -191,6 +191,6 @@ export default function SridharDashboardPage() {
           </Col>
         </Row>
       </Space>
-    </>
+    </div>
   );
 }
