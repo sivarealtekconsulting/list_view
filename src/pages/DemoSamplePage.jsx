@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
   Card,
@@ -10,47 +9,22 @@ import {
   Row,
   Select,
   Space,
-  Table,
-  Tag,
   Typography,
 } from 'antd';
 import {
-  BellOutlined,
-  CalendarOutlined,
-  ColumnHeightOutlined,
-  DownloadOutlined,
   FilterOutlined,
-  MenuOutlined,
-  MoreOutlined,
   PlusOutlined,
-  SearchOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import StatsCards from '../components/cards/StatsCards';
 import CalendarCard from '../components/cards/CalendarCard';
-import CustomPagination from '../components/CustomPagination';
 import { formatters, validationRules } from '../components/form/validation';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
-import JobFilters from '../components/filters';
-import ListView from '../components/ListView';
 import OnboardingCard from '../components/cards/OnboardingCard';
+import VenkateshListView from '../components/venkatListView';
 
-const { Text, Title } = Typography;
-
-const people = [
-  { key: '1', name: 'John Doe', category: 'Type A', status: 'Active', assignedTo: 'Sarah Wilson', date: '15 May 2024' },
-  { key: '2', name: 'Jane Smith', category: 'Type B', status: 'Pending', assignedTo: 'Mike Brown', date: '14 May 2024' },
-  { key: '3', name: 'Robert Johnson', category: 'Type C', status: 'Inactive', assignedTo: 'Emily Davis', date: '13 May 2024' },
-  { key: '4', name: 'Michael Lee', category: 'Type A', status: 'Active', assignedTo: 'David Wilson', date: '12 May 2024' },
-  { key: '5', name: 'Sophia Martinez', category: 'Type B', status: 'Pending', assignedTo: 'Sarah Wilson', date: '11 May 2024' },
-];
-
-const statusColors = {
-  Active: 'success',
-  Pending: 'warning',
-  Inactive: 'error',
-};
+const { Text } = Typography;
 
 const categoryOptions = [
   { value: 'Type A', label: 'Type A' },
@@ -75,67 +49,9 @@ export default function DemoSamplePage() {
   const [form] = Form.useForm();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-
   const handleSubmit = (values) => {
     console.log('Demo sample form values:', values);
   };
-
-  const columns = [
-    {
-      title: ' S.no',
-      dataIndex: 'key',
-      width: 70,
-      sorter: (a, b) => Number(a.key) - Number(b.key),
-    },
-    {
-      title: 'Personality Name',
-      dataIndex: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-
-      render: (name, record) => (
-        <Space align="start" size={6} className="job-title-cell">
-
-          <Space direction="vertical" size={2}>
-
-            <RouterLink className="job-cell-link" to={`/Venkatesh-detailview/${record.key}`}>
-              {name}
-            </RouterLink>
-          </Space>
-        </Space>
-
-
-      ),
-    },
-    {
-      title: 'Category',
-      dataIndex: 'category',
-      sorter: (a, b) => a.category.localeCompare(b.category),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      sorter: (a, b) => a.status.localeCompare(b.status),
-      render: (status) => <Tag color={statusColors[status]}>{status}</Tag>,
-    },
-    {
-      title: 'Assigned To',
-      dataIndex: 'assignedTo',
-      sorter: (a, b) => a.assignedTo.localeCompare(b.assignedTo),
-    },
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      sorter: (a, b) => new Date(a.date) - new Date(b.date),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      align: 'center',
-      render: () => <Button type="text" icon={<MoreOutlined />} />,
-    },
-  ];
-
   return (
     <div className="dashboard-wrapper">
 
@@ -240,40 +156,9 @@ export default function DemoSamplePage() {
             </Col>
           </Row>
         </Col>
-        <Col >
-          {/* <Card
-              title={<Space><FilterOutlined />Filters</Space>}
-              extra={<Button type="link">Reset</Button>}
-            >
-              <Form layout="vertical">
-                <Form.Item label="Date Range">
-                  <Input value="01 May 2024 - 31 May 2024" readOnly suffix={<CalendarOutlined />} />
-                </Form.Item>
-                <Form.Item label="Personality" name="filterPersonality">
-                  <Select placeholder="Select Personality" options={people.map(({ name }) => ({ value: name, label: name }))} />
-                </Form.Item>
-                <Form.Item label="Status" name="filterStatus">
-                  <Select placeholder="Select Status" options={statusOptions} />
-                </Form.Item>
-                <Form.Item label="Category" name="filterCategory">
-                  <Select placeholder="Select Category" options={categoryOptions} />
-                </Form.Item>
-                <Form.Item label="Assigned To" name="filterAssignedTo">
-                  <Select placeholder="Select User" options={assigneeOptions} />
-                </Form.Item>
-                <Row gutter={12}>
-                  <Col span={12}><Button block>Clear</Button></Col>
-                  <Col span={12}><Button block type="primary">Apply</Button></Col>
-                </Row>
-              </Form>
-            </Card> */}
+        <Col>
           <StickyNotesCard />
-
         </Col>
-
-
-        {/* </Row>
-      <Row gutter={[16, 16]}> */}
         <Col xs={24} md={12}>
           <OnboardingCard />
         </Col>
@@ -283,61 +168,26 @@ export default function DemoSamplePage() {
         </Col>
 
         <Col xs={24} md={24}>
-          <div className="antd">
-            <Card
-              title={(
-                <Flex align="center" justify="space-between">
-                  <div>
-                    <TeamOutlined />
-                    <Text strong>Personality List</Text>
-                  </div>
-                  <Space>
-                    <Button type="text" icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} />
-                    <Button icon={<PlusOutlined />} />
-                  </Space>
-                </Flex>
-
-              )}
-            >
-              <Table
-                className="job-list-table"
-                rowSelection={{}}
-                columns={columns}
-                dataSource={people}
-                size="middle"
-                showSorterTooltip={false}
-                tableLayout="fixed"
-                pagination={false}
-                scroll={{ x: '100%' }}
-              />
-
-              <CustomPagination
-                current={pagination.current}
-                pageSize={pagination.pageSize}
-                total={128}
-                onChange={(page) =>
-                  setPagination((current) => ({
-                    ...current,
-                    current: page,
-                  }))
-                }
-                onPageSizeChange={(pageSize) =>
-                  setPagination({
-                    current: 1,
-                    pageSize,
-                  })
-                }
-              />
-            </Card>
-
-
-          </div>
+          <Card
+            title={(
+              <Flex align="center" justify="space-between">
+                <Space>
+                  <TeamOutlined />
+                  <Text strong>Personality List</Text>
+                </Space>
+                {/* <Space>
+                  <Button type="text"  icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} />
+                  <Button icon={<PlusOutlined />} />
+                </Space> */}
+              </Flex>
+            )}
+          >
+            <VenkateshListView
+              filtersOpen={filtersOpen}
+              onCloseFilters={() => setFiltersOpen(false)}
+            />
+          </Card>
         </Col>
-        <JobFilters
-          open={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          onApply={() => setFiltersOpen(false)}
-        />
       </Row>
     </div>
   );
