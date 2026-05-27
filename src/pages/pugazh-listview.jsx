@@ -1,6 +1,6 @@
 import { Row, Col, Space } from 'antd';
 import StatsCards   from '../components/cards/StatsCards';
-import JobListView from '../components/ListView';
+import JobListView from '../components/pugalistView';
 
 export default function PugazhListView() {
   return (
