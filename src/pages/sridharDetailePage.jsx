@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Badge,
@@ -10,7 +10,6 @@ import {
   Input,
   Row,
   Space,
-  Table,
   Tabs,
   Tag,
   Typography,
@@ -30,7 +29,7 @@ import StatsCards from '../components/cards/StatsCards';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import UserForm from '../components/form/forms';
 import { formatters, validationRules } from '../components/form/validation';
-import CustomPagination from '../components/CustomPagination';
+import ParamListView from '../components/ParamListView';
 import { MOCK_JOBS } from '../data/jobs';
 
 const { Text, Title, Paragraph } = Typography;
@@ -116,6 +115,22 @@ const activityRows = [
 
 const skills = ['React', 'Node.js', 'AWS', 'REST APIs', 'Agile delivery'];
 
+const candidateFields = [
+  { label: 'Candidate', value: 'candidate' },
+  { label: 'Role', value: 'role' },
+  { label: 'Location', value: 'location' },
+  { label: 'Experience', value: 'experience' },
+  { label: 'Status', value: 'status' },
+  { label: 'Submitted', value: 'date' },
+];
+
+const activityFields = [
+  { label: 'Activity', value: 'event' },
+  { label: 'Owner', value: 'owner' },
+  { label: 'Status', value: 'status' },
+  { label: 'Time', value: 'time' },
+];
+
 function statusTag(status) {
   const colorByStatus = {
     Submitted: 'green',
@@ -134,66 +149,7 @@ export default function SridharDetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const [form] = Form.useForm();
-  const [candidatePage, setCandidatePage] = useState(1);
-  const [candidatePageSize, setCandidatePageSize] = useState(7);
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
-
-  const pagedCandidateRows = useMemo(() => {
-    const start = (candidatePage - 1) * candidatePageSize;
-    return candidateRows.slice(start, start + candidatePageSize);
-  }, [candidatePage, candidatePageSize]);
-
-  const candidateColumns = [
-    {
-      title: 'Candidate',
-      dataIndex: 'candidate',
-      render: (candidate, record) => (
-        <Space direction="vertical" size={0}>
-          <Text strong>{candidate}</Text>
-          <Text type="secondary">{record.role}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-    },
-    {
-      title: 'Experience',
-      dataIndex: 'experience',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: statusTag,
-    },
-    {
-      title: 'Submitted',
-      dataIndex: 'date',
-    },
-  ];
-
-  const activityColumns = [
-    {
-      title: 'Activity',
-      dataIndex: 'event',
-      render: (event, record) => (
-        <Space direction="vertical" size={0}>
-          <Text>{event}</Text>
-          <Text type="secondary">{record.owner}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: statusTag,
-    },
-    {
-      title: 'Time',
-      dataIndex: 'time',
-    },
-  ];
 
   const handleNoteSubmit = (values) => {
     console.log('Detail note:', values);
@@ -238,14 +194,11 @@ export default function SridharDetailPage() {
                 </Space>
               </Card>
 
-              <Card title="Activity">
-                <Table
-                  columns={activityColumns}
-                  dataSource={activityRows}
-                  pagination={false}
-                  size="middle"
-                />
-              </Card>
+              <ParamListView
+                listName="Activity"
+                fields={activityFields}
+                dataSource={activityRows}
+              />
             </Space>
           </Col>
 
@@ -271,21 +224,10 @@ export default function SridharDetailPage() {
         <Row>
           <Col span={24}>
             <Card title="Submitted Candidates">
-              <Table
-                columns={candidateColumns}
-                dataSource={pagedCandidateRows}
-                pagination={false}
-                size="middle"
-              />
-              <CustomPagination
-                current={candidatePage}
-                pageSize={candidatePageSize}
-                total={candidateRows.length}
-                onChange={setCandidatePage}
-                onPageSizeChange={(nextSize) => {
-                  setCandidatePageSize(nextSize);
-                  setCandidatePage(1);
-                }}
+              <ParamListView
+                listName="Candidates"
+                fields={candidateFields}
+                dataSource={candidateRows}
               />
             </Card>
           </Col>
@@ -298,14 +240,16 @@ export default function SridharDetailPage() {
       children: (
         <Row gutter={[16, 16]}>
           <Col xs={24} xl={12}>
+          <Space direction="vertical" size={16}>
               <ClientSubmissionCard />
               <StickyNotesCard />
-            
+              </Space>
           </Col>
         <Col xs={24} xl={12}>
+          <Space direction="vertical" size={16}>
               <StatsCards />
               <OnboardingCard />
-        
+        </Space>
           </Col>
         </Row>
       ),
