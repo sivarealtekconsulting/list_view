@@ -12,7 +12,8 @@ import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
 import CmnLayout from './pages/SonyDashboard';
 import NewDashboard from './components/cards/NewDashboard';
-import JobCollapsePage from './pages/jobCollapsePage';
+import SridharDashboardPage from './pages/sridharDashboard';
+import SridharDetailPage from './pages/sridharDetailePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
@@ -65,7 +66,9 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
-          <Route path="/jobs" element={<JobCollapsePage />} />
+          <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
+          <Route path="/sri-detailview" element={<SridharDetailPage />} />
+          <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
