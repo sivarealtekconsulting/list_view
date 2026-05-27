@@ -53,7 +53,7 @@ export default function App() {
           <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
-            path="/student-dashboard"
+            path="/surya-dashboard"
             element={<StudentDashboardPage />}
           />
 
