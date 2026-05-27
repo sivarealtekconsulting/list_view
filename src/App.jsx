@@ -5,8 +5,8 @@ import ListView from './components/ListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
-import JobsPage from './pages/JobsPage';  
-import SubmissionsPage from './pages/SubmissionsPage'; 
+import JobsPage from './pages/JobsPage';
+import SubmissionsPage from './pages/SubmissionsPage';
 import DemoSamplePage from './pages/DemoSamplePage';
 import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
@@ -17,6 +17,8 @@ import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
+import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
+  
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
@@ -46,18 +48,18 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/demosample" element={<DemoSamplePage />} />
+          <Route path="/Venkatesh" element={<DemoSamplePage />} />
+          <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
+
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
 x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
-          <Route path="/pugazh"element={<JobsPage />}         />  
-          <Route path="/submissions" element={<SubmissionsPage />} /> 
-          <Route path="/sony-dashboard" element={<SonyDashboard />} />
-          <Route path="/sony-detailedview/:jobId" element={<SonyDetailedView />} />
-
+          <Route path="/pugazh" element={<JobsPage />} />
+          <Route path="/submissions" element={<SubmissionsPage />} />
+          <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
             path="/student-dashboard"
