@@ -23,6 +23,7 @@ import {
   ArrowLeftOutlined,
   AuditOutlined,
   CalendarOutlined,
+  DeleteOutlined,
   EditOutlined,
   EnvironmentOutlined,
   FileTextOutlined,
@@ -136,6 +137,15 @@ function SectionCard({ title, icon, children }) {
   );
 }
 
+function CompactTimelineContent({ title, children }) {
+  return (
+    <Space direction="vertical" size={0}>
+      <Text strong>{title}</Text>
+      <Text type="secondary">{children}</Text>
+    </Space>
+  );
+}
+
 function DetailItem({ label, children }) {
   return (
     <Space direction="vertical" size={2}>
@@ -173,6 +183,8 @@ export default function VenkateshDetailViewPage() {
   const { id } = useParams();
   const screens = useBreakpoint();
   const [activeTab, setActiveTab] = useState('details');
+  const [candidates, setCandidates] = useState(candidateRows);
+  const [selectedCandidateKeys, setSelectedCandidateKeys] = useState([]);
   const record = PERSONALITIES.find((item) => item.key === String(id));
   const isMobile = !screens.md;
 
@@ -192,6 +204,18 @@ export default function VenkateshDetailViewPage() {
 
   const activityItems = buildActivity(record);
   const completionValue = Number(record.completion.replace('%', ''));
+  const candidateRowSelection = {
+    type: 'checkbox',
+    selectedRowKeys: selectedCandidateKeys,
+    onChange: setSelectedCandidateKeys,
+  };
+
+  const handleDeleteCandidates = () => {
+    setCandidates((current) => (
+      current.filter((candidate) => !selectedCandidateKeys.includes(candidate.key))
+    ));
+    setSelectedCandidateKeys([]);
+  };
 
   return (
     <div className="dashboard-wrapper">
@@ -233,7 +257,7 @@ export default function VenkateshDetailViewPage() {
                     items={[
                       { key: 'details', label: tabLabel('Details', 1) },
                       { key: 'activity', label: tabLabel('Activity', activityItems.length) },
-                      { key: 'candidates', label: tabLabel('Candidates', candidateRows.length) },
+                      { key: 'candidates', label: tabLabel('Candidates', candidates.length) },
                     ]}
                   />
                 </Space>
@@ -260,74 +284,140 @@ export default function VenkateshDetailViewPage() {
 
         {activeTab === 'candidates' ? (
           <Col span={24}>
-            <SectionCard title="Candidates" icon={<TeamOutlined />}>
-            <div className="antd">
-              <Table
-                className="job-list-table"
-                columns={candidateColumns}
-                dataSource={candidateRows}
-                pagination={false}
-                showSorterTooltip={false}
-                tableLayout="fixed"
-                scroll={{ x: '100%' }}
-              />
-              </div> 
-            </SectionCard>
+            <Card
+              size="small"
+              className="client-details-card"
+              title={<Space size={6}><TeamOutlined /><Text strong>Candidates</Text></Space>}
+              extra={(
+                <Space>
+                  {selectedCandidateKeys.length > 0 && (
+                    <Text type="secondary">Selected ({selectedCandidateKeys.length})</Text>
+                  )}
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    disabled={selectedCandidateKeys.length === 0}
+                    onClick={handleDeleteCandidates}
+                  >
+                    Delete
+                  </Button>
+                </Space>
+              )}
+            >
+              <div className="antd">
+                <Table
+                  className="job-list-table"
+                  rowSelection={candidateRowSelection}
+                  columns={candidateColumns}
+                  dataSource={candidates}
+                  pagination={false}
+                  showSorterTooltip={false}
+                  tableLayout="fixed"
+                  scroll={{ x: '100%' }}
+                />
+              </div>
+            </Card>
           </Col>
         ) : activeTab === 'activity' ? (
-          <Col span={24}>
-            <SectionCard title="Activity" icon={<InfoCircleOutlined />}>
-              <Timeline
-                items={activityItems.map((item) => ({
-                  color: item.color,
-                  children: (
-                    <Card size="small">
+          <>
+            <Col xs={24} xl={15}>
+              <SectionCard title="Activity Feed" icon={<InfoCircleOutlined />}>
+                <Timeline
+                  mode="left"
+                  items={activityItems.map((item) => ({
+                    color: item.color,
+                    children: (
                       <Space direction="vertical" size={4}>
-                        <Tag color={item.tagColor}>{item.status}</Tag>
-                        <Text type="secondary">{item.text}</Text>
+                        <Space wrap>
+                          <Tag color={item.tagColor}>{item.status}</Tag>
+                          <Text type="secondary">{record.lastUpdated}</Text>
+                        </Space>
+                        <Text>{item.text}</Text>
                       </Space>
-                    </Card>
-                  ),
-                }))}
-              />
-            </SectionCard>
-          </Col>
+                    ),
+                  }))}
+                />
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} xl={9}>
+              <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                <SectionCard title="Activity Snapshot" icon={<AuditOutlined />}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={12}>
+                      <DetailItem label="Events">{activityItems.length}</DetailItem>
+                    </Col>
+                    <Col xs={12}>
+                      <DetailItem label="Latest">{record.lastUpdated}</DetailItem>
+                    </Col>
+                    <Col xs={12}>
+                      <DetailItem label="Owner">{record.assignedTo}</DetailItem>
+                    </Col>
+                    <Col xs={12}>
+                      <DetailItem label="Status">
+                        <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
+                      </DetailItem>
+                    </Col>
+
+                    <Col span={24}>
+                      <Space direction="vertical" size={6}>
+                        <Text type="secondary">Profile completion</Text>
+                        <Progress percent={completionValue} size="small" />
+                      </Space>
+                    </Col>
+                  </Row>
+                </SectionCard>
+
+                <SectionCard title="Next Step" icon={<CalendarOutlined />}>
+                  <Space direction="vertical" size={6}>
+                    <Text strong>Review candidate activity</Text>
+                    <Text type="secondary">Check candidate submissions before updating this profile.</Text>
+                    <Button type="primary" onClick={() => setActiveTab('candidates')}>
+                      View Candidates
+                    </Button>
+                  </Space>
+                </SectionCard>
+              </Space>
+            </Col>
+          </>
         ) : (
           <>
             <Col xs={24} lg={15}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <SectionCard title="Personality Details" icon={<UserOutlined />}>
                   <Row gutter={[24, 18]}>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Personality ID">{record.code}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Personality Name">{record.name}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Category">{record.category}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Role">{record.role}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Status">
                         <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
                       </DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
-                      <DetailItem label="Priority">{record.priority}</DetailItem>
+                    <Col xs={24} sm={12} xl={6}>
+                      <DetailItem label="Priority">  <Tag color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}>
+                        {record.priority}
+                      </Tag></DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Assigned To">{record.assignedTo}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Date of Birth">{record.dob}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Department">{record.department}</DetailItem>
                     </Col>
-                    <Col xs={24} sm={12} xl={8}>
+                    <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Completion">{record.completion}</DetailItem>
                     </Col>
                   </Row>
@@ -335,7 +425,7 @@ export default function VenkateshDetailViewPage() {
 
                 <SectionCard title="Contact Details" icon={<MailOutlined />}>
                   <Row gutter={[24, 18]}>
-                    <Col xs={24} sm={12}>
+                    <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Email">
                         <Space wrap>
                           <MailOutlined />
@@ -343,7 +433,7 @@ export default function VenkateshDetailViewPage() {
                         </Space>
                       </DetailItem>
                     </Col>
-                    <Col xs={24} sm={12}>
+                    <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Phone">
                         <Space wrap>
                           <PhoneOutlined />
@@ -351,7 +441,7 @@ export default function VenkateshDetailViewPage() {
                         </Space>
                       </DetailItem>
                     </Col>
-                    <Col xs={24} sm={12}>
+                    <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Location">
                         <Space wrap>
                           <EnvironmentOutlined />
@@ -359,7 +449,7 @@ export default function VenkateshDetailViewPage() {
                         </Space>
                       </DetailItem>
                     </Col>
-                    <Col xs={24} sm={12}>
+                    <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Created Date">{record.date}</DetailItem>
                     </Col>
                     <Col xs={24} sm={12}>
@@ -385,27 +475,62 @@ export default function VenkateshDetailViewPage() {
             <Col xs={24} lg={9}>
               <Space direction="vertical" size={12} style={{ width: '100%' }}>
                 <SectionCard title="Summary" icon={<InfoCircleOutlined />}>
-                  <Space direction="vertical" size={10}>
-                    <Text type="secondary">Current Status</Text>
-                    <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
-                    <Divider />
-                    <Text type="secondary">Completion</Text>
-                    <Progress percent={completionValue} />
-                    <Divider />
-                    <Text type="secondary">Owner</Text>
-                    <Text>{record.assignedTo}</Text>
-                    <Divider />
-                    <Text type="secondary">Notes</Text>
-                    <Text>{record.notes}</Text>
+                  <Space direction="vertical" size={12}>
+                    <Space wrap>
+                      {/* <Col xs={24} sm={24}>
+                        <DetailItem label="Status">
+                          <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
+                        </DetailItem>
+                      </Col>
+                      <Col xs={24} sm={24}>
+                        <DetailItem label="Priority">
+                          <Tag color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}>
+                            {record.priority}
+                          </Tag>
+                        </DetailItem>
+                      </Col> */}
+                    </Space>
+                    <Paragraph>
+                      {record.name} is a {record.role} in the {record.department} department.
+                      The profile is currently assigned to {record.assignedTo} and is {record.completion} complete.
+                    </Paragraph>
+                    <Progress percent={completionValue} size="small" />
+                    <Paragraph type="secondary">
+                      {record.notes}
+                    </Paragraph>
                   </Space>
                 </SectionCard>
 
                 <SectionCard title="Timeline" icon={<CalendarOutlined />}>
-                  <Space direction="vertical" size={12}>
-                    <DetailItem label="Created">{record.date}</DetailItem>
-                    <DetailItem label="Updated">{record.lastUpdated}</DetailItem>
-                    <DetailItem label="Assigned To">{record.assignedTo}</DetailItem>
-                  </Space>
+                  <Timeline
+                    mode="left"
+                    items={[
+                      {
+                        color: 'blue',
+                        children: (
+                          <CompactTimelineContent title="Created">
+                            {record.date}
+                          </CompactTimelineContent>
+                        ),
+                      },
+                      {
+                        color: 'green',
+                        children: (
+                          <CompactTimelineContent title="Updated">
+                            {record.lastUpdated}
+                          </CompactTimelineContent>
+                        ),
+                      },
+                      {
+                        color: 'orange',
+                        children: (
+                          <CompactTimelineContent title="Assigned">
+                            {record.assignedTo}
+                          </CompactTimelineContent>
+                        ),
+                      },
+                    ]}
+                  />
                 </SectionCard>
               </Space>
             </Col>
