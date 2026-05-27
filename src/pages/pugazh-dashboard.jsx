@@ -1,7 +1,7 @@
 import { Row, Col, Space } from 'antd';
 
 import StatsCards           from '../components/cards/StatsCards';
-import JobListView from '../components/ListView';
+import JobListView from '../components/pugalistView';
 import CalendarCard         from '../components/cards/CalendarCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import ClientDetailsCard    from '../components/cards/ClientDetailsCard';

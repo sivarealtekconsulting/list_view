@@ -92,7 +92,7 @@ export default function DemoSamplePage() {
       title: 'Personality Name',
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
- 
+
       render: (name, record) => (
         <Space align="start" size={6} className="job-title-cell">
 
@@ -272,8 +272,8 @@ export default function DemoSamplePage() {
         </Col>
 
 
-      </Row>
-      <Row gutter={[16, 16]}>
+        {/* </Row>
+      <Row gutter={[16, 16]}> */}
         <Col xs={24} md={12}>
           <OnboardingCard />
         </Col>
@@ -281,62 +281,64 @@ export default function DemoSamplePage() {
         <Col xs={24} md={12}>
           <ClientSubmissionCard />
         </Col>
+
+        <Col xs={24} md={24}>
+          <div className="antd">
+            <Card
+              title={(
+                <Flex align="center" justify="space-between">
+                  <div>
+                    <TeamOutlined />
+                    <Text strong>Personality List</Text>
+                  </div>
+                  <Space>
+                    <Button type="text" icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} />
+                    <Button icon={<PlusOutlined />} />
+                  </Space>
+                </Flex>
+
+              )}
+            >
+              <Table
+                className="job-list-table"
+                rowSelection={{}}
+                columns={columns}
+                dataSource={people}
+                size="middle"
+                showSorterTooltip={false}
+                tableLayout="fixed"
+                pagination={false}
+                scroll={{ x: '100%' }}
+              />
+
+              <CustomPagination
+                current={pagination.current}
+                pageSize={pagination.pageSize}
+                total={128}
+                onChange={(page) =>
+                  setPagination((current) => ({
+                    ...current,
+                    current: page,
+                  }))
+                }
+                onPageSizeChange={(pageSize) =>
+                  setPagination({
+                    current: 1,
+                    pageSize,
+                  })
+                }
+              />
+            </Card>
+
+
+          </div>
+        </Col>
+        <JobFilters
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          onApply={() => setFiltersOpen(false)}
+        />
       </Row>
-
-      <div className="antd">
-        <Card
-          title={(
-            <Flex align="center" justify="space-between">
-              <div>
-                <TeamOutlined />
-                <Text strong>Personality List</Text>
-              </div>
-              <Space>
-                <Button type="text" icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} />
-                <Button icon={<PlusOutlined />} />
-              </Space>
-            </Flex>
-
-          )}
-        >
-          <Table
-            className="job-list-table"
-            rowSelection={{}}
-            columns={columns}
-            dataSource={people}
-            size="middle"
-            showSorterTooltip={false}
-            tableLayout="fixed"
-            pagination={false}
-            scroll={{ x: '100%' }}
-          />
-
-          <CustomPagination
-            current={pagination.current}
-            pageSize={pagination.pageSize}
-            total={128}
-            onChange={(page) =>
-              setPagination((current) => ({
-                ...current,
-                current: page,
-              }))
-            }
-            onPageSizeChange={(pageSize) =>
-              setPagination({
-                current: 1,
-                pageSize,
-              })
-            }
-          />
-        </Card>
-
-
-      </div>
-      <JobFilters
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        onApply={() => setFiltersOpen(false)}
-      />
     </div>
   );
 }
