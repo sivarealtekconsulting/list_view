@@ -10,7 +10,7 @@ import SubmissionsPage from './pages/SubmissionsPage';
 import DemoSamplePage from './pages/DemoSamplePage';
 import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
-import CmnLayout from './pages/cmnLayout';
+import CmnLayout from './pages/SonyDashboard';
 import NewDashboard from './components/cards/NewDashboard';
 import JobCollapsePage from './pages/jobCollapsePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
@@ -20,6 +20,8 @@ import NaveenDashboardPage from './pages/NaveenDashboardPage';
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
+import SonyDashboard from './pages/SonyDashboard';
+import SonyDetailedView from './pages/SonyDetailedView';
 
 export default function App() {
   return (
@@ -47,13 +49,15 @@ export default function App() {
           <Route path="/demosample" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
-          <Route path="/candidates" element={<CandidatesPage />} />
+x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
           <Route path="/pugazh"element={<JobsPage />}         />  
           <Route path="/submissions" element={<SubmissionsPage />} /> 
-          <Route path="/cmnlayout" element={<CmnLayout />} />
+          <Route path="/sony-dashboard" element={<SonyDashboard />} />
+          <Route path="/sony-detailedview/:jobId" element={<SonyDetailedView />} />
+
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
             path="/student-dashboard"
