@@ -41,7 +41,7 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/demosample" element={<DemoSamplePage />} />
+          <Route path="/Venkatesh" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
