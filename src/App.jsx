@@ -10,9 +10,10 @@ import SubmissionsPage from './pages/SubmissionsPage';
 import DemoSamplePage from './pages/DemoSamplePage';
 import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
-import CmnLayout from './pages/cmnLayout';
+// import CmnLayout from './pages/cmnLayout';
 import NewDashboard from './components/cards/NewDashboard';
-import JobCollapsePage from './pages/jobCollapsePage';
+import SridharDashboardPage from './pages/sridharDashboard';
+import SridharDetailPage from './pages/sridharDetailePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
@@ -53,13 +54,15 @@ export default function App() {
           <Route path="/add" element={<UserForm />} />
           <Route path="/pugazh"element={<JobsPage />}         />  
           <Route path="/submissions" element={<SubmissionsPage />} /> 
-          <Route path="/cmnlayout" element={<CmnLayout />} />
+          {/* <Route path="/cmnlayout" element={<CmnLayout />} /> */}
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
-          <Route path="/jobs" element={<JobCollapsePage />} />
+          <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
+          <Route path="/sri-detailview" element={<SridharDetailPage />} />
+          <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
