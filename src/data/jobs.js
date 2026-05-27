@@ -2,7 +2,7 @@ export const MOCK_JOBS = [
   {
     key: '1',
     id: 1,
-    title: 'Full Stack Developer (3 Years Experience)',
+    title: 'Software Developer (3 Years Experience)',
     location: 'North Davidfurt',
     locationType: 'On-site',
     experience: '5+ years',

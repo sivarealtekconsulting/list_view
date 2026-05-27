@@ -5,8 +5,11 @@ import {
   Card,
   Col,
   Divider,
+  Empty,
+  Flex,
   Row,
   Space,
+  Statistic,
   Tabs,
   Tag,
   Timeline,
@@ -29,6 +32,8 @@ import { MOCK_JOBS } from '../data/jobs';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
+import StickyNotesCard from '../components/cards/StickyNotesCard';
+import '../styles/OnboardingCard.css';
 
 const { Text, Title, Link, Paragraph } = Typography;
 
@@ -112,7 +117,7 @@ const candidateRows = [
   {
     id: 2,
     candidateName: 'Kiran Kumar',
-    designation: 'Full Stack Developer',
+    designation: 'Software Developer',
     currentLocation: 'Texas',
     experience: '5 years',
     workAuthorization: 'GC EAD',
@@ -167,6 +172,7 @@ export default function JobDetailPage() {
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
   const [activeDetailTab, setActiveDetailTab] = useState('details');
   const [activeActivityTab, setActiveActivityTab] = useState('activity');
+  const [descExpanded, setDescExpanded] = useState(false);
 
   return (
     <div className="dashboard-wrapper">
@@ -174,11 +180,26 @@ export default function JobDetailPage() {
         <Col span={24}>
           <Breadcrumb
             items={[
-              { title: <Text type="secondary" onClick={() => navigate('/')}>Home</Text> },
-              { title: <Text type="secondary" onClick={() => navigate('/')}>Jobs</Text> },
-              { title: <Text strong>Detailed View</Text> },
+              {
+                title: (
+                  <Text style={{ color: '#586888', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                    Home
+                  </Text>
+                ),
+              },
+              {
+                title: (
+                  <Text style={{ color: '#586888', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                    Jobs
+                  </Text>
+                ),
+              },
+              {
+                title: <Text style={{ color: '#0053A5' }} strong>Detailed View</Text>,
+              },
             ]}
           />
+
         </Col>
 
         <Col span={24}>
@@ -198,37 +219,50 @@ export default function JobDetailPage() {
                     <Text type="secondary">{job.locationType}</Text>
                     <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
                   </Space>
-                  <Tabs
-                    size="small"
-                    activeKey={activeDetailTab}
-                    onChange={setActiveDetailTab}
-                    items={[
-                      { key: 'details', label: tabLabel('Details', 1) },
-                      { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                      { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
-                    ]}
-                  />
                 </Space>
               </Col>
               <Col xs={24} lg={8}>
-                <Row justify="end">
-                  <Col>
-                    <Space direction="vertical" size={8}>
-                      <Space>
-                        <Button type="link" icon={<TeamOutlined />}>Source Candidates</Button>
-                        <Button type="text" icon={<MoreOutlined />} />
-                      </Space>
-                      <Space size={32}>
-                        <DetailField label="Target submissions" value={job.targetSub?.total} />
-                        <DetailField label="In pipeline" value={job.pipeline} />
-                      </Space>
-                      <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
-                    </Space>
-                  </Col>
-                </Row>
+                <Space direction="vertical" size={6} style={{ width: '100%' }}>
+                  <div className="onboarding-item blue" style={{ flexDirection: 'row', alignItems: 'center', gap: 0 }}>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <Text className="onboarding-item-label">Target Submissions</Text>
+                      <Statistic value={job.targetSub?.total ?? '-'} className="onboarding-stat" />
+                    </div>
+                    <div style={{ width: 1, background: 'rgba(0,0,0,0.08)', alignSelf: 'stretch', margin: '0 12px' }} />
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <Text className="onboarding-item-label">In Pipeline</Text>
+                      <Statistic value={job.pipeline ?? '-'} className="onboarding-stat" />
+                    </div>
+                  </div>
+                  <DetailField label="Created On" value="Nov 03, 2025 | 07:00PM" />
+                </Space>
               </Col>
             </Row>
           </Card>
+        </Col>
+
+        <Col span={24}>
+          <div className="antd">
+            <Card>
+              <Flex align="center" justify="space-between" gap={12} wrap>
+                <Tabs
+                  activeKey={activeDetailTab}
+                  onChange={setActiveDetailTab}
+                  items={[
+                    { key: 'details', label: tabLabel('Details', 0) },
+                    { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                    { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
+                  ]}
+                />
+                <Flex align="center" gap={8}>
+                  <Button type="primary" className="job-summary-button" icon={<TeamOutlined />}>
+                    Source Candidates
+                  </Button>
+                  <Button className="job-toolbar-icon-button" icon={<MoreOutlined />} />
+                </Flex>
+              </Flex>
+            </Card>
+          </div>
         </Col>
 
         {activeDetailTab === 'candidates-api' ? (
@@ -245,7 +279,7 @@ export default function JobDetailPage() {
           </Col>
         ) : (
           <>
-            <Col xs={24} lg={15}>
+            <Col xs={24} lg={17}>
               <Space direction="vertical" size={12}>
                 <SectionCard title="Client" icon={<FileSearchOutlined />}>
                   <Row gutter={[32, 16]}>
@@ -274,10 +308,15 @@ export default function JobDetailPage() {
 
                 <SectionCard title="Description" icon={<FileTextOutlined />}>
                   <Space direction="vertical">
-                    {defaultDescription.map((line) => (
+                    {(descExpanded ? defaultDescription : defaultDescription.slice(0, 10)).map((line) => (
                       <Paragraph key={line}>{line}</Paragraph>
                     ))}
                   </Space>
+                  {defaultDescription.length > 10 && (
+                    <Link onClick={() => setDescExpanded((prev) => !prev)}>
+                      {descExpanded ? 'Show less' : 'Show more'}
+                    </Link>
+                  )}
                 </SectionCard>
 
                 <SectionCard title="Additional Details" icon={<InfoCircleOutlined />}>
@@ -289,8 +328,9 @@ export default function JobDetailPage() {
               </Space>
             </Col>
 
-            <Col xs={24} lg={9}>
-              <Card size="small" className="client-details-card">
+            <Col xs={24} lg={7}>
+              
+              <Card size="small" className="client-details-card" title="Activity & Notes">
                 <Tabs
                   size="small"
                   activeKey={activeActivityTab}
@@ -339,7 +379,7 @@ export default function JobDetailPage() {
                         </Space>
                       ),
                     },
-                    { key: 'notes', label: tabLabel('Notes', 0), children: <Text type="secondary">No notes found</Text> },
+                    { key: 'notes', label: tabLabel('Notes', 0), children: <Empty description="No data" /> },
                   ]}
                 />
               </Card>
