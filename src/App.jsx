@@ -40,7 +40,7 @@ export default function App() {
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
-          <Route path="/jobs" element={<JobCollapsePage />} />
+          <Route path="/jobs-collapse" element={<JobCollapsePage />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

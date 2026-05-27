@@ -52,93 +52,17 @@ export default function JobCollapsePage() {
   };
 
   return (
-    <>
-      <Space direction="vertical" size={16}>
-        <Card
-          title="Job Collapse Workspace"
-          extra={(
-            <Space>
-              <Select
-                defaultValue="all"
-                size="small"
-                options={[
-                  { value: 'all', label: 'All jobs' },
-                  { value: 'mine', label: 'My jobs' },
-                  { value: 'team', label: 'Team jobs' },
-                ]}
-              />
-              <Button icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)}>
-                Filters
-              </Button>
-            </Space>
-          )}
-        >
-        </Card>
-
-        <Row gutter={[16, 16]}>
-          {summaryCards.map((item) => (
-            <Col key={item.title} xs={24} lg={12}>
-              <Card>
-                <Statistic
-                  title={item.title}
-                  value={item.value}
-                  suffix={<Text type="secondary">{item.suffix}</Text>}
-                />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-
+    <div className="dashboard-wrapper">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} xl={24}>
         <Row gutter={[16, 16]}>
           <Col xs={24} xl={12}>
-            <Card title="Delivery activity">
-              <Space direction="vertical" size={12}>
-                {activityItems.map((item) => (
-                  <Space key={item} align="start">
-                    <CalendarOutlined />
-                    <Text>{item}</Text>
-                  </Space>
-                ))}
-              </Space>
-            </Card>
             <StatsCards />
-
-               <ClientDetailsCard />
-       
+            {/* <ClientDetailsCard /> */}
+              
           </Col>
           <Col xs={24} xl={12}>
-            <CalendarCard />
-          </Col>
-        </Row>
-
-        <Row>
-          <Col span={24}>
-            <Card
-              title={(
-                <Space>
-                  <TeamOutlined />
-                  <Text strong>Jobs List</Text>
-                </Space>
-              )}
-            >
-              <JobListView />
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[16, 16]}>
-          <Col xs={24} xl={12}>
-            <ClientSubmissionCard />
-               <OnboardingCard />
-          </Col>
-          <Col xs={24} xl={12}>
-            <Space direction="vertical" size={16}>
-              <StickyNotesCard />
-             
-            </Space>
-          </Col>
-        </Row>
-         <Card title="Quick job intake">
+          <Card title="Quick job intake">
                 <Form
                   form={form}
                   layout="vertical"
@@ -225,21 +149,6 @@ export default function JobCollapsePage() {
                     </Col>
 
                     <Col span={24}>
-                      <Form.Item
-                        label="Remarks"
-                        name="remarks"
-                        rules={[
-                          validationRules.required('Remarks'),
-                          validationRules.remarks(),
-                          validationRules.remarksMinLength(),
-                          validationRules.remarksMaxLength(),
-                        ]}
-                      >
-                        <Input.TextArea rows={4} />
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
                       <Space>
                         <Button type="primary" htmlType="submit">
                           Submit
@@ -252,13 +161,48 @@ export default function JobCollapsePage() {
                   </Row>
                 </Form>
               </Card>
-      </Space>
+              </Col>
+          <Col xs={24} xl={12}>
+            <CalendarCard />
+          </Col>
+        </Row>
+        </Col>
+
+        <Row>
+          <Col span={24}>
+            <Card
+              title={(
+                <Space>
+                  <TeamOutlined />
+                  <Text strong>Jobs List</Text>
+                </Space>
+              )}
+            >
+              <JobListView />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24} xl={12}>
+            <ClientSubmissionCard />
+               <OnboardingCard />
+          </Col>
+          <Col xs={24} xl={12}>
+            <Space direction="vertical" size={16}>
+              <StickyNotesCard />
+             
+            </Space>
+          </Col>
+        </Row>
+        <ClientDetailsCard />
 
       <JobFilters
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         onApply={() => setFiltersOpen(false)}
       />
-    </>
+      </Row>
+    </div>
   );
 }
