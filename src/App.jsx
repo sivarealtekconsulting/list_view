@@ -5,8 +5,8 @@ import ListView from './components/ListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
-import JobsPage from './pages/JobsPage';  
-import SubmissionsPage from './pages/SubmissionsPage'; 
+import JobsPage from './pages/JobsPage';
+import SubmissionsPage from './pages/SubmissionsPage';
 import DemoSamplePage from './pages/DemoSamplePage';
 import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
@@ -17,7 +17,9 @@ import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
-
+import PugazhDashboard      from './pages/pugazh-dashboard';
+import PugazhListView       from './pages/pugazh-listview';
+import PugazhDetailListView from './pages/pugazh-detail-listview';
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 
@@ -51,14 +53,17 @@ export default function App() {
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
-          <Route path="/pugazh"element={<JobsPage />}         />  
-          <Route path="/submissions" element={<SubmissionsPage />} /> 
+          <Route path="/pugazh" element={<JobsPage />} />
+          <Route path="/submissions" element={<SubmissionsPage />} />
           <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
+          <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
+          <Route path="/pugazh-listview" element={<PugazhListView />} />
+          <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
           <Route path="/jobs" element={<JobCollapsePage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
