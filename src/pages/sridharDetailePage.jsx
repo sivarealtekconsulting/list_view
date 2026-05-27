@@ -240,16 +240,20 @@ export default function SridharDetailPage() {
       children: (
         <Row gutter={[16, 16]}>
           <Col xs={24} xl={12}>
-          <Space direction="vertical" size={16}>
+          <Space direction="vertical">
               <ClientSubmissionCard />
               <StickyNotesCard />
               </Space>
           </Col>
         <Col xs={24} xl={12}>
-          <Space direction="vertical" size={16}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
               <StatsCards />
+            </Col>
+            <Col span={24}>
               <OnboardingCard />
-        </Space>
+            </Col>
+          </Row>
           </Col>
         </Row>
       ),
