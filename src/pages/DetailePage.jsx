@@ -23,30 +23,14 @@ import {
   MoreOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
-import CandidateListView from '../components/CandidateListView';
+import DynamicListView from '../components/DynamicListView';
+import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
 
 const { Text, Title, Link, Paragraph } = Typography;
-
-const pageStyle = {
-  width: 1174,
-  maxWidth: 'calc(100vw - 90px)',
-  margin: '58px auto 0',
-  paddingBottom: 32,
-};
-
-const cardStyle = {
-  border: '1px solid #f5f8fb',
-  borderRadius: 4,
-  boxShadow: 'none',
-};
-
-const compactCardBody = {
-  padding: 16,
-};
 
 const defaultDescription = [
   'Bill Rate: 60 - 80',
@@ -56,7 +40,6 @@ const defaultDescription = [
   'GbaMS ReqID: 10428045',
   'Consultant with GenAI',
   'Experience: 8-15 years in AI/ML, 3+ years in GCP and AI/ML',
-  '',
   'Roles & Responsibilities',
   'Architect and implement AI/ML solutions on GCP using services like Vertex AI, BigQuery, Cloud Storage, Cloud Composer, and Dataflow.',
   'Develop and fine-tune Large Language Models and integrate them into enterprise applications.',
@@ -65,7 +48,6 @@ const defaultDescription = [
   'Ensure compliance with Responsible AI principles and security standards.',
   'Optimize performance and scalability of AI models in production environments.',
   'Mentor junior engineers and contribute to best practices in AI engineering.',
-  '',
   'Required Skills',
   'Strong proficiency in GCP services: Vertex AI, BigQuery, Cloud Spanner, Cloud Functions, Pub/Sub.',
   'Expertise in Python, Java, and AI/ML frameworks.',
@@ -77,28 +59,28 @@ const defaultDescription = [
 
 const activityItems = [
   {
-    color: '#1677ff',
+    color: 'blue',
     status: 'Shortlist',
     tagColor: 'blue',
     time: '07:39 PM',
     text: 'Move to Pipeline for ZNXTJOB24011527 lead by admin_realtek',
   },
   {
-    color: '#1677ff',
+    color: 'blue',
     status: 'Shortlist',
     tagColor: 'blue',
     time: '07:39 PM',
     text: 'Move to Pipeline for ZNXTJOB24011525 Product Architect by admin_realtek',
   },
   {
-    color: '#52c41a',
+    color: 'green',
     status: 'Submitted',
     tagColor: 'green',
     time: '04:17 PM',
     text: 'Candidate has been submitted to Job ID ZNXTJOB240011525',
   },
   {
-    color: '#ff4d4f',
+    color: 'red',
     status: 'Rejected',
     tagColor: 'red',
     time: '07:39 PM',
@@ -106,11 +88,54 @@ const activityItems = [
   },
 ];
 
+const candidateFields = [
+  { label: 'Candidate Name', value: 'candidateName' },
+  { label: 'Designation', value: 'designation' },
+  { label: 'Current Location', value: 'currentLocation' },
+  { label: 'Experience', value: 'experience' },
+  { label: 'Work Authorization', value: 'workAuthorization' },
+  { label: 'Submission Status', value: 'submissionStatus' },
+  { label: 'Submitted Date', value: 'submittedDate' },
+];
+
+const candidateRows = [
+  {
+    id: 1,
+    candidateName: 'Jayaprakash A',
+    designation: 'DevOps Engineer',
+    currentLocation: 'San Jose, CA',
+    experience: '6 years',
+    workAuthorization: 'H1B',
+    submissionStatus: 'Submitted',
+    submittedDate: 'Mar 23, 2026',
+  },
+  {
+    id: 2,
+    candidateName: 'Kiran Kumar',
+    designation: 'Full Stack Developer',
+    currentLocation: 'Texas',
+    experience: '5 years',
+    workAuthorization: 'GC EAD',
+    submissionStatus: 'Pipeline',
+    submittedDate: 'Mar 20, 2026',
+  },
+  {
+    id: 3,
+    candidateName: 'Sano S',
+    designation: 'Java Developer',
+    currentLocation: 'Chennai',
+    experience: '7 years',
+    workAuthorization: 'L2 EAD',
+    submissionStatus: 'Shortlisted',
+    submittedDate: 'Mar 18, 2026',
+  },
+];
+
 function DetailField({ label, value }) {
   return (
     <Space direction="vertical" size={2}>
-      <Text type="secondary" style={{ fontSize: 12 }}>{label}</Text>
-      <Text style={{ fontSize: 13 }}>{value || '-'}</Text>
+      <Text type="secondary">{label}</Text>
+      <Text>{value || '-'}</Text>
     </Space>
   );
 }
@@ -119,8 +144,7 @@ function SectionCard({ title, icon, children }) {
   return (
     <Card
       size="small"
-      style={cardStyle}
-      bodyStyle={compactCardBody}
+      className="client-details-card"
       title={<Space size={6}>{icon}<Text strong>{title}</Text></Space>}
     >
       {children}
@@ -137,7 +161,7 @@ function tabLabel(label, count) {
   );
 }
 
-export default function JobDetailPage() {
+export default function DetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
@@ -145,66 +169,84 @@ export default function JobDetailPage() {
   const [activeActivityTab, setActiveActivityTab] = useState('activity');
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f3f8fb', padding: '1px 0 32px' }}>
-      <div style={pageStyle}>
-        <Breadcrumb
-          style={{ marginBottom: 12 }}
-          items={[
-            { title: <Text type="secondary" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>Home</Text> },
-            { title: <Text type="secondary" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>Jobs</Text> },
-            { title: <Text strong style={{ color: '#075c95' }}>Detailed View</Text> },
-          ]}
-        />
+    <div className="dashboard-wrapper">
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <Breadcrumb
+            items={[
+              { title: <Text type="secondary" onClick={() => navigate('/')}>Home</Text> },
+              { title: <Text type="secondary" onClick={() => navigate('/')}>Jobs</Text> },
+              { title: <Text strong>Detailed View</Text> },
+            ]}
+          />
+        </Col>
 
-        <Card size="small" style={{ ...cardStyle, marginBottom: 12 }} bodyStyle={compactCardBody}>
-          <Row justify="space-between" gutter={[16, 16]}>
-            <Col xs={24} lg={16}>
-              <Space direction="vertical" size={5}>
-                <Text type="secondary" style={{ fontSize: 12 }}>TCS - MSP ID 10432419</Text>
-                <Space size={8} wrap>
-                  <Title level={4} style={{ margin: 0, fontSize: 18 }}>{job.title} - 38975</Title>
-                  <StatusBadge status={job.status} />
+        <Col span={24}>
+          <Card size="small" className="client-details-card">
+            <Row justify="space-between" gutter={[16, 16]}>
+              <Col xs={24} lg={16}>
+                <Space direction="vertical" size={5}>
+                  <Text type="secondary">TCS - MSP ID 10432419</Text>
+                  <Space size={8} wrap>
+                    <Title level={4}>{job.title} - 38975</Title>
+                    <StatusBadge status={job.status} />
+                  </Space>
+                  <Space size={12} wrap>
+                    <Text type="secondary"><EnvironmentOutlined /> {job.location}</Text>
+                    <Text type="secondary"><ClockCircleOutlined /> {job.experience}</Text>
+                    <Text type="secondary"><BankOutlined /> {job.employmentType}</Text>
+                    <Text type="secondary">{job.locationType}</Text>
+                    <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
+                  </Space>
+                  <Tabs
+                    size="small"
+                    activeKey={activeDetailTab}
+                    onChange={setActiveDetailTab}
+                    items={[
+                      { key: 'details', label: tabLabel('Details', 1) },
+                      { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                      { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
+                    ]}
+                  />
                 </Space>
-                <Space size={12} wrap>
-                  <Text type="secondary"><EnvironmentOutlined /> {job.location}</Text>
-                  <Text type="secondary"><ClockCircleOutlined /> {job.experience}</Text>
-                  <Text type="secondary"><BankOutlined /> {job.employmentType}</Text>
-                  <Text type="secondary">{job.locationType}</Text>
-                  <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
-                </Space>
-                <Tabs
-                  size="small"
-                  activeKey={activeDetailTab}
-                  onChange={setActiveDetailTab}
-                  items={[
-                    { key: 'details', label: tabLabel('Details', 1) },
-                    { key: 'candidates', label: tabLabel('Candidates', 0) },
-                  ]}
-                />
-              </Space>
-            </Col>
-            <Col xs={24} lg={8}>
-              <Space direction="vertical" size={8} style={{ width: '100%', alignItems: 'flex-end' }}>
-                <Space>
-                  <Button type="link" icon={<TeamOutlined />}>Source Candidates</Button>
-                  <Button type="text" icon={<MoreOutlined />} />
-                </Space>
-                <Space size={32}>
-                  <DetailField label="Target submissions" value={job.targetSub?.total} />
-                  <DetailField label="In pipeline" value={job.pipeline} />
-                </Space>
-                <Text type="secondary" style={{ fontSize: 12 }}>Created on Nov 03, 2025 | 07:00PM</Text>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
+              </Col>
+              <Col xs={24} lg={8}>
+                <Row justify="end">
+                  <Col>
+                    <Space direction="vertical" size={8}>
+                      <Space>
+                        <Button type="link" icon={<TeamOutlined />}>Source Candidates</Button>
+                        <Button type="text" icon={<MoreOutlined />} />
+                      </Space>
+                      <Space size={32}>
+                        <DetailField label="Target submissions" value={job.targetSub?.total} />
+                        <DetailField label="In pipeline" value={job.pipeline} />
+                      </Space>
+                      <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
+                    </Space>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
 
-        {activeDetailTab === 'candidates' ? (
-          <CandidateListView />
+        {activeDetailTab === 'candidates-api' ? (
+          <Col span={24}>
+            <DynamicListView moduleName="candidates" />
+          </Col>
+        ) : activeDetailTab === 'candidate' ? (
+          <Col span={24}>
+            <ParamListView
+              listName="candidate"
+              fields={candidateFields}
+              dataSource={candidateRows}
+            />
+          </Col>
         ) : (
-          <Row gutter={[12, 12]} align="stretch">
+          <>
             <Col xs={24} lg={15}>
-              <Space direction="vertical" size={12} style={{ width: '100%' }}>
+              <Space direction="vertical" size={12}>
                 <SectionCard title="Client" icon={<FileSearchOutlined />}>
                   <Row gutter={[32, 16]}>
                     <Col xs={24} md={8}><DetailField label="Contact Person" value="Jayaprakash A" /></Col>
@@ -231,9 +273,11 @@ export default function JobDetailPage() {
                 </SectionCard>
 
                 <SectionCard title="Description" icon={<FileTextOutlined />}>
-                  <Paragraph style={{ whiteSpace: 'pre-line', marginBottom: 0, color: '#6b7280', fontSize: 13 }}>
-                    {defaultDescription.join('\n')}
-                  </Paragraph>
+                  <Space direction="vertical">
+                    {defaultDescription.map((line) => (
+                      <Paragraph key={line}>{line}</Paragraph>
+                    ))}
+                  </Space>
                 </SectionCard>
 
                 <SectionCard title="Additional Details" icon={<InfoCircleOutlined />}>
@@ -246,7 +290,7 @@ export default function JobDetailPage() {
             </Col>
 
             <Col xs={24} lg={9}>
-              <Card size="small" style={{ ...cardStyle, height: '100%' }} bodyStyle={compactCardBody}>
+              <Card size="small" className="client-details-card">
                 <Tabs
                   size="small"
                   activeKey={activeActivityTab}
@@ -256,37 +300,37 @@ export default function JobDetailPage() {
                       key: 'activity',
                       label: tabLabel('Activity', 2),
                       children: (
-                        <Space direction="vertical" size={14} style={{ width: '100%' }}>
-                          <Title level={5} style={{ margin: 0, fontSize: 15 }}>Mar 23, 2026</Title>
+                        <Space direction="vertical" size={14}>
+                          <Title level={5}>Mar 23, 2026</Title>
                           <Timeline
                             items={activityItems.slice(0, 2).map((item) => ({
                               color: item.color,
                               children: (
-                                <Card size="small" style={cardStyle} bodyStyle={{ padding: 10 }}>
-                                  <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                                    <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                                <Card size="small">
+                                  <Space direction="vertical" size={4}>
+                                    <Space>
                                       <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary" style={{ fontSize: 11 }}>{item.time}</Text>
+                                      <Text type="secondary">{item.time}</Text>
                                     </Space>
-                                    <Text type="secondary" style={{ fontSize: 12 }}>{item.text}</Text>
+                                    <Text type="secondary">{item.text}</Text>
                                   </Space>
                                 </Card>
                               ),
                             }))}
                           />
-                          <Divider style={{ margin: 0 }} />
-                          <Title level={5} style={{ margin: 0, fontSize: 15 }}>Mar 20, 2026</Title>
+                          <Divider />
+                          <Title level={5}>Mar 20, 2026</Title>
                           <Timeline
                             items={activityItems.slice(2).map((item) => ({
                               color: item.color,
                               children: (
-                                <Card size="small" style={cardStyle} bodyStyle={{ padding: 10 }}>
-                                  <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                                    <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                                <Card size="small">
+                                  <Space direction="vertical" size={4}>
+                                    <Space>
                                       <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary" style={{ fontSize: 11 }}>{item.time}</Text>
+                                      <Text type="secondary">{item.time}</Text>
                                     </Space>
-                                    <Text type="secondary" style={{ fontSize: 12 }}>{item.text}</Text>
+                                    <Text type="secondary">{item.text}</Text>
                                   </Space>
                                 </Card>
                               ),
@@ -300,9 +344,9 @@ export default function JobDetailPage() {
                 />
               </Card>
             </Col>
-          </Row>
+          </>
         )}
-      </div>
+      </Row>
     </div>
   );
 }

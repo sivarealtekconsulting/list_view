@@ -19,7 +19,7 @@ export default function OnboardingCard() {
     >
       <Row gutter={[12, 12]}>
         {items.map(it => (
-          <Col key={it.label} xs={24} sm={12} md={12} lg={6} xl={6}>
+          <Col key={it.label} xs={12} sm={6} md={6} lg={12} xl={12}>
             <div className={`onboarding-item ${it.color}`}>
               <Text className="onboarding-item-label">{it.label}</Text>
               <Statistic value={it.value} className="onboarding-stat" />

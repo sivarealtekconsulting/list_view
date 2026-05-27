@@ -6,7 +6,7 @@ import CalendarCard from './CalendarCard';
 import OnboardingCard from './OnboardingCard';
 import ClientDetailsCard from './ClientDetailsCard';
 import '../../styles/DashboardCards.css';
-import JobListView from '../JobListView';
+import ListView from '../ListView';
 
 export default function DashboardCards() {
   return (
@@ -41,7 +41,7 @@ export default function DashboardCards() {
 
         {/* Row 5: List View - full width */}
         <Col span={24}>
-          <JobListView />
+          <ListView />
         </Col>
 
       </Row>

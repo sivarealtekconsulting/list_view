@@ -1,4 +1,13 @@
-import { Row, Col, Space } from 'antd';
+import { Avatar, Button, Layout, Menu, Space, Typography } from 'antd';
+import {
+  AppstoreOutlined, AuditOutlined, BarChartOutlined, BankOutlined,
+  CalendarOutlined, CaretDownOutlined, FileTextOutlined, MailOutlined,
+  NotificationOutlined, SafetyCertificateOutlined, SendOutlined,
+  ShareAltOutlined, TeamOutlined, UserOutlined,
+} from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import StatsCards  from '../components/cards/StatsCards';
+import ListView from '../components/ListView';
 
 import StatsCards           from '../components/cards/StatsCards';
 import JobListView          from '../components/JobListView';
@@ -25,17 +34,11 @@ export default function JobsPage() {
           </Space>
         </Col>
 
-        {/* RIGHT — Calendar + Submission + Notes */}
-        <Col xs={24} lg={8}>
-          <Space direction="vertical" size={12} className="jobs-page-right">
-            <CalendarCard />
-            <ClientSubmissionCard />
-            <StickyNotesCard />
-          </Space>
-        </Col>
-        
-      </Row>
-      <ClientDetailsCard />
-    </div>
+        <Content className="jobs-content">
+          <StatsCards />
+          <ListView />
+        </Content>
+      </Layout>
+    </Layout>
   );
 }

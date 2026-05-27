@@ -1,15 +1,14 @@
 import { ConfigProvider } from 'antd';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import DashboardCards from './components/cards/DashboardCards';
-import JobListView from './components/JobListView';
+import ListView from './components/ListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
 import JobsPage from './pages/JobsPage';  
-import UserForm from './components/form/forms';
 import SubmissionsPage from './pages/SubmissionsPage'; 
 import DemoSamplePage from './pages/DemoSamplePage';
-import JobDetailPage from './pages/JobDetailPage';
+import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
 import CmnLayout from './pages/cmnLayout';
 import NewDashboard from './components/cards/NewDashboard';
@@ -17,6 +16,10 @@ import JobCollapsePage from './pages/jobCollapsePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
+import NaveenDashboardPage from './pages/NaveenDashboardPage';
+
+import SubhaDashboardPage from './pages/SubhaDashboardPage';
+import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 
 export default function App() {
   return (
@@ -36,15 +39,16 @@ export default function App() {
             element={
               <div style={{ background: '#f5f6fa', minHeight: '100vh', paddingTop: 24, paddingBottom: 24 }}>
                 <DashboardCards />
-                <JobListView />
+                <ListView />
               </div>
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/demosample" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
-          <Route path="/jobs/:jobId" element={<JobDetailPage />} />
+          <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
           <Route path="/pugazh"element={<JobsPage />}         />  
@@ -55,10 +59,10 @@ export default function App() {
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
-
-
           <Route path="/jobs" element={<JobCollapsePage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
+          <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
+          <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

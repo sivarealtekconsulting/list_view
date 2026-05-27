@@ -12,7 +12,7 @@ import {
 import CalendarCard from '../components/cards/CalendarCard';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import DynamicFieldFilter from '../components/filters/DynamicFieldFilter';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 
 const { Title, Text } = Typography;
 
@@ -84,7 +84,7 @@ export default function StudentDashboardPage() {
       {/* List View */}
       <Row>
         <Col span={24}>
-          <JobListView />
+          <ListView />
         </Col>
       </Row>
     </>

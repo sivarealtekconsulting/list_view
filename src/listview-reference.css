@@ -310,6 +310,14 @@
   overflow-x: hidden !important;
 }
 
+:is(.listview-shell, .antd).dynamic-list-view .ant-table-content {
+  overflow-x: auto !important;
+}
+
+:is(.listview-shell, .antd).dynamic-list-view .ant-table {
+  table-layout: auto !important;
+}
+
 :is(.listview-shell, .antd) .ant-table-thead > tr > th {
   height: 44px !important;
   padding: 8px 14px !important;
