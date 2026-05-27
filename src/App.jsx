@@ -14,12 +14,13 @@ import CmnLayout from './pages/SonyDashboard';
 import NewDashboard from './components/cards/NewDashboard';
 import SridharDashboardPage from './pages/sridharDashboard';
 import SridharDetailPage from './pages/sridharDetailePage';
-import NewDemoPageNash from './pages/NewDemoPageNash';
+import GnaneshDashboard from './pages/gnanesh-dashboard';
+import GnaneshDetailedView from './pages/gnanesh-detailed-view';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
-import PugazhDashboard      from './pages/pugazh-dashboard';
-import PugazhListView       from './pages/pugazh-listview';
+import PugazhDashboard from './pages/pugazh-dashboard';
+import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
 import PugalDetailedView from './pages/pugal-detail-view-page'
@@ -58,7 +59,7 @@ export default function App() {
 
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
-x          <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -79,7 +80,8 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
-          <Route path="/nash" element={<NewDemoPageNash />} />
+          <Route path="/gnanesh-dashboard" element={<GnaneshDashboard />} />
+          <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
         </Routes>

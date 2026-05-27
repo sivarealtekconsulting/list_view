@@ -1,25 +1,21 @@
 import { useState } from 'react';
 import {
   Breadcrumb,
-  Button,
   Layout,
   Row,
   Col,
   Typography,
 } from 'antd';
-import {
-  FilterOutlined,
-} from '@ant-design/icons';
 
 import StatsCards from '../components/cards/StatsCards';
 import CalendarCard from '../components/cards/CalendarCard';
 import DynamicFieldFilter from '../components/filters/DynamicFieldFilter';
-import ListView from '../components/ListView';
+import GnaneshListView from '../components/GnaneshListView';
 
 const { Content } = Layout;
 const { Text } = Typography;
 
-export default function NewDemoPageNash() {
+export default function GnaneshDashboard() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
@@ -59,7 +55,7 @@ export default function NewDemoPageNash() {
             </Col>
 
             <Col span={18} className="jobs-page-list-col">
-              <ListView />
+              <GnaneshListView />
             </Col>
           </Row>
         </Content>
