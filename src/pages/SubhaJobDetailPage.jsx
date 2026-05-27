@@ -27,6 +27,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
 import DynamicListView from '../components/DynamicListView';
+import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
 
 const { Text, Title, Link, Paragraph } = Typography;
@@ -84,6 +85,49 @@ const activityItems = [
     tagColor: 'red',
     time: '07:39 PM',
     text: 'candidate submission status has been changed to re-submission for Job ID - ZNXTJOB2620532',
+  },
+];
+
+const candidateFields = [
+  { label: 'Candidate Name', value: 'candidateName' },
+  { label: 'Designation', value: 'designation' },
+  { label: 'Current Location', value: 'currentLocation' },
+  { label: 'Experience', value: 'experience' },
+  { label: 'Work Authorization', value: 'workAuthorization' },
+  { label: 'Submission Status', value: 'submissionStatus' },
+  { label: 'Submitted Date', value: 'submittedDate' },
+];
+
+const candidateRows = [
+  {
+    id: 1,
+    candidateName: 'Jayaprakash A',
+    designation: 'DevOps Engineer',
+    currentLocation: 'San Jose, CA',
+    experience: '6 years',
+    workAuthorization: 'H1B',
+    submissionStatus: 'Submitted',
+    submittedDate: 'Mar 23, 2026',
+  },
+  {
+    id: 2,
+    candidateName: 'Kiran Kumar',
+    designation: 'Full Stack Developer',
+    currentLocation: 'Texas',
+    experience: '5 years',
+    workAuthorization: 'GC EAD',
+    submissionStatus: 'Pipeline',
+    submittedDate: 'Mar 20, 2026',
+  },
+  {
+    id: 3,
+    candidateName: 'Sano S',
+    designation: 'Java Developer',
+    currentLocation: 'Chennai',
+    experience: '7 years',
+    workAuthorization: 'L2 EAD',
+    submissionStatus: 'Shortlisted',
+    submittedDate: 'Mar 18, 2026',
   },
 ];
 
@@ -160,7 +204,8 @@ export default function JobDetailPage() {
                     onChange={setActiveDetailTab}
                     items={[
                       { key: 'details', label: tabLabel('Details', 1) },
-                      { key: 'candidates', label: tabLabel('Candidates', 0) },
+                      { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                      { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
                     ]}
                   />
                 </Space>
@@ -186,9 +231,17 @@ export default function JobDetailPage() {
           </Card>
         </Col>
 
-        {activeDetailTab === 'candidates' ? (
+        {activeDetailTab === 'candidates-api' ? (
           <Col span={24}>
             <DynamicListView moduleName="candidates" />
+          </Col>
+        ) : activeDetailTab === 'candidate' ? (
+          <Col span={24}>
+            <ParamListView
+              listName="candidate"
+              fields={candidateFields}
+              dataSource={candidateRows}
+            />
           </Col>
         ) : (
           <>
