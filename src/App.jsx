@@ -6,7 +6,6 @@ import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
 import JobsPage from './pages/JobsPage';  
-import UserForm from './components/form/forms';
 import SubmissionsPage from './pages/SubmissionsPage'; 
 import DemoSamplePage from './pages/DemoSamplePage';
 import JobDetailPage from './pages/JobDetailPage';
@@ -17,6 +16,7 @@ import JobCollapsePage from './pages/jobCollapsePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
+import NaveenDashboardPage from './pages/NaveenDashboardPage';
 
 export default function App() {
   return (
@@ -45,6 +45,7 @@ export default function App() {
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
           <Route path="/pugazh"element={<JobsPage />}         />  
