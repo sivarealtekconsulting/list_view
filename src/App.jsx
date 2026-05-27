@@ -8,7 +8,7 @@ import DashboardPage from './pages/DashboardPage';
 import JobsPage from './pages/JobsPage';  
 import SubmissionsPage from './pages/SubmissionsPage'; 
 import DemoSamplePage from './pages/DemoSamplePage';
-import JobDetailPage from './pages/JobDetailPage';
+import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
 import CmnLayout from './pages/cmnLayout';
 import NewDashboard from './components/cards/NewDashboard';
@@ -46,7 +46,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/demosample" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
-          <Route path="/jobs/:jobId" element={<JobDetailPage />} />
+          <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
