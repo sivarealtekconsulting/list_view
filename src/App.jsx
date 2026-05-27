@@ -10,9 +10,10 @@ import SubmissionsPage from './pages/SubmissionsPage';
 import DemoSamplePage from './pages/DemoSamplePage';
 import DetailPage from './pages/DetailePage';
 import UserForm from './components/form/forms';
-import CmnLayout from './pages/cmnLayout';
+import CmnLayout from './pages/SonyDashboard';
 import NewDashboard from './components/cards/NewDashboard';
-import JobCollapsePage from './pages/jobCollapsePage';
+import SridharDashboardPage from './pages/sridharDashboard';
+import SridharDetailPage from './pages/sridharDetailePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
@@ -20,8 +21,13 @@ import NaveenDashboardPage from './pages/NaveenDashboardPage';
 import PugazhDashboard      from './pages/pugazh-dashboard';
 import PugazhListView       from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
+import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
+  
+
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
+import SonyDashboard from './pages/SonyDashboard';
+import SonyDetailedView from './pages/SonyDetailedView';
 
 export default function App() {
   return (
@@ -46,10 +52,12 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/demosample" element={<DemoSamplePage />} />
+          <Route path="/Venkatesh" element={<DemoSamplePage />} />
+          <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
+
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
-          <Route path="/candidates" element={<CandidatesPage />} />
+x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -65,6 +73,9 @@ export default function App() {
           <Route path="/pugazh-listview" element={<PugazhListView />} />
           <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
           <Route path="/jobs" element={<JobCollapsePage />} />
+          <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
+          <Route path="/sri-detailview" element={<SridharDetailPage />} />
+          <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
