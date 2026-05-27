@@ -64,6 +64,9 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/pugazh" element={<JobsPage />} />
           <Route path="/submissions" element={<SubmissionsPage />} />
           <Route path="/cmnlayout" element={<CmnLayout />} />
+          <Route path="/sony-detailedview/:jobId" element={<SonyDetailedView />} />
+          <Route path="/sony-dashboard" element={<SonyDashboard />} />
+
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
             path="/student-dashboard"
@@ -72,7 +75,6 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
           <Route path="/pugazh-listview" element={<PugazhListView />} />
           <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
-          <Route path="/jobs" element={<JobCollapsePage />} />
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
