@@ -18,6 +18,9 @@ import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
 
+import SubhaDashboardPage from './pages/SubhaDashboardPage';
+import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
+
 export default function App() {
   return (
     <ConfigProvider
@@ -56,10 +59,10 @@ export default function App() {
             path="/student-dashboard"
             element={<StudentDashboardPage />}
           />
-
-
           <Route path="/jobs" element={<JobCollapsePage />} />
           <Route path="/nash" element={<NewDemoPageNash />} />
+          <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
+          <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
