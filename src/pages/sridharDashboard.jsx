@@ -1,4 +1,5 @@
 import {
+  Breadcrumb,
   Button,
   Card,
   Col,
@@ -31,6 +32,17 @@ export default function SridharDashboardPage() {
   return (
     <div className='dashboard-wrapper'>
       <Space direction="vertical" size={24}>
+        <Row>
+          <Col span={24}>
+            <Breadcrumb>
+              <Breadcrumb.Item>Home</Breadcrumb.Item>
+              <Breadcrumb.Item>
+                <Text strong>Dashboard</Text>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </Col>
+        </Row>
+
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <StatsCards />

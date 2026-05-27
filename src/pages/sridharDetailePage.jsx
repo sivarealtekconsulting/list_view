@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Badge,
+  Breadcrumb,
   Button,
   Card,
   Col,
@@ -30,6 +31,7 @@ import StickyNotesCard from '../components/cards/StickyNotesCard';
 import UserForm from '../components/form/forms';
 import { formatters, validationRules } from '../components/form/validation';
 import ParamListView from '../components/ParamListView';
+import SridharListView from '../components/sridharListView';
 import { MOCK_JOBS } from '../data/jobs';
 
 const { Text, Title, Paragraph } = Typography;
@@ -194,11 +196,11 @@ export default function SridharDetailPage() {
                 </Space>
               </Card>
 
-              <ParamListView
+              {/* <ParamListView
                 listName="Activity"
                 fields={activityFields}
                 dataSource={activityRows}
-              />
+              /> */}
             </Space>
           </Col>
 
@@ -224,11 +226,7 @@ export default function SridharDetailPage() {
         <Row>
           <Col span={24}>
             <Card title="Submitted Candidates">
-              <ParamListView
-                listName="Candidates"
-                fields={candidateFields}
-                dataSource={candidateRows}
-              />
+              <SridharListView />
             </Card>
           </Col>
         </Row>
@@ -362,6 +360,22 @@ export default function SridharDetailPage() {
   return (
     <div className="dashboard-wrapper">
       <Space direction="vertical" size={16}>
+      <Row>
+        <Col span={24}>
+          <Breadcrumb>
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Text onClick={() => navigate('/sri-dashboard')}>
+                Dashboard
+              </Text>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Text strong>Detail View</Text>
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        </Col>
+      </Row>
+
       <Card>
         <Row gutter={[16, 16]}>
           <Col xs={24} xl={16}>
