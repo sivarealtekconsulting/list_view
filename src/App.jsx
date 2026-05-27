@@ -5,10 +5,18 @@ import JobListView from './components/JobListView';
 import CandidatesPage from './pages/CandidatesPage';
 import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
+import JobsPage from './pages/JobsPage';  
+import SubmissionsPage from './pages/SubmissionsPage'; 
+import DemoSamplePage from './pages/DemoSamplePage';
 import JobDetailPage from './pages/JobDetailPage';
 import UserForm from './components/form/forms';
+import CmnLayout from './pages/cmnLayout';
 import NewDashboard from './components/cards/NewDashboard';
 import JobCollapsePage from './pages/jobCollapsePage';
+import NewDemoPageNash from './pages/NewDemoPageNash';
+import StickyNotesCard from './components/cards/StickyNotesCard';
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import NaveenDashboardPage from './pages/NaveenDashboardPage';
 
 export default function App() {
   return (
@@ -33,12 +41,25 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/demosample" element={<DemoSamplePage />} />
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<JobDetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
+          <Route path="/pugazh"element={<JobsPage />}         />  
+          <Route path="/submissions" element={<SubmissionsPage />} /> 
+          <Route path="/cmnlayout" element={<CmnLayout />} />
+          <Route path="/add" element={<StickyNotesCard />} />
+          <Route
+            path="/student-dashboard"
+            element={<StudentDashboardPage />}
+          />
+
+
           <Route path="/jobs" element={<JobCollapsePage />} />
+          <Route path="/nash" element={<NewDemoPageNash />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

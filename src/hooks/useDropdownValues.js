@@ -44,3 +44,4 @@ export function useDropdownValues(module) {
 
   return { valuesByField, loadingFields, fetchValues };
 }
+export default useDropdownValues;
