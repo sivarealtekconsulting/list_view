@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import StatsCards  from '../components/cards/StatsCards';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 
 const { Sider, Header, Content } = Layout;
 const { Text } = Typography;
@@ -61,7 +61,7 @@ export default function JobsPage() {
 
         <Content className="jobs-content">
           <StatsCards />
-          <JobListView />
+          <ListView />
         </Content>
       </Layout>
     </Layout>

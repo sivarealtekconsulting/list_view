@@ -14,7 +14,7 @@ import {
 import StatsCards from '../components/cards/StatsCards';
 import CalendarCard from '../components/cards/CalendarCard';
 import DynamicFieldFilter from '../components/filters/DynamicFieldFilter';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -59,7 +59,7 @@ export default function NewDemoPageNash() {
             </Col>
 
             <Col span={18} className="jobs-page-list-col">
-              <JobListView />
+              <ListView />
             </Col>
           </Row>
         </Content>

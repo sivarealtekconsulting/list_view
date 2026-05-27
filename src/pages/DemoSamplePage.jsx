@@ -31,7 +31,7 @@ import { formatters, validationRules } from '../components/form/validation';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import JobFilters from '../components/filters';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 import OnboardingCard from '../components/cards/OnboardingCard';
 
 const { Text, Title } = Typography;
@@ -305,7 +305,7 @@ export default function DemoSamplePage() {
                 </Space>
               )}
             >
-              <JobListView />
+              <ListView />
             </Card>
           </Col>
         </Row>

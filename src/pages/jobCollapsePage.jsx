@@ -16,7 +16,7 @@ import {
   FilterOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 import JobFilters from '../components/filters';
 import CalendarCard from '../components/cards/CalendarCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
@@ -121,7 +121,7 @@ export default function JobCollapsePage() {
                 </Space>
               )}
             >
-              <JobListView />
+              <ListView />
             </Card>
           </Col>
         </Row>
