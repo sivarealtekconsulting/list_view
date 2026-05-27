@@ -196,8 +196,8 @@ export default function JobDetailPage() {
               <Space direction="vertical" size={12}>
                 <SectionCard title="Client" icon={<FileSearchOutlined />}>
                   <Row gutter={[32, 16]}>
-                    <Col xs={24} md={8}><DetailField label="Contact Person" value="Jayaprakash A" /></Col>
-                    <Col xs={24} md={8}><DetailField label="Email" value={<Link>jayaprakash123@gmail.com</Link>} /></Col>
+                    <Col xs={24} md={8}><DetailField label="Contact Person" value="Subha Seline" /></Col>
+                    <Col xs={24} md={8}><DetailField label="Email" value={<Link>seline@gmail.com</Link>} /></Col>
                     <Col xs={24} md={8}><DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} /></Col>
                   </Row>
                 </SectionCard>
