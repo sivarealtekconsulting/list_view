@@ -318,16 +318,6 @@
   table-layout: auto !important;
 }
 
-:is(.listview-shell, .antd).dynamic-list-view .ant-table-thead > tr > th,
-:is(.listview-shell, .antd).dynamic-list-view .ant-table-tbody > tr > td {
-  min-width: 180px !important;
-  white-space: nowrap !important;
-}
-
-:is(.listview-shell, .antd).dynamic-list-view .ant-table-selection-column {
-  min-width: 48px !important;
-}
-
 :is(.listview-shell, .antd) .ant-table-thead > tr > th {
   height: 44px !important;
   padding: 8px 14px !important;
