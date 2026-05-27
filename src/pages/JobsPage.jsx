@@ -7,61 +7,36 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import StatsCards  from '../components/cards/StatsCards';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 
-const { Sider, Header, Content } = Layout;
-const { Text } = Typography;
-
-const sideMenuItems = [
-  
-  { key: 'jobs',          icon: <FileTextOutlined />          },
-  
-];
+import StatsCards           from '../components/cards/StatsCards';
+import JobListView          from '../components/JobListView';
+import CalendarCard         from '../components/cards/CalendarCard';
+import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
+import ClientDetailsCard    from '../components/cards/ClientDetailsCard';
+import StickyNotesCard      from '../components/cards/StickyNotesCard';
+import OnboardingCard from '../components/cards/OnboardingCard';
 
 export default function JobsPage() {
-  const navigate = useNavigate();
-
   return (
-    <Layout className="jobs-layout">
-      {/* <Sider width={64} className="jobs-sider">
-        <div className="jobs-sider-logo">
-          <BankOutlined className="jobs-sider-logo-icon" />
-        </div>
-        <Menu
-          mode="inline"
-          selectedKeys={['jobs']}
-          inlineCollapsed
-          className="jobs-sider-menu"
-          onClick={({ key }) => navigate(`/${key}`)}
-          items={sideMenuItems.map(item => ({
-            ...item,
-            label: '',
-            className: 'jobs-sider-menu-item',
-          }))}
-        />
-      </Sider> */}
+    <div className="dashboard-wrapper">
+      <Row gutter={[16, 16]} align="top">
 
-      <Layout>
-        {/* <Header className="jobs-header">
-          <Space size={8} align="center">
-            <BankOutlined className="jobs-header-brand-icon" />
-            <Text strong className="jobs-header-brand-text">
-              Realtek Consulting LLC
-            </Text>
+        {/* LEFT — Stats + JobList + ClientDetails */}
+        <Col xs={20} lg={16}>
+          <Space direction="vertical" size={12} className="jobs-page-left">
+            <OnboardingCard />
+            <StatsCards />
+            {/* <OnboardingCard /> */}
+            <JobListView />
+            {/* <OnboardingCard /> */}
+            {/* <ClientDetailsCard /> */}
           </Space>
-          <Space size={16} align="center">
-            <Button type="text" icon={<MailOutlined className="jobs-header-mail-icon" />} />
-            <Space size={8} align="center">
-              <Avatar size={32} icon={<UserOutlined />} className="jobs-header-avatar" />
-              <Text strong className="jobs-header-username">Jayaprakash A</Text>
-              <CaretDownOutlined className="jobs-header-caret" />
-            </Space>
-          </Space>
-        </Header> */}
+        </Col>
 
         <Content className="jobs-content">
           <StatsCards />
-          <JobListView />
+          <ListView />
         </Content>
       </Layout>
     </Layout>

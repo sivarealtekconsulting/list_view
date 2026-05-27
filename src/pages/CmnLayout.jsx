@@ -19,7 +19,7 @@ import StatusBadge from '../components/StatusBadge';
 import AssigneeAvatars from '../components/AssigneeAvatars';
 import { validationRules } from '../components/form/validation';
 import JobFilters from '../components/filters';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 
 const { Text } = Typography;
 const columnOptions = [
@@ -467,7 +467,7 @@ export default function CmnLayout() {
                     </Card>
                 </div>
                 <div>
-                    <JobListView />
+                    <ListView />
                     {/* <Tooltip title="Filter">
                     <Button
                         className="job-toolbar-icon-button"

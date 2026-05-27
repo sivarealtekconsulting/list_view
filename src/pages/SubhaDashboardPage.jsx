@@ -5,7 +5,7 @@ import StickyNotesCard from '../components/cards/StickyNotesCard';
 import CalendarCard from '../components/cards/CalendarCard';
 import OnboardingCard from '../components/cards/OnboardingCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
-import JobListView from '../components/JobListView';
+import ListView from '../components/ListView';
 // import '../../styles/DashboardCards.css';
 
 export default function NaveenDashboardPage() {
@@ -39,7 +39,7 @@ export default function NaveenDashboardPage() {
           <ClientDetailsCard />
         </Col> */}
         <Col span={24}>
-          <JobListView />
+          <ListView />
         </Col>
 
       </Row>
