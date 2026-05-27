@@ -19,6 +19,7 @@ import StatusBadge from '../components/StatusBadge';
 import AssigneeAvatars from '../components/AssigneeAvatars';
 import { validationRules } from '../components/form/validation';
 import JobFilters from '../components/filters';
+import JobListView from '../components/JobListView';
 
 const { Text } = Typography;
 const columnOptions = [
@@ -251,217 +252,223 @@ export default function CmnLayout() {
         console.log("Form Values:", values);
     };
     return (
-        <>
-            <Card>
-                <Row gutter={[12, 12]}>
-                    {stats.map(s => (
-                        <Col key={s.label} xs={24} sm={24} md={8} lg={8} xl={8}>
-                            <Card className="stats-inner-card">
-                                <Space align="center">
-                                    <Text>{s.label}</Text>
-                                </Space>
-                                <Statistic value={s.value} />
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </Card>
-            <div>
-                <Card>
-                    <Row>
-                        <Col lg={12}>
-                            <CalendarCard />
-                        </Col>
-                        <Col lg={12}>
-                            <Card className="">
-                                <Form
-                                    form={form}
-                                    layout="vertical"
-                                    onFinish={onFinish}
-                                    autoComplete="off"
-                                >
-                                    <Row gutter={16}>
-                                        {/* EMAIL */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Email"
-                                                name="email"
-                                                rules={[
-                                                    validationRules.required("Email"),
-                                                    validationRules.email(),
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
+        <div className='dashboard-wrapper'>
+            <Row gutter={[16, 16]}>
 
-                                        {/* PHONE */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Phone Number"
-                                                name="phone"
-                                                rules={[
-                                                    validationRules.required("Phone Number"),
-                                                    validationRules.phone(),
-                                                ]}
-                                                validateTrigger={["onBlur", "onChange"]}
-                                            >
-                                                <Input
-                                                    maxLength={10}
-                                                    onChange={(e) => {
-                                                        form.setFieldsValue({
-                                                            phone: formatters.phoneFormatter(
-                                                                e.target.value
-                                                            ),
-                                                        });
-                                                    }}
-                                                />
-                                            </Form.Item>
-                                        </Col>
+                <Col span={24}>
+                    <Card>
+                        <Row gutter={[16, 16]}>
+                            {stats.map(s => (
+                                <Col key={s.label} xs={24} sm={24} md={8} lg={8} xl={8}>
+                                    <Card className="stats-inner-card">
+                                        <Space align="center">
+                                            <Text>{s.label}</Text>
+                                        </Space>
+                                        <Statistic value={s.value} />
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Card>
 
+                </Col>
+                <div>
+                    <Card>
+                        <Row gutter={[12, 12]}>
+                            <Col lg={12}>
+                                <CalendarCard />
+                            </Col>
+                            <Col lg={12}>
+                                <Card className="">
+                                    <Form
+                                        form={form}
+                                        layout="vertical"
+                                        onFinish={onFinish}
+                                        autoComplete="off"
+                                    >
+                                        <Row gutter={16}>
+                                            {/* EMAIL */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Email"
+                                                    name="email"
+                                                    rules={[
+                                                        validationRules.required("Email"),
+                                                        validationRules.email(),
+                                                    ]}
+                                                >
+                                                    <Input />
+                                                </Form.Item>
+                                            </Col>
 
-                                        {/* FULL NAME */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Full Name"
-                                                name="fullName"
-                                                rules={[
-                                                    validationRules.required("Full Name"),
-                                                    validationRules.alphabets(),
-                                                    validationRules.firstNameMinLength(),
-                                                    validationRules.firstNameMaxLength(),
-                                                ]}
-                                            >
-                                                <Input
-                                                    onChange={(e) => {
-                                                        form.setFieldsValue({
-                                                            fullName: formatters.firstNameFormatter(
-                                                                e.target.value
-                                                            ),
-                                                        });
-                                                    }}
-                                                />
-                                            </Form.Item>
-                                        </Col>
-
-
-                                        {/* WEBSITE URL */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Website URL"
-                                                name="website"
-                                                rules={[
-                                                    validationRules.required("Website URL"),
-                                                    validationRules.url(),
-                                                ]}
-                                            >
-                                                <Input
-                                                    onChange={(e) => {
-                                                        form.setFieldsValue({
-                                                            website:
-                                                                formatters.removeExtraSpaces(
+                                            {/* PHONE */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Phone Number"
+                                                    name="phone"
+                                                    rules={[
+                                                        validationRules.required("Phone Number"),
+                                                        validationRules.phone(),
+                                                    ]}
+                                                    validateTrigger={["onBlur", "onChange"]}
+                                                >
+                                                    <Input
+                                                        maxLength={10}
+                                                        onChange={(e) => {
+                                                            form.setFieldsValue({
+                                                                phone: formatters.phoneFormatter(
                                                                     e.target.value
                                                                 ),
-                                                        });
-                                                    }} />
-                                            </Form.Item>
-                                        </Col>
-                                        {/* MSP Req ID */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="MSP Req ID"
-                                                name="mspreqID"
-                                                rules={[
-                                                    validationRules.required("MSP Req ID"),
-                                                    validationRules.candidateId("MSP Req ID"),
-                                                ]}
-                                            >
-                                                <Input
-                                                    onChange={(e) => {
-                                                        form.setFieldsValue({
-                                                            mspreqID:
-                                                                formatters.removeExtraSpaces(
+                                                            });
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+
+
+                                            {/* FULL NAME */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Full Name"
+                                                    name="fullName"
+                                                    rules={[
+                                                        validationRules.required("Full Name"),
+                                                        validationRules.alphabets(),
+                                                        validationRules.firstNameMinLength(),
+                                                        validationRules.firstNameMaxLength(),
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        onChange={(e) => {
+                                                            form.setFieldsValue({
+                                                                fullName: formatters.firstNameFormatter(
                                                                     e.target.value
                                                                 ),
-                                                        });
-                                                    }}
-                                                />
-                                            </Form.Item>
-                                        </Col>
-                                        {/* CANDIDATE ID */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Candidate ID"
-                                                name="candidateId"
-                                                rules={[
-                                                    validationRules.required("Candidate ID"),
-                                                    validationRules.candidateId("Candidate ID"),
-                                                ]}
+                                                            });
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+
+
+                                            {/* WEBSITE URL */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Website URL"
+                                                    name="website"
+                                                    rules={[
+                                                        validationRules.required("Website URL"),
+                                                        validationRules.url(),
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        onChange={(e) => {
+                                                            form.setFieldsValue({
+                                                                website:
+                                                                    formatters.removeExtraSpaces(
+                                                                        e.target.value
+                                                                    ),
+                                                            });
+                                                        }} />
+                                                </Form.Item>
+                                            </Col>
+                                            {/* MSP Req ID */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="MSP Req ID"
+                                                    name="mspreqID"
+                                                    rules={[
+                                                        validationRules.required("MSP Req ID"),
+                                                        validationRules.candidateId("MSP Req ID"),
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        onChange={(e) => {
+                                                            form.setFieldsValue({
+                                                                mspreqID:
+                                                                    formatters.removeExtraSpaces(
+                                                                        e.target.value
+                                                                    ),
+                                                            });
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+                                            {/* CANDIDATE ID */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Candidate ID"
+                                                    name="candidateId"
+                                                    rules={[
+                                                        validationRules.required("Candidate ID"),
+                                                        validationRules.candidateId("Candidate ID"),
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        onChange={(e) => {
+                                                            form.setFieldsValue({
+                                                                candidateId:
+                                                                    formatters.removeExtraSpaces(
+                                                                        e.target.value
+                                                                    ),
+                                                            });
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+
+                                            {/* DESIGNATION */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Designation"
+                                                    name="designation"
+                                                    rules={[
+                                                        validationRules.required("Designation"),
+                                                        validationRules.designation(),
+                                                    ]}
+                                                >
+                                                    <Input />
+                                                </Form.Item>
+                                            </Col>
+
+
+                                            {/* COMPANY NAME */}
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    label="Company Name"
+                                                    name="companyName"
+                                                    rules={[
+                                                        validationRules.required("Company Name"),
+                                                        validationRules.companyName(),
+                                                    ]}
+                                                >
+                                                    <Input />
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+
+                                        {/* SUBMIT BUTTON */}
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit">
+                                                Submit
+                                            </Button>
+
+                                            <Button
+                                                style={{ marginLeft: 10 }}
+                                                onClick={() => form.resetFields()}
                                             >
-                                                <Input
-                                                    onChange={(e) => {
-                                                        form.setFieldsValue({
-                                                            candidateId:
-                                                                formatters.removeExtraSpaces(
-                                                                    e.target.value
-                                                                ),
-                                                        });
-                                                    }}
-                                                />
-                                            </Form.Item>
-                                        </Col>
-
-                                        {/* DESIGNATION */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Designation"
-                                                name="designation"
-                                                rules={[
-                                                    validationRules.required("Designation"),
-                                                    validationRules.designation(),
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-
-
-                                        {/* COMPANY NAME */}
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Company Name"
-                                                name="companyName"
-                                                rules={[
-                                                    validationRules.required("Company Name"),
-                                                    validationRules.companyName(),
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-
-                                    {/* SUBMIT BUTTON */}
-                                    <Form.Item>
-                                        <Button type="primary" htmlType="submit">
-                                            Submit
-                                        </Button>
-
-                                        <Button
-                                            style={{ marginLeft: 10 }}
-                                            onClick={() => form.resetFields()}
-                                        >
-                                            Reset
-                                        </Button>
-                                    </Form.Item>
-                                </Form>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Card>
-            </div>
-            <div>
-                <Tooltip title="Filter">
+                                                Reset
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Card>
+                </div>
+                <div>
+                    <JobListView />
+                    {/* <Tooltip title="Filter">
                     <Button
                         className="job-toolbar-icon-button"
                         icon={<FilterOutlined />}
@@ -478,8 +485,9 @@ export default function CmnLayout() {
                     tableLayout="fixed"
                     pagination={false}
                     className="job-list-table"
-                />
-            </div>
+                /> */}
+                </div>
+            </Row>
             <JobFilters
                 open={filtersOpen}
                 onClose={() => setFiltersOpen(false)}
@@ -489,6 +497,6 @@ export default function CmnLayout() {
                     setPagination((current) => ({ ...current, current: 1 }));
                 }}
             />
-        </>
+        </div >
     )
 }
