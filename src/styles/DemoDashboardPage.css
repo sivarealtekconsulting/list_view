@@ -1,0 +1,402 @@
+.demo-dashboard {
+  min-height: 100vh;
+  display: flex;
+  background: #f5f7fb;
+  color: #17213a;
+}
+
+.demo-sidebar {
+  width: 116px;
+  min-height: 100vh;
+  padding: 20px 8px;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, #0758bc 0%, #004b9f 100%);
+}
+
+.demo-logo {
+  height: 50px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.demo-sidebar button {
+  min-height: 62px;
+  border: 0;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.demo-sidebar button.active,
+.demo-sidebar button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.demo-sidebar .anticon {
+  font-size: 21px;
+}
+
+.demo-sidebar span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demo-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.demo-topbar,
+.demo-titlebar {
+  height: 74px;
+  padding: 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8edf5;
+  background: #fff;
+}
+
+.demo-titlebar {
+  height: 68px;
+}
+
+.demo-titlebar h3,
+.demo-panel h4,
+.demo-panel h5,
+.demo-calendar-panel h4,
+.demo-metric-card h3 {
+  margin: 0;
+}
+
+.demo-content {
+  padding: 18px 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.demo-panel,
+.demo-filter-strip,
+.demo-metric-card {
+  border: 1px solid #e6ebf3;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 35, 55, 0.04);
+}
+
+.demo-filter-strip .ant-card-body {
+  padding: 16px 18px;
+}
+
+.demo-filter-strip .ant-typography,
+.demo-card-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.demo-full {
+  width: 100%;
+}
+
+.demo-metric-card .ant-card-body {
+  min-height: 116px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-metric-card h3 {
+  color: #17213a;
+  font-size: 28px;
+}
+
+.demo-trend {
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.demo-trend span {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.demo-metric-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+}
+
+.demo-metric-icon.blue { color: #0b63ce; background: #e8f1ff; }
+.demo-metric-icon.green { color: #059669; background: #ddf7ea; }
+.demo-metric-icon.purple { color: #7e22ce; background: #f3e8ff; }
+.demo-metric-icon.orange { color: #ea580c; background: #ffedd5; }
+
+.demo-panel .ant-card-body {
+  padding: 18px 20px;
+}
+
+.demo-panel-head,
+.demo-table-head,
+.demo-filter-head {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.demo-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(42px, 1fr));
+  border: 1px solid #e5ebf4;
+  border-bottom: 0;
+  border-right: 0;
+}
+
+.demo-calendar-day {
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.demo-calendar-cell {
+  min-height: 76px;
+  padding: 14px 10px;
+  border-right: 1px solid #e5ebf4;
+  border-bottom: 1px solid #e5ebf4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  font-weight: 700;
+}
+
+.demo-calendar-cell.muted {
+  color: #94a3b8;
+}
+
+.demo-calendar-cell.active span {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #075fd0;
+  color: #fff;
+}
+
+.demo-calendar-cell div,
+.demo-legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.demo-calendar-cell i,
+.demo-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.demo-legend {
+  margin-top: 14px;
+}
+
+.demo-legend span {
+  color: #475569;
+  font-size: 13px;
+}
+
+i.blue { background: #2563eb; }
+i.green { background: #16a34a; }
+i.red { background: #ef4444; }
+i.orange { background: #f97316; }
+i.neutral { background: #cbd5e1; }
+
+.demo-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.demo-side-filter .ant-input,
+.demo-side-filter .ant-select-selector,
+.demo-side-filter .ant-picker {
+  min-height: 36px;
+}
+
+.demo-table-card .ant-card-body {
+  padding: 0;
+}
+
+.demo-table-head {
+  margin: 0;
+  padding: 10px 18px 0;
+  border-bottom: 1px solid #edf1f6;
+}
+
+.demo-table-head .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.demo-stage-tag {
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.demo-positive {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.demo-negative {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.demo-stage-card {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.demo-stage-card .ant-progress-text {
+  display: grid;
+  place-items: center;
+  color: #1e293b;
+}
+
+.demo-stage-card .ant-progress-text strong {
+  font-size: 20px;
+}
+
+.demo-stage-list {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+.demo-stage-list span {
+  display: grid;
+  grid-template-columns: 10px minmax(120px, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.demo-stage-list i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.demo-activity,
+.demo-interview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-activity .anticon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+}
+
+.demo-activity .green { color: #16a34a; background: #dcfce7; }
+.demo-activity .red { color: #ef4444; background: #fee2e2; }
+.demo-activity .blue { color: #2563eb; background: #dbeafe; }
+
+.demo-activity small,
+.demo-interview small {
+  display: block;
+  color: #64748b;
+}
+
+.demo-interview > div {
+  width: 46px;
+  height: 54px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+.demo-interview > div span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.demo-interview > div strong {
+  margin-top: -12px;
+  font-size: 22px;
+}
+
+.demo-interview .ant-typography {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .demo-dashboard {
+    display: block;
+  }
+
+  .demo-sidebar {
+    width: auto;
+    min-height: auto;
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .demo-sidebar button {
+    min-width: 86px;
+  }
+
+  .demo-topbar,
+  .demo-titlebar {
+    padding: 0 16px;
+  }
+
+  .demo-content {
+    padding: 14px;
+  }
+
+  .demo-calendar-cell {
+    min-height: 54px;
+    padding: 8px 4px;
+  }
+
+  .demo-stage-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

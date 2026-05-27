@@ -7,6 +7,10 @@ import AddCandidatePage from './pages/AddCandidatePage';
 import DashboardPage from './pages/DashboardPage';
 import UserForm from './components/form/forms';
 
+
+import DemoDashboardPage from './pages/DemoDashboardPage';
+import DemoListViewPage from './pages/DemoListViewPage';
+
 export default function App() {
   return (
     <ConfigProvider
@@ -33,6 +37,10 @@ export default function App() {
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
+
+          
+          <Route path="/demo-listview" element={<DemoListViewPage />} />
+          <Route path="/demo-dashboard" element={<DemoDashboardPage />} />
 
         </Routes>
       </BrowserRouter>

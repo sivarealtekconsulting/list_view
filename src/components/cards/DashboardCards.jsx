@@ -1,9 +1,7 @@
 import { Col, Row } from 'antd';
 import StatsCards from './StatsCards';
-import ClientSubmissionCard from './ClientSubmissionCard';
 import StickyNotesCard from './StickyNotesCard';
 import CalendarCard from './CalendarCard';
-import OnboardingCard from './OnboardingCard';
 import ClientDetailsCard from './ClientDetailsCard';
 import '../../styles/DashboardCards.css';
 
@@ -17,20 +15,14 @@ export default function DashboardCards() {
           <StatsCards />
         </Col>
 
-        {/* Row 2: Client Submission + Sticky Notes */}
-        <Col xs={24} md={12}>
-          <ClientSubmissionCard />
-        </Col>
-        <Col xs={24} md={12}>
+        {/* Row 2: Sticky Notes */}
+        <Col span={24}>
           <StickyNotesCard />
         </Col>
 
-        {/* Row 3: Calendar + Onboarding */}
-        <Col xs={24} md={12}>
+        {/* Row 3: Calendar */}
+        <Col span={24}>
           <CalendarCard />
-        </Col>
-        <Col xs={24} md={12}>
-          <OnboardingCard />
         </Col>
 
         {/* Row 4: Client Details - full width */}
