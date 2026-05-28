@@ -24,7 +24,7 @@ import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
 import PugalDetailedView from './pages/pugal-detail-view-page'
-  
+import PugazhEditJob from './pages/PugazhEditJob';
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
@@ -76,7 +76,8 @@ export default function App() {
           />
           <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
           <Route path="/pugazh-listview" element={<PugazhListView />} />
-          <Route path="/pugazh-detail-listview" element={<PugalDetailedView />} />
+          <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
+          <Route path="/pugazh-edit-job" element={<PugazhEditJob />} />
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
