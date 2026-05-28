@@ -4,10 +4,12 @@ import {
   Button,
   Card,
   Col,
+  Collapse,
   Divider,
   Empty,
   Flex,
   Row,
+  Segmented,
   Space,
   Statistic,
   Tabs,
@@ -329,59 +331,82 @@ export default function JobDetailPage() {
             </Col>
 
             <Col xs={24} lg={7}>
-              
-              <Card size="small" className="client-details-card" title="Activity & Notes">
-                <Tabs
-                  size="small"
-                  activeKey={activeActivityTab}
-                  onChange={setActiveActivityTab}
-                  items={[
-                    {
-                      key: 'activity',
-                      label: tabLabel('Activity', 2),
-                      children: (
-                        <Space direction="vertical" size={14}>
-                          <Title level={5}>Mar 23, 2026</Title>
-                          <Timeline
-                            items={activityItems.slice(0, 2).map((item) => ({
-                              color: item.color,
-                              children: (
-                                <Card size="small">
-                                  <Space direction="vertical" size={4}>
-                                    <Space>
-                                      <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary">{item.time}</Text>
+              <Card size="small" className="client-details-card">
+                <Space direction="vertical" style={{ width: '100%' }} size={12}>
+                  <Segmented
+                    block
+                    options={[
+                      { label: tabLabel('Activity', 2), value: 'activity' },
+                      { label: tabLabel('Notes', 0),    value: 'notes'    },
+                    ]}
+                    value={activeActivityTab}
+                    onChange={setActiveActivityTab}
+                  />
+                  {activeActivityTab === 'activity' ? (
+                    <Collapse
+                      accordion
+                      defaultActiveKey={['mar-23']}
+                      items={[
+                        {
+                          key: 'mar-23',
+                          label: (
+                            <Space size={6}>
+                              <Text strong>Mar 23, 2026</Text>
+                              <Badge count={2} />
+                            </Space>
+                          ),
+                          children: (
+                            <Timeline
+                              items={activityItems.slice(0, 2).map((item) => ({
+                                color: item.color,
+                                children: (
+                                  <Card size="small">
+                                    <Space direction="vertical" size={4}>
+                                      <Space>
+                                        <Tag color={item.tagColor}>{item.status}</Tag>
+                                        <Text type="secondary">{item.time}</Text>
+                                      </Space>
+                                      <Text type="secondary">{item.text}</Text>
                                     </Space>
-                                    <Text type="secondary">{item.text}</Text>
-                                  </Space>
-                                </Card>
-                              ),
-                            }))}
-                          />
-                          <Divider />
-                          <Title level={5}>Mar 20, 2026</Title>
-                          <Timeline
-                            items={activityItems.slice(2).map((item) => ({
-                              color: item.color,
-                              children: (
-                                <Card size="small">
-                                  <Space direction="vertical" size={4}>
-                                    <Space>
-                                      <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary">{item.time}</Text>
+                                  </Card>
+                                ),
+                              }))}
+                            />
+                          ),
+                        },
+                        {
+                          key: 'mar-20',
+                          label: (
+                            <Space size={6}>
+                              <Text strong>Mar 20, 2026</Text>
+                              <Badge count={2} />
+                            </Space>
+                          ),
+                          children: (
+                            <Timeline
+                              items={activityItems.slice(2).map((item) => ({
+                                color: item.color,
+                                children: (
+                                  <Card size="small">
+                                    <Space direction="vertical" size={4}>
+                                      <Space>
+                                        <Tag color={item.tagColor}>{item.status}</Tag>
+                                        <Text type="secondary">{item.time}</Text>
+                                      </Space>
+                                      <Text type="secondary">{item.text}</Text>
                                     </Space>
-                                    <Text type="secondary">{item.text}</Text>
-                                  </Space>
-                                </Card>
-                              ),
-                            }))}
-                          />
-                        </Space>
-                      ),
-                    },
-                    { key: 'notes', label: tabLabel('Notes', 0), children: <Empty description="No data" /> },
-                  ]}
-                />
+                                  </Card>
+                                ),
+                              }))}
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <Empty description="No data" />
+                  )}
+                </Space>
               </Card>
             </Col>
           </>
