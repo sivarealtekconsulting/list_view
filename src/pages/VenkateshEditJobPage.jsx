@@ -259,7 +259,7 @@ export default function VenkateshEditJobPage() {
                       </Row>
                     </Card>
                   </Col>
-
+                  
                   <Col span={24}>
                     <Card title="Assignment & Status">
                       <Row gutter={[16, 16]}>
