@@ -227,7 +227,7 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
         tableLayout="auto"
         pagination={false}
         className="job-list-table"
-        rowKey={(record, index) => record.id ?? record.key ?? index}
+        rowKey={(record) => record.id ?? record.key}
       />
 
       <CustomPagination

@@ -1,0 +1,167 @@
+{
+  "summary": {
+    "myJobsCount": 10,
+    "allJobsCount": 3184
+  },
+  "jobs": [
+    {
+      "key": "SRJ-101",
+      "id": 101,
+      "title": "Platform Reliability Engineer",
+      "location": "Denver",
+      "locationType": "Remote",
+      "experience": "8 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 118,
+      "targetSub": { "filled": 2, "total": 6 },
+      "pipeline": 4,
+      "assignees": [
+        { "initials": "MS", "color": "#0ea5e9" },
+        { "initials": "LR", "color": "#f97316" }
+      ],
+      "extraAssignees": 1,
+      "status": "Open",
+      "createdAt": "Jun 03, 2026",
+      "createdAgo": "3 days ago",
+      "client": "Nexora Cloud - 541209",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRJ-102",
+      "id": 102,
+      "title": "AI Integration Architect",
+      "location": "Boston",
+      "locationType": "Hybrid",
+      "experience": "11 years",
+      "employmentType": "Full-time",
+      "clientRate": 142,
+      "targetSub": { "filled": 4, "total": 8 },
+      "pipeline": 7,
+      "assignees": [
+        { "initials": "AV", "color": "#14b8a6" },
+        { "initials": "NP", "color": "#a855f7" }
+      ],
+      "extraAssignees": 3,
+      "status": "Interview",
+      "createdAt": "Jun 05, 2026",
+      "createdAgo": "Yesterday",
+      "client": "HelioBank - 883140",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRJ-103",
+      "id": 103,
+      "title": "Healthcare Data Modeler",
+      "location": "Raleigh",
+      "locationType": "On-site",
+      "experience": "6 years",
+      "employmentType": "Contract",
+      "clientRate": 96,
+      "targetSub": { "filled": 1, "total": 4 },
+      "pipeline": 3,
+      "assignees": [
+        { "initials": "KT", "color": "#22c55e" }
+      ],
+      "extraAssignees": 2,
+      "status": "Submitted",
+      "createdAt": "Jun 07, 2026",
+      "createdAgo": "Today",
+      "client": "CareAxis - 237665",
+      "hasBookmark": false,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRJ-104",
+      "id": 104,
+      "title": "Cybersecurity Compliance Lead",
+      "location": "Phoenix",
+      "locationType": "Remote",
+      "experience": "10 years",
+      "employmentType": "Part-time",
+      "clientRate": 134,
+      "targetSub": { "filled": 5, "total": 9 },
+      "pipeline": 6,
+      "assignees": [
+        { "initials": "RG", "color": "#ef4444" },
+        { "initials": "YN", "color": "#64748b" }
+      ],
+      "extraAssignees": 0,
+      "status": "Screening",
+      "createdAt": "Jun 09, 2026",
+      "createdAgo": "2 hours ago",
+      "client": "SecureGrid - 704118",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRJ-105",
+      "id": 105,
+      "title": "Salesforce Revenue Analyst",
+      "location": "Atlanta",
+      "locationType": "Hybrid",
+      "experience": "4 years",
+      "employmentType": "Full-time",
+      "clientRate": 88,
+      "targetSub": { "filled": 3, "total": 7 },
+      "pipeline": 8,
+      "assignees": [
+        { "initials": "DP", "color": "#eab308" }
+      ],
+      "extraAssignees": 4,
+      "status": "Pipeline",
+      "createdAt": "Jun 11, 2026",
+      "createdAgo": "Just now",
+      "client": "RevCascade - 661420",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRJ-106",
+      "id": 106,
+      "title": "Mobile Payments QA Manager",
+      "location": "Minneapolis",
+      "locationType": "On-site",
+      "experience": "12 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 126,
+      "targetSub": { "filled": 6, "total": 11 },
+      "pipeline": 10,
+      "assignees": [
+        { "initials": "BH", "color": "#06b6d4" },
+        { "initials": "SJ", "color": "#db2777" }
+      ],
+      "extraAssignees": 5,
+      "status": "Shortlisted",
+      "createdAt": "Jun 13, 2026",
+      "createdAgo": "4 hours ago",
+      "client": "PayOrbit - 919002",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRJ-107",
+      "id": 107,
+      "title": "Retail Analytics Product Owner",
+      "location": "Portland",
+      "locationType": "Remote",
+      "experience": "9 years",
+      "employmentType": "Full-time",
+      "clientRate": 111,
+      "targetSub": { "filled": 7, "total": 12 },
+      "pipeline": 12,
+      "assignees": [
+        { "initials": "IC", "color": "#8b5cf6" },
+        { "initials": "TW", "color": "#84cc16" }
+      ],
+      "extraAssignees": 6,
+      "status": "Offer",
+      "createdAt": "Jun 15, 2026",
+      "createdAgo": "6 hours ago",
+      "client": "MarketNest - 475810",
+      "hasBookmark": false,
+      "hasLinkedIn": false
+    }
+  ]
+}

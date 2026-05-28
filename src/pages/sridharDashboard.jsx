@@ -1,4 +1,5 @@
 import {
+  Breadcrumb,
   Button,
   Card,
   Col,
@@ -17,6 +18,7 @@ import OnboardingCard from '../components/cards/OnboardingCard';
 import StatsCards from '../components/cards/StatsCards';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import { formatters, validationRules } from '../components/form/validation';
+import { MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
 
 const { Text } = Typography;
 
@@ -31,6 +33,17 @@ export default function SridharDashboardPage() {
   return (
     <div className='dashboard-wrapper'>
       <Space direction="vertical" size={24}>
+        <Row>
+          <Col span={24}>
+            <Breadcrumb>
+              <Breadcrumb.Item>Home</Breadcrumb.Item>
+              <Breadcrumb.Item>
+                <Text strong>Dashboard</Text>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </Col>
+        </Row>
+
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <StatsCards />
@@ -170,7 +183,7 @@ export default function SridharDashboardPage() {
                 </Space>
               )}
             >
-              <ListView />
+              <ListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
             </Card>
           </Col>
         </Row>
