@@ -1,17 +1,3 @@
-/**
- * DemoSamplePage.test.jsx
- *
- * Test suite for the Venkatesh demo dashboard page.
- *
- * Coverage:
- *  1. Dashboard layout and KPI cards
- *  2. Add / Edit Personality form validation and formatting
- *  3. Calendar navigation and legend
- *  4. Supporting cards: Sticky Notes, Onboarding, Client Submission
- *  5. Inline list view: headers, routes, search, tabs, selection, actions
- *  6. Inline filter drawer controls
- */
-
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -41,11 +27,13 @@ vi.mock('../hooks/useDropdownValues', () => ({
   }),
 }));
 
-const renderPage = () => render(
-  <MemoryRouter>
-    <DemoSamplePage />
-  </MemoryRouter>,
-);
+function renderDemoPage() {
+  return render(
+    <MemoryRouter>
+      <DemoSamplePage />
+    </MemoryRouter>,
+  );
+}
 
 function getPersonalityListCard() {
   return screen.getByText('Personality List').closest('.ant-card');
@@ -55,9 +43,9 @@ function getCalendarCard() {
   return screen.getByText('April 2026').closest('.ant-card');
 }
 
-describe('DemoSamplePage - Dashboard Render', () => {
+describe('DemoSamplePage dashboard', () => {
   it('renders the main dashboard sections', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByText('Add / Edit Personality')).toBeInTheDocument();
     expect(screen.getByText('Personality List')).toBeInTheDocument();
@@ -67,7 +55,7 @@ describe('DemoSamplePage - Dashboard Render', () => {
   });
 
   it('renders KPI labels and values', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByText('Total Jobs')).toBeInTheDocument();
     expect(screen.getByText('1,697')).toBeInTheDocument();
@@ -78,7 +66,7 @@ describe('DemoSamplePage - Dashboard Render', () => {
   });
 
   it('renders supporting dashboard card labels', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getAllByText('Tagged')).toHaveLength(2);
     expect(screen.getAllByText('Note')).toHaveLength(2);
@@ -89,9 +77,9 @@ describe('DemoSamplePage - Dashboard Render', () => {
   });
 });
 
-describe('DemoSamplePage - Form Validation', () => {
+describe('DemoSamplePage form', () => {
   it('shows required validation when Save is clicked without mandatory fields', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
@@ -99,7 +87,7 @@ describe('DemoSamplePage - Form Validation', () => {
   });
 
   it('formats entered personality name while typing', async () => {
-    renderPage();
+    renderDemoPage();
 
     const nameInput = screen.getByPlaceholderText('Enter personality name');
     await userEvent.type(nameInput, 'john doe');
@@ -108,7 +96,7 @@ describe('DemoSamplePage - Form Validation', () => {
   });
 
   it('validates alphabet-only name and optional DOB format', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.type(screen.getByPlaceholderText('Enter personality name'), 'John123');
     await userEvent.type(screen.getByPlaceholderText('MM/DD/YYYY'), '13/40/2024');
@@ -119,7 +107,7 @@ describe('DemoSamplePage - Form Validation', () => {
   });
 
   it('does not show name required validation after a valid name is entered', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.type(screen.getByPlaceholderText('Enter personality name'), 'john doe');
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -128,15 +116,15 @@ describe('DemoSamplePage - Form Validation', () => {
   });
 });
 
-describe('DemoSamplePage - Calendar', () => {
+describe('DemoSamplePage calendar', () => {
   it('renders the default calendar month', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByText('April 2026')).toBeInTheDocument();
   });
 
   it('moves between months using calendar navigation', async () => {
-    renderPage();
+    renderDemoPage();
 
     const calendarCard = getCalendarCard();
     await userEvent.click(within(calendarCard).getByRole('button', { name: /left/i }));
@@ -147,7 +135,7 @@ describe('DemoSamplePage - Calendar', () => {
   });
 
   it('renders calendar legend items', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByText('Onboarded date')).toBeInTheDocument();
     expect(screen.getByText('Exit date')).toBeInTheDocument();
@@ -156,9 +144,9 @@ describe('DemoSamplePage - Calendar', () => {
   });
 });
 
-describe('DemoSamplePage - Inline List View', () => {
+describe('DemoSamplePage inline list view', () => {
   it('renders list tabs and table headers', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getAllByText('My Jobs').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('All Jobs')).toBeInTheDocument();
@@ -168,7 +156,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('renders job detail links with correct route', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByRole('link', { name: /Full Stack Developer/i })).toHaveAttribute(
       'href',
@@ -177,7 +165,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('renders pagination controls and result range', () => {
-    renderPage();
+    renderDemoPage();
 
     expect(screen.getByText('Show')).toBeInTheDocument();
     expect(screen.getByText('/ page')).toBeInTheDocument();
@@ -185,7 +173,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('keeps list unfiltered until search reaches three characters', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.type(screen.getByPlaceholderText('Min 3 Chars to search'), 'Fu');
 
@@ -194,7 +182,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('filters list results after minimum search characters', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.type(screen.getByPlaceholderText('Min 3 Chars to search'), 'Full');
 
@@ -203,7 +191,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('shows selected row count when a row checkbox is selected', async () => {
-    renderPage();
+    renderDemoPage();
 
     const checkboxes = within(getPersonalityListCard()).getAllByRole('checkbox');
     await userEvent.click(checkboxes[1]);
@@ -212,7 +200,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('switches to All Jobs tab without losing table data', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /All Jobs/i }));
 
@@ -221,7 +209,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('opens the inline list actions menu', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.click(screen.getByRole('button', { name: /Actions/i }));
 
@@ -231,7 +219,7 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 
   it('opens the inline list column visibility menu', async () => {
-    const { container } = renderPage();
+    const { container } = renderDemoPage();
 
     await userEvent.click(container.querySelector('.job-actions-button'));
 
@@ -242,9 +230,9 @@ describe('DemoSamplePage - Inline List View', () => {
   });
 });
 
-describe('DemoSamplePage - Filters', () => {
+describe('DemoSamplePage filters', () => {
   it('opens the filter drawer and shows filter controls', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.click(screen.getByRole('button', { name: /filter/i }));
 
@@ -256,7 +244,7 @@ describe('DemoSamplePage - Filters', () => {
   });
 
   it('adds another filter row inside the drawer', async () => {
-    renderPage();
+    renderDemoPage();
 
     await userEvent.click(screen.getByRole('button', { name: /filter/i }));
     expect(await screen.findByText('Filters')).toBeInTheDocument();
