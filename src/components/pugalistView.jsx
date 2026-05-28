@@ -6,7 +6,7 @@ import {
 import {
   BookFilled, LinkedinFilled,
   FilterOutlined, PlusOutlined, DownOutlined,
-  SearchOutlined,
+  SearchOutlined, MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
@@ -32,6 +32,7 @@ const columnOptions = [
   { key: 'status', label: 'Status' },
   { key: 'targetSub', label: 'Target Sub' },
   { key: 'pipeline', label: 'Pipeline' },
+  { key: 'actions', label: 'Actions' },
 ];
 
 const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
@@ -281,10 +282,48 @@ export default function ListView() {
         </Space>
       ),
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      fixed: 'right',
+      width: 90,
+      align: 'center',
+      render: () => (
+        <Dropdown
+          menu={{
+            items: [
+              {
+                key: 'view',
+                label: 'View',
+                onClick: () => navigate('/pugazh-detail-listview'),
+              },
+              {
+                key: 'edit',
+                label: 'Edit',
+                onClick: () => navigate('/pugazh-edit-job'),
+              },
+              {
+                key: 'delete',
+                label: 'Delete',
+                danger: true,
+              },
+            ],
+          }}
+          trigger={['click']}
+        >
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
+      ),
+    },
   ], [navigate]);
 
   const visibleColumns = useMemo(
-    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
+    () =>
+      columns.filter(
+        (column) =>
+          column.key === 'actions' ||
+          visibleColumnKeys.includes(column.visibilityKey || column.key)
+      ),
     [columns, visibleColumnKeys],
   );
 
