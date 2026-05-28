@@ -18,6 +18,14 @@ class ResizeObserverMock {
   disconnect() {}
 }
 
+class IntersectionObserverMock {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+}
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query) => ({
@@ -37,6 +45,11 @@ Object.defineProperty(window, 'ResizeObserver', {
   value: ResizeObserverMock,
 });
 
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  value: IntersectionObserverMock,
+});
+
 Object.defineProperty(window, 'scrollTo', {
   writable: true,
   value: () => {},
@@ -44,7 +57,15 @@ Object.defineProperty(window, 'scrollTo', {
 
 Object.defineProperty(window, 'getComputedStyle', {
   writable: true,
-  value: (element) => originalGetComputedStyle(element),
+  value: (element, pseudoElement) => {
+    if (pseudoElement) {
+      return {
+        getPropertyValue: () => '',
+      };
+    }
+
+    return originalGetComputedStyle(element);
+  },
 });
 
 vi.spyOn(console, 'error').mockImplementation((...args) => {

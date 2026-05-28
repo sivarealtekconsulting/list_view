@@ -3,19 +3,25 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import VenkateshDetailViewPage from './VenkateshDetailViewPage';
 
-const renderPage = (initialEntry = '/Venkatesh-detailview/1') => render(
-  <MemoryRouter initialEntries={[initialEntry]}>
-    <Routes>
-      <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
-      <Route path="/Venkatesh-detailview/:id/edit-job" element={<div>Edit Job Route</div>} />
-      <Route path="/Venkatesh" element={<div>Venkatesh Route</div>} />
-    </Routes>
-  </MemoryRouter>,
-);
+function renderDetailPage(initialEntry = '/Venkatesh-detailview/1') {
+  return render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Routes>
+        <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
+        <Route path="/Venkatesh-detailview/:id/edit-job" element={<div>Edit Job Route</div>} />
+        <Route path="/Venkatesh" element={<div>Venkatesh Route</div>} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
 
-describe('VenkateshDetailViewPage', () => {
+function getCandidatesCard() {
+  return screen.getAllByText('Candidates')[1].closest('.ant-card');
+}
+
+describe('VenkateshDetailViewPage details tab', () => {
   it('renders personality, contact, summary, and timeline details', () => {
-    renderPage();
+    renderDetailPage();
 
     expect(screen.getByRole('heading', { name: 'John Doe' })).toBeInTheDocument();
     expect(screen.getByText('Personality Details')).toBeInTheDocument();
@@ -27,7 +33,7 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('renders summary paragraph, progress, and tags from the selected record', () => {
-    renderPage();
+    renderDetailPage();
 
     expect(screen.getByText(/John Doe is a Product Strategist in the Product department/i)).toBeInTheDocument();
     expect(screen.getByText('Strong communication profile with high customer-facing readiness.')).toBeInTheDocument();
@@ -38,7 +44,7 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('navigates to edit route when Edit is clicked', async () => {
-    renderPage();
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('button', { name: /Edit/i }));
 
@@ -46,15 +52,17 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('navigates back to list route when Back is clicked', async () => {
-    renderPage();
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('button', { name: /Back/i }));
 
     expect(screen.getByText('Venkatesh Route')).toBeInTheDocument();
   });
+});
 
-  it('shows activity tab with activity feed and next step', async () => {
-    renderPage();
+describe('VenkateshDetailViewPage activity tab', () => {
+  it('shows activity feed and next step content', async () => {
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Activity/i }));
 
@@ -67,7 +75,7 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('activity snapshot shows event count, owner, latest update, and status', async () => {
-    renderPage();
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Activity/i }));
 
@@ -79,8 +87,8 @@ describe('VenkateshDetailViewPage', () => {
     expect(screen.getAllByText('Sarah Wilson').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('moves from activity to candidates with the View Candidates action', async () => {
-    renderPage();
+  it('moves from activity tab to candidates tab with View Candidates action', async () => {
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Activity/i }));
     await userEvent.click(screen.getByRole('button', { name: /View Candidates/i }));
@@ -88,14 +96,16 @@ describe('VenkateshDetailViewPage', () => {
     expect(screen.getAllByText('Candidate ID').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Arun Kumar')).toBeInTheDocument();
   });
+});
 
-  it('shows candidate selection count and deletes selected candidate rows', async () => {
-    renderPage();
+describe('VenkateshDetailViewPage candidates tab', () => {
+  it('shows selected candidate count and deletes one selected row', async () => {
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Candidates/i }));
     expect(screen.getByText('Arun Kumar')).toBeInTheDocument();
 
-    const candidatesCard = screen.getAllByText('Candidates')[1].closest('.ant-card');
+    const candidatesCard = getCandidatesCard();
     expect(within(candidatesCard).getByRole('button', { name: /Delete/i })).toBeDisabled();
 
     const checkboxes = within(candidatesCard).getAllByRole('checkbox');
@@ -109,11 +119,11 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('selects all candidate rows and deletes them together', async () => {
-    renderPage();
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Candidates/i }));
 
-    const candidatesCard = screen.getAllByText('Candidates')[1].closest('.ant-card');
+    const candidatesCard = getCandidatesCard();
     const checkboxes = within(candidatesCard).getAllByRole('checkbox');
     await userEvent.click(checkboxes[0]);
 
@@ -126,7 +136,7 @@ describe('VenkateshDetailViewPage', () => {
   });
 
   it('keeps candidate table readable after sortable header is clicked', async () => {
-    renderPage();
+    renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Candidates/i }));
     await userEvent.click(screen.getAllByText('Candidate Name')[0]);
@@ -135,9 +145,11 @@ describe('VenkateshDetailViewPage', () => {
     expect(screen.getByText('Meera Iyer')).toBeInTheDocument();
     expect(screen.getByText('Rahul Sharma')).toBeInTheDocument();
   });
+});
 
+describe('VenkateshDetailViewPage fallback', () => {
   it('renders not found state for unknown record id', () => {
-    renderPage('/Venkatesh-detailview/999');
+    renderDetailPage('/Venkatesh-detailview/999');
 
     expect(screen.getByText('Personality record not found')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Back to Venkatesh/i })).toBeInTheDocument();

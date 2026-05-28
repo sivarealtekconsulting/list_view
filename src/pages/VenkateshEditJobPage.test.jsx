@@ -3,6 +3,18 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import VenkateshEditJobPage from './VenkateshEditJobPage';
 
+vi.mock('antd', async () => {
+  const antd = await vi.importActual('antd');
+
+  return {
+    ...antd,
+    message: {
+      ...antd.message,
+      success: vi.fn(),
+    },
+  };
+});
+
 const renderPage = (initialEntry = '/Venkatesh-detailview/1/edit-job') => render(
   <MemoryRouter initialEntries={[initialEntry]}>
     <Routes>

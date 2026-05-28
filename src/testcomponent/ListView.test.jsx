@@ -5,7 +5,7 @@
  */
 
 import { ConfigProvider } from 'antd';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ListView from '../components/ListView';
@@ -64,11 +64,10 @@ describe('ListView toolbar and table', () => {
     const matchingLocation = MOCK_JOBS[1].location;
     const hiddenLocation = MOCK_JOBS[0].location;
 
-    await userEvent.type(getSearchInput(), 'te');
+    fireEvent.change(getSearchInput(), { target: { value: 'te' } });
     expect(screen.getByText(hiddenLocation)).toBeInTheDocument();
 
-    await userEvent.clear(getSearchInput());
-    await userEvent.type(getSearchInput(), matchingLocation.toLowerCase());
+    fireEvent.change(getSearchInput(), { target: { value: matchingLocation.toLowerCase() } });
 
     expect(screen.getByText(matchingLocation)).toBeInTheDocument();
     expect(screen.queryByText(hiddenLocation)).not.toBeInTheDocument();
