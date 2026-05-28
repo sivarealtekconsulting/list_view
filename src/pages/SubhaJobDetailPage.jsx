@@ -34,8 +34,7 @@ import { MOCK_JOBS } from '../data/jobs';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
-import StickyNotesCard from '../components/cards/StickyNotesCard';
-import '../styles/OnboardingCard.css';
+import '../styles/SubhaJobDetailPage.css';
 
 const { Text, Title, Link, Paragraph } = Typography;
 
@@ -96,13 +95,13 @@ const activityItems = [
 ];
 
 const candidateFields = [
-  { label: 'Candidate Name', value: 'candidateName' },
-  { label: 'Designation', value: 'designation' },
-  { label: 'Current Location', value: 'currentLocation' },
-  { label: 'Experience', value: 'experience' },
-  { label: 'Work Authorization', value: 'workAuthorization' },
-  { label: 'Submission Status', value: 'submissionStatus' },
-  { label: 'Submitted Date', value: 'submittedDate' },
+  { label: 'Candidate Name',    value: 'candidateName'      },
+  { label: 'Designation',       value: 'designation'        },
+  { label: 'Current Location',  value: 'currentLocation'    },
+  { label: 'Experience',        value: 'experience'         },
+  { label: 'Work Authorization',value: 'workAuthorization'  },
+  { label: 'Submission Status', value: 'submissionStatus'   },
+  { label: 'Submitted Date',    value: 'submittedDate'      },
 ];
 
 const candidateRows = [
@@ -140,19 +139,25 @@ const candidateRows = [
 
 function DetailField({ label, value }) {
   return (
-    <Space direction="vertical" size={2}>
-      <Text type="secondary">{label}</Text>
-      <Text>{value || '-'}</Text>
-    </Space>
+    <div className="jdv-field">
+      <Text className="jdv-field-label">{label}</Text>
+      <Text className="jdv-field-value">{value || '-'}</Text>
+    </div>
   );
 }
 
-function SectionCard({ title, icon, children }) {
+function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLight = 'rgba(0,83,165,0.08)' }) {
   return (
     <Card
       size="small"
-      className="client-details-card"
-      title={<Space size={6}>{icon}<Text strong>{title}</Text></Space>}
+      className="jdv-section-card"
+      style={{ '--section-accent': accentColor, '--section-accent-light': accentLight }}
+      title={
+        <Space size={12}>
+          <span className="jdv-section-icon-wrap">{icon}</span>
+          <Text strong className="jdv-section-title">{title}</Text>
+        </Space>
+      }
     >
       {children}
     </Card>
@@ -172,68 +177,73 @@ export default function JobDetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
-  const [activeDetailTab, setActiveDetailTab] = useState('details');
+  const [activeDetailTab, setActiveDetailTab]     = useState('details');
   const [activeActivityTab, setActiveActivityTab] = useState('activity');
-  const [descExpanded, setDescExpanded] = useState(false);
+  const [descExpanded, setDescExpanded]           = useState(false);
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="dashboard-wrapper jdv">
       <Row gutter={[16, 16]}>
+
+        {/* ── Breadcrumb ── */}
         <Col span={24}>
           <Breadcrumb
+            className="jdv-breadcrumb"
             items={[
               {
                 title: (
-                  <Text style={{ color: '#586888', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                  <span className="jdv-breadcrumb-link" onClick={() => navigate('/')}>
                     Home
-                  </Text>
+                  </span>
                 ),
               },
               {
                 title: (
-                  <Text style={{ color: '#586888', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                  <span className="jdv-breadcrumb-link" onClick={() => navigate('/')}>
                     Jobs
-                  </Text>
+                  </span>
                 ),
               },
               {
-                title: <Text style={{ color: '#0053A5' }} strong>Detailed View</Text>,
+                title: <span className="jdv-breadcrumb-active">Detailed View</span>,
               },
             ]}
           />
-
         </Col>
 
+        {/* ── Hero card ── */}
         <Col span={24}>
-          <Card size="small" className="client-details-card">
-            <Row justify="space-between" gutter={[16, 16]}>
+          <Card size="small" className="jdv-hero-card">
+            <Row justify="space-between" align="middle" gutter={[16, 16]}>
               <Col xs={24} lg={16}>
                 <Space direction="vertical" size={5}>
-                  <Text type="secondary">TCS - MSP ID 10432419</Text>
+                  <span className="jdv-client-code">TCS - MSP ID 10432419</span>
                   <Space size={8} wrap>
-                    <Title level={4}>{job.title} - 38975</Title>
+                    <Title level={4} className="jdv-job-title">
+                      {job.title} - 38975
+                    </Title>
                     <StatusBadge status={job.status} />
                   </Space>
                   <Space size={12} wrap>
-                    <Text type="secondary"><EnvironmentOutlined /> {job.location}</Text>
-                    <Text type="secondary"><ClockCircleOutlined /> {job.experience}</Text>
-                    <Text type="secondary"><BankOutlined /> {job.employmentType}</Text>
-                    <Text type="secondary">{job.locationType}</Text>
-                    <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
+                    <span className="jdv-meta-item"><EnvironmentOutlined /> {job.location}</span>
+                    <span className="jdv-meta-item"><ClockCircleOutlined /> {job.experience}</span>
+                    <span className="jdv-meta-item"><BankOutlined /> {job.employmentType}</span>
+                    <span className="jdv-meta-item">{job.locationType}</span>
+                    <span className="jdv-meta-item"><DollarOutlined /> Client rate: ${job.clientRate}/hr</span>
                   </Space>
                 </Space>
               </Col>
               <Col xs={24} lg={8}>
                 <Space direction="vertical" size={6} style={{ width: '100%' }}>
-                  <div className="onboarding-item blue" style={{ flexDirection: 'row', alignItems: 'center', gap: 0 }}>
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                      <Text className="onboarding-item-label">Target Submissions</Text>
-                      <Statistic value={job.targetSub?.total ?? '-'} className="onboarding-stat" />
+                  <div className="jdv-stats-box">
+                    <div className="jdv-stat-col">
+                      <span className="jdv-stat-label">Target Submissions</span>
+                      <Statistic value={job.targetSub?.total ?? '-'} />
                     </div>
-                    <div style={{ width: 1, background: 'rgba(0,0,0,0.08)', alignSelf: 'stretch', margin: '0 12px' }} />
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                      <Text className="onboarding-item-label">In Pipeline</Text>
-                      <Statistic value={job.pipeline ?? '-'} className="onboarding-stat" />
+                    <div className="jdv-stat-divider" />
+                    <div className="jdv-stat-col">
+                      <span className="jdv-stat-label">In Pipeline</span>
+                      <Statistic value={job.pipeline ?? '-'} />
                     </div>
                   </div>
                   <DetailField label="Created On" value="Nov 03, 2025 | 07:00PM" />
@@ -243,30 +253,30 @@ export default function JobDetailPage() {
           </Card>
         </Col>
 
+        {/* ── Tabs toolbar ── */}
         <Col span={24}>
-          <div className="antd">
-            <Card>
-              <Flex align="center" justify="space-between" gap={12} wrap>
-                <Tabs
-                  activeKey={activeDetailTab}
-                  onChange={setActiveDetailTab}
-                  items={[
-                    { key: 'details', label: tabLabel('Details', 0) },
-                    { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                    { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
-                  ]}
-                />
-                <Flex align="center" gap={8}>
-                  <Button type="primary" className="job-summary-button" icon={<TeamOutlined />}>
-                    Source Candidates
-                  </Button>
-                  <Button className="job-toolbar-icon-button" icon={<MoreOutlined />} />
-                </Flex>
+          <Card className="jdv-toolbar-card">
+            <Flex align="center" justify="space-between" gap={12} wrap>
+              <Tabs
+                activeKey={activeDetailTab}
+                onChange={setActiveDetailTab}
+                items={[
+                  { key: 'details',        label: tabLabel('Details', 0) },
+                  { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                  { key: 'candidate',      label: tabLabel('Candidate', candidateRows.length) },
+                ]}
+              />
+              <Flex align="center" gap={8}>
+                <Button type="primary" className="jdv-action-btn" icon={<TeamOutlined />}>
+                  Source Candidates
+                </Button>
+                <Button className="jdv-more-btn" icon={<MoreOutlined />} />
               </Flex>
-            </Card>
-          </div>
+            </Flex>
+          </Card>
         </Col>
 
+        {/* ── Tab content ── */}
         {activeDetailTab === 'candidates-api' ? (
           <Col span={24}>
             <DynamicListView moduleName="candidates" />
@@ -281,60 +291,79 @@ export default function JobDetailPage() {
           </Col>
         ) : (
           <>
+            {/* ── Left: detail sections ── */}
             <Col xs={24} lg={17}>
               <Space direction="vertical" size={12}>
-                <SectionCard title="Client" icon={<FileSearchOutlined />}>
+
+                <SectionCard title="Client" icon={<FileSearchOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
                   <Row gutter={[32, 16]}>
-                    <Col xs={24} md={8}><DetailField label="Contact Person" value="Subha Seline" /></Col>
-                    <Col xs={24} md={8}><DetailField label="Email" value={<Link>seline@gmail.com</Link>} /></Col>
-                    <Col xs={24} md={8}><DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} /></Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Contact Person" value="Subha Seline" />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Email" value={<Link>seline@gmail.com</Link>} />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} />
+                    </Col>
                   </Row>
                 </SectionCard>
 
-                <SectionCard title="Skills & Competencies" icon={<InfoCircleOutlined />}>
+                <SectionCard title="Skills & Competencies" icon={<InfoCircleOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
                   <Space direction="vertical" size={12}>
                     <DetailField
                       label="Primary Skills"
-                      value={(
+                      value={
                         <Space size={[6, 6]} wrap>
                           {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training'].map((skill) => (
-                            <Tag key={skill} color="blue">{skill}</Tag>
+                            <Tag key={skill} className="jdv-skill-tag">{skill}</Tag>
                           ))}
                         </Space>
-                      )}
+                      }
                     />
                     <DetailField label="Secondary Skills" value="-" />
-                    <DetailField label="Competencies" value="-" />
+                    <DetailField label="Competencies"     value="-" />
                   </Space>
                 </SectionCard>
 
-                <SectionCard title="Description" icon={<FileTextOutlined />}>
+                <SectionCard title="Description" icon={<FileTextOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
                   <Space direction="vertical">
                     {(descExpanded ? defaultDescription : defaultDescription.slice(0, 10)).map((line) => (
-                      <Paragraph key={line}>{line}</Paragraph>
+                      <Paragraph key={line} className="jdv-desc-para">{line}</Paragraph>
                     ))}
                   </Space>
                   {defaultDescription.length > 10 && (
-                    <Link onClick={() => setDescExpanded((prev) => !prev)}>
+                    <span
+                      className="jdv-desc-toggle"
+                      onClick={() => setDescExpanded((prev) => !prev)}
+                    >
                       {descExpanded ? 'Show less' : 'Show more'}
-                    </Link>
+                    </span>
                   )}
                 </SectionCard>
 
-                <SectionCard title="Additional Details" icon={<InfoCircleOutlined />}>
+                <SectionCard title="Additional Details" icon={<InfoCircleOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
                   <Row gutter={[32, 16]}>
-                    <Col xs={24} md={6}><DetailField label="Notice Period" value="-" /></Col>
-                    <Col xs={24} md={10}><DetailField label="Business Unit" value="Realtek Consulting LLC" /></Col>
+                    <Col xs={24} md={6}>
+                      <DetailField label="Notice Period"  value="-" />
+                    </Col>
+                    <Col xs={24} md={10}>
+                      <DetailField label="Business Unit" value="Realtek Consulting LLC" />
+                    </Col>
                   </Row>
                 </SectionCard>
+
               </Space>
             </Col>
 
+            {/* ── Right: Activity & Notes ── */}
             <Col xs={24} lg={7}>
-              <Card size="small" className="client-details-card">
+              <Card size="small" className="jdv-activity-card">
                 <Space direction="vertical" style={{ width: '100%' }} size={12}>
+
                   <Segmented
                     block
+                    className="jdv-activity-switcher"
                     options={[
                       { label: tabLabel('Activity', 2), value: 'activity' },
                       { label: tabLabel('Notes', 0),    value: 'notes'    },
@@ -342,16 +371,18 @@ export default function JobDetailPage() {
                     value={activeActivityTab}
                     onChange={setActiveActivityTab}
                   />
+
                   {activeActivityTab === 'activity' ? (
                     <Collapse
                       accordion
+                      className="jdv-date-collapse"
                       defaultActiveKey={['mar-23']}
                       items={[
                         {
                           key: 'mar-23',
                           label: (
                             <Space size={6}>
-                              <Text strong>Mar 23, 2026</Text>
+                              <span className="jdv-date-label">Mar 23, 2026</span>
                               <Badge count={2} />
                             </Space>
                           ),
@@ -360,13 +391,15 @@ export default function JobDetailPage() {
                               items={activityItems.slice(0, 2).map((item) => ({
                                 color: item.color,
                                 children: (
-                                  <Card size="small">
+                                  <Card size="small" className="jdv-timeline-card">
                                     <Space direction="vertical" size={4}>
                                       <Space>
-                                        <Tag color={item.tagColor}>{item.status}</Tag>
-                                        <Text type="secondary">{item.time}</Text>
+                                        <Tag color={item.tagColor} className="jdv-activity-tag">
+                                          {item.status}
+                                        </Tag>
+                                        <span className="jdv-activity-time">{item.time}</span>
                                       </Space>
-                                      <Text type="secondary">{item.text}</Text>
+                                      <span className="jdv-activity-text">{item.text}</span>
                                     </Space>
                                   </Card>
                                 ),
@@ -378,7 +411,7 @@ export default function JobDetailPage() {
                           key: 'mar-20',
                           label: (
                             <Space size={6}>
-                              <Text strong>Mar 20, 2026</Text>
+                              <span className="jdv-date-label">Mar 20, 2026</span>
                               <Badge count={2} />
                             </Space>
                           ),
@@ -387,13 +420,15 @@ export default function JobDetailPage() {
                               items={activityItems.slice(2).map((item) => ({
                                 color: item.color,
                                 children: (
-                                  <Card size="small">
+                                  <Card size="small" className="jdv-timeline-card">
                                     <Space direction="vertical" size={4}>
                                       <Space>
-                                        <Tag color={item.tagColor}>{item.status}</Tag>
-                                        <Text type="secondary">{item.time}</Text>
+                                        <Tag color={item.tagColor} className="jdv-activity-tag">
+                                          {item.status}
+                                        </Tag>
+                                        <span className="jdv-activity-time">{item.time}</span>
                                       </Space>
-                                      <Text type="secondary">{item.text}</Text>
+                                      <span className="jdv-activity-text">{item.text}</span>
                                     </Space>
                                   </Card>
                                 ),
@@ -406,11 +441,13 @@ export default function JobDetailPage() {
                   ) : (
                     <Empty description="No data" />
                   )}
+
                 </Space>
               </Card>
             </Col>
           </>
         )}
+
       </Row>
     </div>
   );
