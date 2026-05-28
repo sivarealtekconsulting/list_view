@@ -119,9 +119,9 @@
 /* ─────────────────────────────────────────
    Detail field  (label + value pairs)
 ───────────────────────────────────────── */
-.jdv .jdv-field        { display: flex; flex-direction: column; gap: 3px; }
-.jdv .jdv-field-label  { font-size: 12px; color: var(--jdv-text-sub); }
-.jdv .jdv-field-value  { font-size: 13px; font-weight: 500; color: var(--jdv-text); }
+.jdv .jdv-field        { display: flex; flex-direction: column; gap: 5px; }
+.jdv .jdv-field-label  { font-size: 12px; font-weight: 500; color: #4b5563; letter-spacing: 0.01em; }
+.jdv .jdv-field-value  { font-size: 13px; font-weight: 600; color: var(--jdv-text); }
 
 .jdv .jdv-field a {
   font-size: 13px;
@@ -146,9 +146,9 @@
 .jdv .jdv-toolbar-card .ant-tabs-nav::before { border: none !important; }
 .jdv .jdv-toolbar-card .ant-tabs-ink-bar     { display: none !important; }
 
-/* Track: frosted grey pill that wraps all tabs */
+/* Track: transparent so a single tab doesn't look enclosed in a container */
 .jdv .jdv-toolbar-card .ant-tabs-nav-list {
-  background: #eef2fa;
+  background: transparent;
   border-radius: 24px;
   padding: 3px;
 }
@@ -246,20 +246,21 @@
   color: var(--jdv-text);
 }
 
-/* Icon: solid-filled circle, white icon, color-matched shadow */
+/* Icon: outlined circle — white bg, blue border, blue icon */
 .jdv .jdv-section-icon-wrap {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: var(--section-accent, #0053A5);
-  color: #ffffff;
+  background: #ffffff;
+  color: #0053A5;
+  border: 1.5px solid #0053A5;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 }
 
 .jdv .jdv-section-title {
@@ -269,37 +270,118 @@
   letter-spacing: 0.01em;
 }
 
-/* Skill tags */
-.jdv .jdv-skill-tag.ant-tag {
-  margin: 0;
-  border: 0;
-  border-radius: 12px;
-  background: #eaf4ff;
-  color: #075c95;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 2px 10px;
+/* Skill group container — groups label + tags visually */
+.jdv .jdv-skills-group {
+  background: #f8fafd;
+  border: 1px solid var(--jdv-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 2px;
 }
 
-/* Description text */
-.jdv .jdv-desc-para.ant-typography {
+/* Skill tags — soft rounded chip */
+.jdv .jdv-skill-tag.ant-tag {
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  background: #e0f0ff;
+  color: #0053A5;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 83, 165, 0.12);
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+.jdv .jdv-skill-tag.ant-tag:hover {
+  background: #bfdbfe;
+  box-shadow: 0 4px 10px rgba(0, 83, 165, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Description — two-column KV table + heading badges + arrow bullets */
+.jdv .jdv-desc-content { display: flex; flex-direction: column; gap: 2px; }
+
+/* Base line */
+.jdv .jdv-desc-line {
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+/* KV pairs — 2-column grid: label left, value right */
+.jdv .jdv-desc-kv {
+  display: grid;
+  grid-template-columns: minmax(90px, 28%) 1fr;
+  align-items: baseline;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.jdv .jdv-desc-kv-key {
+  font-weight: 600;
+  color: var(--jdv-text);
+  white-space: nowrap;
+}
+.jdv .jdv-desc-kv-key::after { content: ':'; color: var(--jdv-text-muted); margin-left: 2px; }
+.jdv .jdv-desc-kv-sep { display: none; }
+.jdv .jdv-desc-kv-val { color: var(--jdv-text-sub); }
+
+/* Section headings — blue badge strip */
+.jdv .jdv-desc-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #0053A5;
+  background: #eff6ff;
+  padding: 5px 10px !important;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+.jdv .jdv-desc-heading:first-child { margin-top: 0; }
+.jdv .jdv-desc-heading:hover { background: #dbeafe !important; }
+
+/* Standalone label — bold, no arrow, no heading style */
+.jdv .jdv-desc-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--jdv-text);
+  line-height: 1.7;
+}
+
+/* Body lines — › arrow bullet with indent */
+.jdv .jdv-desc-body {
   font-size: 13px;
   color: var(--jdv-text-sub);
-  line-height: 1.6;
-  margin: 0 0 4px !important;
+  line-height: 1.7;
+  padding-left: 22px !important;
+  position: relative;
+}
+.jdv .jdv-desc-body::before {
+  content: '›';
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  color: #0053A5;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
 }
 
 .jdv .jdv-desc-toggle {
   font-size: 13px;
   color: var(--jdv-primary);
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 10px;
   display: inline-block;
 }
 
 /* ─────────────────────────────────────────
    Activity & Notes panel
 ───────────────────────────────────────── */
+
 .jdv .jdv-activity-card.ant-card {
   border: 1px solid var(--jdv-border);
   border-radius: var(--jdv-radius);
@@ -352,10 +434,66 @@
 }
 .jdv .jdv-timeline-card > .ant-card-body { padding: 10px 12px; }
 
+/* Timeline dots — solid filled with status-colored glow ring */
+.jdv .jdv-date-collapse .ant-timeline-item-head {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.jdv .jdv-date-collapse .ant-timeline-item-head-blue {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15) !important;
+}
+
+.jdv .jdv-date-collapse .ant-timeline-item-head-green {
+  background: #15803d !important;
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15) !important;
+}
+
+.jdv .jdv-date-collapse .ant-timeline-item-head-red {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15) !important;
+}
+
+/* Connecting line — clean light grey */
+.jdv .jdv-date-collapse .ant-timeline-item-tail {
+  border-left: 2px solid #e2e8f0 !important;
+}
+
+/* Activity status tags — same soft chip style as skill tags */
 .jdv .jdv-activity-tag.ant-tag {
-  font-size: 11px;
-  border-radius: 10px;
-  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 3px 10px;
+  border: none !important;
+  letter-spacing: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Shortlist — soft blue chip */
+.jdv .jdv-activity-tag.ant-tag-blue {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 1px 4px rgba(29, 78, 216, 0.12);
+}
+
+/* Submitted — soft green chip */
+.jdv .jdv-activity-tag.ant-tag-green {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  box-shadow: 0 1px 4px rgba(21, 128, 61, 0.12);
+}
+
+/* Rejected — soft red chip */
+.jdv .jdv-activity-tag.ant-tag-red {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  box-shadow: 0 1px 4px rgba(185, 28, 28, 0.12);
 }
 .jdv .jdv-activity-time {
   font-size: 11px;

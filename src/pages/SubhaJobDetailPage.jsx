@@ -39,7 +39,7 @@ import '../styles/SubhaJobDetailPage.css';
 const { Text, Title, Link, Paragraph } = Typography;
 
 const defaultDescription = [
-  'Bill Rate: 60 - 80',
+  'Bill Rate: 60 - 80 MSP OWN',
   'MSP Owner: William Bristol',
   'Location: ~LOUISVILLE~',
   'Duration: 6 months',
@@ -164,6 +164,30 @@ function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLig
   );
 }
 
+function renderDescLine(line) {
+  const colonIdx = line.indexOf(':');
+  if (colonIdx > 0 && colonIdx <= 25) {
+    const key = line.slice(0, colonIdx);
+    const val = line.slice(colonIdx + 1).trim();
+    return (
+      <div key={line} className="jdv-desc-line jdv-desc-kv">
+        <span className="jdv-desc-kv-key">{key}</span>
+        <span className="jdv-desc-kv-sep">:&nbsp;</span>
+        <span className="jdv-desc-kv-val">{val}</span>
+      </div>
+    );
+  }
+  const words = line.split(' ');
+  const isTitleCase = words.every((w) => w.length <= 2 || w[0] === w[0].toUpperCase());
+  if (!line.endsWith('.') && line.length < 50 && isTitleCase) {
+    return <div key={line} className="jdv-desc-line jdv-desc-heading">{line}</div>;
+  }
+  if (!line.endsWith('.') && line.length < 50) {
+    return <div key={line} className="jdv-desc-line jdv-desc-label">{line}</div>;
+  }
+  return <div key={line} className="jdv-desc-line jdv-desc-body">{line}</div>;
+}
+
 function tabLabel(label, count) {
   return (
     <Space size={6}>
@@ -262,8 +286,8 @@ export default function JobDetailPage() {
                 onChange={setActiveDetailTab}
                 items={[
                   { key: 'details',        label: tabLabel('Details', 0) },
-                  { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                  { key: 'candidate',      label: tabLabel('Candidate', candidateRows.length) },
+                  // { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                  // { key: 'candidate',      label: tabLabel('Candidate', candidateRows.length) },
                 ]}
               />
               <Flex align="center" gap={8}>
@@ -293,7 +317,7 @@ export default function JobDetailPage() {
           <>
             {/* ── Left: detail sections ── */}
             <Col xs={24} lg={17}>
-              <Space direction="vertical" size={12}>
+              <Space direction="vertical" size={12} style={{ width: '100%', display: 'flex' }}>
 
                 <SectionCard title="Client" icon={<FileSearchOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
                   <Row gutter={[32, 16]}>
@@ -314,11 +338,13 @@ export default function JobDetailPage() {
                     <DetailField
                       label="Primary Skills"
                       value={
-                        <Space size={[6, 6]} wrap>
-                          {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training'].map((skill) => (
-                            <Tag key={skill} className="jdv-skill-tag">{skill}</Tag>
-                          ))}
-                        </Space>
+                        <div className="jdv-skills-group">
+                          <Space size={[6, 6]} wrap>
+                            {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training', 'PHP', 'Python', 'Django', 'Flask', 'FastAPI', 'GO', 'RDBMS', 'Python Selenium', 'Java', 'MongoDB'].map((skill) => (
+                              <Tag key={skill} className="jdv-skill-tag">{skill}</Tag>
+                            ))}
+                          </Space>
+                        </div>
                       }
                     />
                     <DetailField label="Secondary Skills" value="-" />
@@ -327,11 +353,9 @@ export default function JobDetailPage() {
                 </SectionCard>
 
                 <SectionCard title="Description" icon={<FileTextOutlined />} accentColor="#0053A5" accentLight="rgba(0,83,165,0.08)">
-                  <Space direction="vertical">
-                    {(descExpanded ? defaultDescription : defaultDescription.slice(0, 10)).map((line) => (
-                      <Paragraph key={line} className="jdv-desc-para">{line}</Paragraph>
-                    ))}
-                  </Space>
+                  <div className="jdv-desc-content">
+                    {(descExpanded ? defaultDescription : defaultDescription.slice(0, 10)).map(renderDescLine)}
+                  </div>
                   {defaultDescription.length > 10 && (
                     <span
                       className="jdv-desc-toggle"
@@ -358,7 +382,7 @@ export default function JobDetailPage() {
 
             {/* ── Right: Activity & Notes ── */}
             <Col xs={24} lg={7}>
-              <Card size="small" className="jdv-activity-card">
+              <Card size="small" className="jdv-activity-card" style={{ height: '100%' }}>
                 <Space direction="vertical" style={{ width: '100%' }} size={12}>
 
                   <Segmented
@@ -445,6 +469,7 @@ export default function JobDetailPage() {
                 </Space>
               </Card>
             </Col>
+
           </>
         )}
 
