@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Badge,
@@ -16,7 +15,6 @@ import {
   Typography,
 } from 'antd';
 import {
-  ArrowLeftOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
@@ -117,15 +115,6 @@ const activityRows = [
 
 const skills = ['React', 'Node.js', 'AWS', 'REST APIs', 'Agile delivery'];
 
-const candidateFields = [
-  { label: 'Candidate', value: 'candidate' },
-  { label: 'Role', value: 'role' },
-  { label: 'Location', value: 'location' },
-  { label: 'Experience', value: 'experience' },
-  { label: 'Status', value: 'status' },
-  { label: 'Submitted', value: 'date' },
-];
-
 const activityFields = [
   { label: 'Activity', value: 'event' },
   { label: 'Owner', value: 'owner' },
@@ -196,17 +185,17 @@ export default function SridharDetailPage() {
                 </Space>
               </Card>
 
-              {/* <ParamListView
+              <ParamListView
                 listName="Activity"
                 fields={activityFields}
                 dataSource={activityRows}
-              /> */}
+              />
             </Space>
           </Col>
 
           <Col xs={24} xl={8}>
             <Space direction="vertical" size={16}>
-              {/* <ClientDetailsCard /> */}
+              <ClientDetailsCard />
               <CalendarCard />
             </Space>
           </Col>

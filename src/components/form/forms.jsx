@@ -412,7 +412,6 @@ const UserForm = () => {
                                 beforeUpload={
                                     uploadValidation.beforeUpload
                                 }
-                                beforeUpload={() => false}
                             >
                                 <Button>
                                     Upload Documents

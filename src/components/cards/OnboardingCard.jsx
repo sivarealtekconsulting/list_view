@@ -24,7 +24,7 @@ export default function OnboardingCard() {
               <Text className="onboarding-item-label">{it.label}</Text>
               <Statistic value={it.value} className="onboarding-stat" />
               <div className="onboarding-item-footer">
-                <Text className="onboarding-item-sub">{it.sub}</Text>
+                {/* <Text className="onboarding-item-sub">{it.sub}</Text> */}
               </div>
             </div>
           </Col>
