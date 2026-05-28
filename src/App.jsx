@@ -23,9 +23,12 @@ import PugazhDashboard from './pages/pugazh-dashboard';
 import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
+import CandidateAddForm from './pages/AddFormPage';
+import CandidateAddFormV1 from './pages/CandidateAddFormV1';
+import CandidateAddFormV3 from './pages/CandidateAddFormV3';
 import VenkateshEditJobPage from './pages/VenkateshEditJobPage';
 import PugalDetailedView from './pages/pugal-detail-view-page'
-  
+
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
@@ -61,7 +64,7 @@ export default function App() {
 
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
-          <Route path="/candidates" element={<CandidatesPage />} />
+x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -70,6 +73,9 @@ export default function App() {
           <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/sony-detailedview/:jobId" element={<SonyDetailedView />} />
           <Route path="/sony-dashboard" element={<SonyDashboard />} />
+          <Route path="/candidate-add" element={<CandidateAddForm />} />
+          <Route path="/candidate-add/v1" element={<CandidateAddFormV1 />} />
+          <Route path="/candidate-add/v3" element={<CandidateAddFormV3 />} />
 
           <Route path="/add" element={<StickyNotesCard />} />
           <Route
