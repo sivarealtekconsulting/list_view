@@ -23,6 +23,7 @@ import PugazhDashboard from './pages/pugazh-dashboard';
 import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
+import VenkateshEditJobPage from './pages/VenkateshEditJobPage';
 import PugalDetailedView from './pages/pugal-detail-view-page'
   
 
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/Venkatesh" element={<DemoSamplePage />} />
           <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
+          <Route path="/Venkatesh-detailview/:id/edit-job" element={<VenkateshEditJobPage />} />
 
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />

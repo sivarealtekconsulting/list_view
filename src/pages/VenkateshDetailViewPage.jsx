@@ -271,7 +271,11 @@ export default function VenkateshDetailViewPage() {
                   <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/Venkatesh')}>
                     Back
                   </Button>
-                  <Button type="primary" icon={<EditOutlined />}>
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={() => navigate(`/Venkatesh-detailview/${record.key}/edit-job`)}
+                  >
                     Edit
                   </Button>
                 </Flex>
