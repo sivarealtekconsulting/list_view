@@ -1,0 +1,253 @@
+.add-form-page {
+  min-height: 100vh;
+  padding: 18px 24px 92px;
+  background: #f3f8fb;
+}
+
+.add-form-page__inner {
+  width: 100%;
+  max-width: 1174px;
+  margin: 0 auto;
+}
+
+.add-form-page__breadcrumb {
+  margin-bottom: 12px;
+}
+
+.add-form {
+  width: 100%;
+}
+
+/* Outer wrapper card */
+.add-form-outer-card {
+  margin-bottom: 0;
+  border: 1px solid #e8edf2;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(15, 35, 55, 0.05);
+}
+
+.add-form-outer-card > .ant-card-head {
+  min-height: 52px;
+  padding: 0 18px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.add-form-outer-card > .ant-card-head .ant-card-head-title {
+  padding: 12px 0;
+}
+
+.add-form-outer-card > .ant-card-head .ant-card-extra {
+  padding: 12px 0;
+}
+
+.add-form-outer-card > .ant-card-body {
+  padding: 12px 12px 4px;
+  background: #f3f8fb;
+}
+
+.add-form-outer-icon {
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.add-form-outer-subtitle {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Inner section cards */
+.add-form-inner-card {
+  margin-bottom: 10px;
+  border: 1px solid #eef2f6;
+  border-radius: 6px;
+  box-shadow: none;
+  background: #fff;
+}
+
+.add-form-inner-card .ant-card-head {
+  min-height: 42px;
+  padding: 0 18px;
+  border-bottom: 0;
+}
+
+.add-form-inner-card .ant-card-head-title {
+  padding: 10px 0;
+}
+
+.add-form-inner-card .ant-card-extra {
+  padding: 10px 0;
+}
+
+.add-form-inner-card .ant-card-body {
+  padding: 8px 24px 18px;
+}
+
+/* Legacy card class kept for compatibility */
+.add-form-card {
+  margin-bottom: 12px;
+  border: 1px solid #f5f8fb;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.add-form-card .ant-card-head {
+  min-height: 42px;
+  padding: 0 18px;
+  border-bottom: 0;
+}
+
+.add-form-card .ant-card-head-title {
+  padding: 10px 0;
+}
+
+.add-form-card .ant-card-extra {
+  padding: 10px 0;
+  color: #8c8c8c;
+  font-size: 12px;
+}
+
+.add-form-card .ant-card-body {
+  padding: 8px 24px 18px;
+}
+
+.add-form-card-subtitle {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Form item base styles */
+.add-form .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.add-form .ant-form-item-label > label {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.add-form .ant-input,
+.add-form .ant-input-affix-wrapper,
+.add-form .ant-select-selector,
+.add-form .ant-picker {
+  min-height: 32px;
+  border-color: #e5eaf0;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+/* Error state — red border on all field types */
+.add-form .ant-form-item-has-error .ant-input,
+.add-form .ant-form-item-has-error .ant-input-affix-wrapper,
+.add-form .ant-form-item-has-error .ant-select-selector,
+.add-form .ant-form-item-has-error .ant-picker,
+.add-form .ant-input-status-error,
+.add-form .ant-input-affix-wrapper-status-error,
+.add-form .ant-select-status-error .ant-select-selector,
+.add-form .ant-picker-status-error {
+  border-color: #ff4d4f !important;
+  box-shadow: none !important;
+}
+
+/* Country code Select — red border when its sibling phone input has an error */
+.add-form .ant-form-item-control-input-content:has(.ant-input-affix-wrapper-status-error) .ant-select-selector,
+.add-form .ant-form-item-control-input-content:has(.ant-input-status-error) .ant-select-selector {
+  border-color: #ff4d4f !important;
+}
+
+.add-form .ant-input-affix-wrapper .ant-input {
+  min-height: auto;
+}
+
+.add-form .ant-select {
+  width: 100%;
+}
+
+.add-form .ant-picker {
+  width: 100%;
+}
+
+.ant-upload-wrapper .ant-upload-drag .ant-upload {
+  padding: 0 !important;
+}
+
+.add-form .ant-form-item-has-error .ant-upload-wrapper .ant-upload-drag {
+  border-color: #ff4d4f !important;
+}
+
+.add-form .ant-upload-wrapper .ant-upload-drag {
+  min-height: 36px;
+  border-color: #d9dfe7;
+  background: #fff;
+}
+
+/* Interview Availability — vertical label layout */
+.add-form-interview-row .ant-form-item {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.add-form-interview-row .ant-form-item-label {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 0 0 4px 0 !important;
+}
+
+.add-form-interview-row .ant-form-item-label > label {
+  justify-content: flex-start;
+}
+
+.add-form-interview-row .ant-form-item-control {
+  width: 100%;
+  max-width: 100%;
+  flex: none;
+}
+
+/* Documents column headers */
+.add-form-doc-header {
+  margin-bottom: 6px;
+  padding: 0 0 4px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.add-form-doc-col-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Icons */
+.add-form-icon {
+  color: #9ca3af;
+}
+
+.add-form-title-icon {
+  color: #374151;
+}
+
+/* Footer */
+.add-form-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  border-top: 1px solid #eef2f6;
+  background: #fff;
+  box-shadow: 0 -4px 16px rgba(15, 35, 55, 0.06);
+}
+
+.add-form-doc-row {
+  margin-bottom: 10px;
+}
+
+.add-form-doc-type {
+  min-width: 80px;
+}
+
+.add-form-doc-action {
+  color: #075c95;
+}

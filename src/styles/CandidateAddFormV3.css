@@ -1,0 +1,755 @@
+/* ── Page Layout ──────────────────────────────────────────────────────────── */
+.v3-page {
+  min-height: 100vh;
+  padding: 18px 24px 92px;
+  background: #f3f8fb;
+}
+
+.v3-page-inner {
+  width: 100%;
+  max-width: 1174px;
+  margin: 0 auto;
+}
+
+.v3-breadcrumb {
+  margin-bottom: 14px;
+}
+
+.v3-page-header {
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(15, 35, 55, 0.04);
+}
+
+.v3-header-icon {
+  font-size: 18px;
+  color: #374151;
+  margin-top: 2px;
+}
+
+/* ── Section Cards ────────────────────────────────────────────────────────── */
+.v3-card {
+  margin-bottom: 12px;
+  border: 1px solid #eef2f6;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.v3-card .ant-card-head {
+  min-height: 48px;
+  padding: 0 20px;
+  border-bottom: 1px solid #f4f7fa;
+}
+
+.v3-card .ant-card-head-title {
+  padding: 10px 0;
+}
+
+.v3-card .ant-card-extra {
+  padding: 10px 0;
+}
+
+.v3-card .ant-card-body {
+  padding: 8px 20px 4px;
+}
+
+.v3-card-sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.v3-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #0f2337;
+  color: #fff;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.v3-section-label {
+  font-size: 14px;
+  color: #111827;
+}
+
+/* ── Form Item spacing ────────────────────────────────────────────────────── */
+.v3-form .ant-form-item {
+  margin-bottom: 32px;
+}
+
+.v3-form .ant-form-item-explain-error {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* ── effect-16: Floating Label Text Input ─────────────────────────────────── */
+.v3-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* icon sits at the left, absolutely positioned so it doesn't break sibling selectors */
+.v3-prefix-icon {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: #9ca3af;
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.v3-effect-16 {
+  border: 0;
+  padding: 4px 0;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  width: 100%;
+  font: 14px/24px Arial, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  letter-spacing: 0.5px;
+}
+
+.v3-input-wrap.has-icon .v3-effect-16 {
+  padding-left: 22px;
+}
+
+.v3-effect-16:focus,
+.v3-effect-16:not(:placeholder-shown) {
+  outline: none;
+  border-bottom-color: transparent;
+}
+
+/* animated green underline */
+.v3-effect-16 ~ .v3-focus-line {
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-effect-16:focus ~ .v3-focus-line,
+.v3-effect-16:not(:placeholder-shown) ~ .v3-focus-line {
+  width: 100%;
+}
+
+/* floating label */
+.v3-effect-16 ~ .v3-float-label {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: #aaa;
+  font-size: 14px;
+  transition: 0.3s;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+.v3-input-wrap.has-icon .v3-effect-16 ~ .v3-float-label {
+  left: 22px;
+}
+
+.v3-effect-16:focus ~ .v3-float-label,
+.v3-effect-16:not(:placeholder-shown) ~ .v3-float-label {
+  top: -16px;
+  font-size: 11px;
+  color: #4caf50;
+  left: 0 !important;
+}
+
+/* ── Floating Select ──────────────────────────────────────────────────────── */
+.v3-select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* gray underline as inner pseudo-element — sits at same level as the green line */
+.v3-select-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+}
+
+.v3-select-wrap:focus-within::before,
+.v3-select-wrap.has-value::before {
+  background: transparent;
+}
+
+/* label sits at same position as text input's floating label */
+.v3-select-label {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: #aaa;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.v3-select-wrap.has-value .v3-select-label,
+.v3-select-wrap:focus-within .v3-select-label {
+  top: -16px;
+  font-size: 11px;
+  color: #4caf50;
+}
+
+.v3-select-wrap .v3-ant-select {
+  width: 100% !important;
+}
+
+.v3-select-wrap .v3-ant-select .ant-select-selector {
+  border-radius: 0 !important;
+  padding: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+}
+
+.v3-select-wrap .v3-ant-select .ant-select-selection-item,
+.v3-select-wrap .v3-ant-select .ant-select-selection-placeholder {
+  line-height: 32px !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+}
+
+.v3-select-wrap .v3-ant-select .ant-select-selection-placeholder {
+  color: transparent !important;
+}
+
+.v3-select-wrap .v3-ant-select .ant-select-arrow {
+  color: #9ca3af;
+  right: 0;
+}
+
+.v3-sel-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-select-wrap.has-value .v3-sel-focus-line,
+.v3-select-wrap:focus-within .v3-sel-focus-line {
+  width: 100%;
+}
+
+/* ── Floating DatePicker ──────────────────────────────────────────────────── */
+.v3-date-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.v3-date-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+}
+
+.v3-date-wrap:focus-within::before,
+.v3-date-wrap.has-value::before {
+  background: transparent;
+}
+
+.v3-date-label {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: #aaa;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.v3-date-wrap.has-value .v3-date-label,
+.v3-date-wrap:focus-within .v3-date-label {
+  top: -16px;
+  font-size: 11px;
+  color: #4caf50;
+}
+
+.v3-date-wrap .v3-ant-datepicker {
+  width: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+}
+
+.v3-date-wrap .v3-ant-datepicker .ant-picker-input > input {
+  font-size: 14px;
+  color: #333;
+}
+
+.v3-date-wrap .v3-ant-datepicker .ant-picker-input > input::placeholder {
+  color: transparent;
+}
+
+.v3-date-wrap .v3-ant-datepicker .ant-picker-suffix {
+  color: #9ca3af;
+}
+
+.v3-date-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-date-wrap.has-value .v3-date-focus-line,
+.v3-date-wrap:focus-within .v3-date-focus-line {
+  width: 100%;
+}
+
+/* ── Floating TimePicker ──────────────────────────────────────────────────── */
+.v3-time-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.v3-time-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+}
+
+.v3-time-wrap:focus-within::before,
+.v3-time-wrap.has-value::before {
+  background: transparent;
+}
+
+.v3-time-label {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: #aaa;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.v3-time-wrap.has-value .v3-time-label,
+.v3-time-wrap:focus-within .v3-time-label {
+  top: -16px;
+  font-size: 11px;
+  color: #4caf50;
+}
+
+.v3-time-wrap .v3-ant-timepicker {
+  width: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+}
+
+.v3-time-wrap .v3-ant-timepicker .ant-picker-input > input {
+  font-size: 14px;
+  color: #333;
+}
+
+.v3-time-wrap .v3-ant-timepicker .ant-picker-input > input::placeholder {
+  color: transparent;
+}
+
+.v3-time-wrap .v3-ant-timepicker .ant-picker-suffix {
+  color: #9ca3af;
+}
+
+.v3-time-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-time-wrap.has-value .v3-time-focus-line,
+.v3-time-wrap:focus-within .v3-time-focus-line {
+  width: 100%;
+}
+
+/* ── Phone number group ───────────────────────────────────────────────────── */
+.v3-phone-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.v3-code-wrap {
+  flex-shrink: 0;
+  width: 88px;
+  position: relative;
+}
+
+.v3-code-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+}
+
+.v3-code-wrap:focus-within::before {
+  background: transparent;
+}
+
+.v3-code-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-code-wrap:focus-within::after {
+  width: 100%;
+}
+
+.v3-code-select.ant-select .ant-select-selector {
+  padding: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+}
+
+.v3-code-select.ant-select .ant-select-selection-item {
+  line-height: 32px !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+}
+
+.v3-code-select.ant-select .ant-select-arrow {
+  color: #9ca3af;
+  right: 0;
+}
+
+.v3-phone-input-wrap {
+  flex: 1;
+}
+
+/* ── Resume Upload ────────────────────────────────────────────────────────── */
+.v3-dragger.ant-upload-wrapper .ant-upload-drag {
+  min-height: 120px;
+  border: 1.5px dashed #d0d9e4;
+  border-radius: 8px !important;
+  background: #fafcff;
+}
+
+.v3-dragger.ant-upload-wrapper .ant-upload-drag .ant-upload {
+  padding: 0 !important;
+}
+
+.v3-dragger.ant-upload-wrapper .ant-upload-drag:hover {
+  border-color: #4caf50;
+}
+
+.v3-dragger-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 16px;
+  gap: 4px;
+}
+
+.v3-upload-icon {
+  font-size: 30px;
+  color: #4caf50;
+  margin-bottom: 4px;
+}
+
+.v3-upload-text {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.v3-upload-sub {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.v3-upload-hint {
+  margin: 0;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ── Gender radio ─────────────────────────────────────────────────────────── */
+.v3-gender-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.v3-gender-group .ant-radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: 1px solid #e5eaf0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+  transition: border-color 0.2s, background 0.2s;
+  margin-right: 0;
+}
+
+.v3-gender-group .ant-radio-wrapper:hover {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.v3-gender-group .ant-radio-wrapper.ant-radio-wrapper-checked {
+  border-color: #4caf50;
+  background: #f0faf0;
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.v3-gender-group .ant-radio {
+  display: none;
+}
+
+/* ── Rate fields ──────────────────────────────────────────────────────────── */
+.v3-rate-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.v3-rate-input-wrap {
+  flex: 1;
+}
+
+.v3-rate-currency-wrap,
+.v3-rate-period-wrap {
+  width: 90px;
+  position: relative;
+}
+
+.v3-rate-currency-wrap::before,
+.v3-rate-period-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+}
+
+.v3-rate-currency-wrap:focus-within::before,
+.v3-rate-period-wrap:focus-within::before {
+  background: transparent;
+}
+
+.v3-rate-currency-wrap::after,
+.v3-rate-period-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+}
+
+.v3-rate-currency-wrap:focus-within::after,
+.v3-rate-period-wrap:focus-within::after {
+  width: 100%;
+}
+
+.v3-rate-select.ant-select .ant-select-selector {
+  padding: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+}
+
+.v3-rate-select.ant-select .ant-select-selection-item {
+  line-height: 32px !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+}
+
+.v3-rate-select.ant-select .ant-select-arrow {
+  color: #9ca3af;
+  right: 0;
+}
+
+/* ── Document row plain select (no floating label — column header serves as label) ── */
+.v3-doc-select.ant-select {
+  width: 100% !important;
+  position: relative;
+}
+
+/* gray static underline */
+.v3-doc-select.ant-select::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+  transition: background 0.1s;
+}
+
+/* green animated underline */
+.v3-doc-select.ant-select::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #4caf50;
+  transition: width 0.4s;
+  z-index: 1;
+}
+
+.v3-doc-select.ant-select.ant-select-focused::before,
+.v3-doc-select.ant-select.ant-select-open::before {
+  background: transparent;
+}
+
+.v3-doc-select.ant-select.ant-select-focused::after,
+.v3-doc-select.ant-select.ant-select-open::after {
+  width: 100%;
+}
+
+.v3-doc-select.ant-select .ant-select-selector {
+  padding: 0 !important;
+  height: 32px !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+.v3-doc-select.ant-select .ant-select-selection-item,
+.v3-doc-select.ant-select .ant-select-selection-placeholder {
+  line-height: 32px !important;
+  font-size: 14px !important;
+  padding: 0 !important;
+}
+
+.v3-doc-select.ant-select .ant-select-arrow {
+  color: #9ca3af;
+  right: 0;
+}
+
+/* ── List table headers ───────────────────────────────────────────────────── */
+.v3-col-header-row {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.v3-col-header {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.v3-list-row .ant-form-item {
+  margin-bottom: 12px;
+}
+
+/* ── Disclaimer ───────────────────────────────────────────────────────────── */
+.v3-disclaimer {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ── Group label (above radio/checkbox groups) ────────────────────────────── */
+.v3-group-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* ── Add button in card header ────────────────────────────────────────────── */
+.v3-add-btn {
+  color: #4caf50 !important;
+  font-weight: 500;
+}
+
+.v3-add-btn:hover {
+  color: #388e3c !important;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.v3-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  border-top: 1px solid #eef2f6;
+  background: #fff;
+  box-shadow: 0 -4px 16px rgba(15, 35, 55, 0.06);
+}
+
+.v3-footer .ant-btn-primary {
+  background-color: #0f2337;
+  border-color: #0f2337;
+}
+
+.v3-footer .ant-btn-primary:hover {
+  background-color: #1a3650 !important;
+  border-color: #1a3650 !important;
+}
