@@ -30,7 +30,7 @@ import UserForm from '../components/form/forms';
 import { formatters, validationRules } from '../components/form/validation';
 import ParamListView from '../components/ParamListView';
 import SridharListView from '../components/sridharListView';
-import { MOCK_JOBS } from '../data/jobs';
+import { MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -140,7 +140,7 @@ export default function SridharDetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const [form] = Form.useForm();
-  const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
+  const job = SRIDHAR_MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? SRIDHAR_MOCK_JOBS[0];
 
   const handleNoteSubmit = (values) => {
     console.log('Detail note:', values);
@@ -215,7 +215,7 @@ export default function SridharDetailPage() {
         <Row>
           <Col span={24}>
             <Card title="Submitted Candidates">
-              <SridharListView />
+              <SridharListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
             </Card>
           </Col>
         </Row>

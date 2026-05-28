@@ -61,15 +61,17 @@ describe('ListView toolbar and table', () => {
 
   it('filters only after at least 3 search characters', async () => {
     renderListView();
+    const matchingLocation = MOCK_JOBS[1].location;
+    const hiddenLocation = MOCK_JOBS[0].location;
 
     await userEvent.type(getSearchInput(), 'te');
-    expect(screen.getByText(MOCK_JOBS[0].title)).toBeInTheDocument();
+    expect(screen.getByText(hiddenLocation)).toBeInTheDocument();
 
     await userEvent.clear(getSearchInput());
-    await userEvent.type(getSearchInput(), 'texas');
+    await userEvent.type(getSearchInput(), matchingLocation.toLowerCase());
 
-    expect(screen.getByText('Texas')).toBeInTheDocument();
-    expect(screen.queryByText('North Davidfurt')).not.toBeInTheDocument();
+    expect(screen.getByText(matchingLocation)).toBeInTheDocument();
+    expect(screen.queryByText(hiddenLocation)).not.toBeInTheDocument();
     expect(screen.getByText('Showing of 1 - 1 of 30')).toBeInTheDocument();
   });
 

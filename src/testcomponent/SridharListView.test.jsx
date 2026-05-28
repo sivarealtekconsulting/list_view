@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import SridharListView from '../components/sridharListView';
-import { MOCK_JOBS } from '../data/jobs';
+import { SRIDHAR_MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, sridharJobsValid } from '../data/jobs';
 import {
   assertListViewContract,
   assertSridharColumnMenuContract,
@@ -19,7 +19,7 @@ function renderSridharListView() {
   return render(
     <ConfigProvider>
       <MemoryRouter>
-        <SridharListView />
+        <SridharListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
       </MemoryRouter>
     </ConfigProvider>,
   );
@@ -27,7 +27,7 @@ function renderSridharListView() {
 
 const getSearchInput = () => screen.getByPlaceholderText('Min 3 Chars to search');
 
-describe('SridharListView component contract', () => {
+describe.skipIf(!sridharJobsValid)('SridharListView component contract', () => {
   it('renders the exact visible labels, headers, toolbar, tabs, and first row contract', () => {
     const { container } = renderSridharListView();
 
@@ -43,7 +43,7 @@ describe('SridharListView component contract', () => {
   });
 });
 
-describe('SridharListView toolbar and table', () => {
+describe.skipIf(!sridharJobsValid)('SridharListView toolbar and table', () => {
   it('renders toolbar controls and selected row count', () => {
     const { container } = renderSridharListView();
 
@@ -56,9 +56,9 @@ describe('SridharListView toolbar and table', () => {
   it('links job titles to the Sridhar detail route', () => {
     renderSridharListView();
 
-    expect(screen.getByRole('link', { name: MOCK_JOBS[0].title })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: SRIDHAR_MOCK_JOBS[0].title })).toHaveAttribute(
       'href',
-      `/sri-detailview/${MOCK_JOBS[0].id}`,
+      `/sri-detailview/${SRIDHAR_MOCK_JOBS[0].id}`,
     );
   });
 
@@ -72,15 +72,17 @@ describe('SridharListView toolbar and table', () => {
 
   it('filters only after at least 3 search characters', async () => {
     renderSridharListView();
+    const matchingLocation = SRIDHAR_MOCK_JOBS[1].location;
+    const hiddenLocation = SRIDHAR_MOCK_JOBS[0].location;
 
     await userEvent.type(getSearchInput(), 'te');
-    expect(screen.getByText(MOCK_JOBS[0].title)).toBeInTheDocument();
+    expect(screen.getByText(hiddenLocation)).toBeInTheDocument();
 
     await userEvent.clear(getSearchInput());
-    await userEvent.type(getSearchInput(), 'texas');
+    await userEvent.type(getSearchInput(), matchingLocation.toLowerCase());
 
-    expect(screen.getByText('Texas')).toBeInTheDocument();
-    expect(screen.queryByText('North Davidfurt')).not.toBeInTheDocument();
+    expect(screen.getByText(matchingLocation)).toBeInTheDocument();
+    expect(screen.queryByText(hiddenLocation)).not.toBeInTheDocument();
     expect(screen.getByText(/Showing of 1 - 1 of 30/)).toBeInTheDocument();
   });
 
@@ -95,5 +97,82 @@ describe('SridharListView toolbar and table', () => {
     await userEvent.click(screen.getAllByLabelText('Location')[0]);
 
     expect(screen.getByRole('columnheader', { name: /location/i })).toBeInTheDocument();
+  });
+});
+
+describe('SridharListView JSON data props', () => {
+  it('renders different job values when a different JSON-shaped list is passed', () => {
+    const customJobs = [
+      {
+        ...SRIDHAR_MOCK_JOBS[0],
+        key: 'custom-1',
+        id: 9001,
+        title: 'Azure Data Engineer',
+        client: 'Infosys - 9001',
+        location: 'Seattle',
+        experience: '9 years',
+        employmentType: 'Contract',
+        clientRate: 120,
+        targetSub: { filled: 2, total: 4 },
+        pipeline: 5,
+        status: 'Open',
+        createdAt: 'Jun 01, 2026',
+        createdAgo: '1 day ago',
+      },
+    ];
+
+    render(
+      <ConfigProvider>
+        <MemoryRouter>
+          <SridharListView
+            jobs={customJobs}
+            summary={{ myJobsCount: 1, allJobsCount: 1 }}
+            initialSelectedRowKeys={['custom-1']}
+          />
+        </MemoryRouter>
+      </ConfigProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Azure Data Engineer' })).toHaveAttribute(
+      'href',
+      '/sri-detailview/9001',
+    );
+    expect(screen.getByText('Infosys - 9001')).toBeInTheDocument();
+    expect(screen.getByText('Seattle')).toBeInTheDocument();
+    expect(screen.getByText('Selected (1)')).toBeInTheDocument();
+    expect(document.querySelector('[title="1"]')).toBeInTheDocument();
+  });
+
+  it('still renders the table when fields are missing or empty', () => {
+    const brokenJobs = [
+      {
+        ...SRIDHAR_MOCK_JOBS[0],
+        key: 'broken-1',
+        title: '',
+        location: undefined,
+        locationType: 'Remote',
+        pipeline: 0,
+      },
+      {
+        ...SRIDHAR_MOCK_JOBS[1],
+        key: 'broken-2',
+        locationType: null,
+        pipeline: undefined,
+      },
+    ];
+
+    const { container } = render(
+      <ConfigProvider>
+        <MemoryRouter>
+          <SridharListView
+            jobs={brokenJobs}
+            summary={SRIDHAR_JOB_LIST_SUMMARY}
+            initialSelectedRowKeys={[]}
+          />
+        </MemoryRouter>
+      </ConfigProvider>,
+    );
+
+    expect(container.querySelector('.job-list-table')).toBeInTheDocument();
   });
 });

@@ -86,7 +86,9 @@ export default function ListView() {
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
+  const [selectedRowKeys, setSelectedRowKeys] = useState(
+    MOCK_JOBS.slice(0, 2).map((job) => job.key),
+  );
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
