@@ -18,6 +18,7 @@ import OnboardingCard from '../components/cards/OnboardingCard';
 import StatsCards from '../components/cards/StatsCards';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import { formatters, validationRules } from '../components/form/validation';
+import { MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
 
 const { Text } = Typography;
 
@@ -182,7 +183,7 @@ export default function SridharDashboardPage() {
                 </Space>
               )}
             >
-              <ListView />
+              <ListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
             </Card>
           </Col>
         </Row>

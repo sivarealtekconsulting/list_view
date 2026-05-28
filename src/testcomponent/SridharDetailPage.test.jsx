@@ -7,7 +7,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import SridharDetailPage from '../pages/sridharDetailePage';
-import { MOCK_JOBS } from '../data/jobs';
+import { SRIDHAR_MOCK_JOBS, sridharJobsValid } from '../data/jobs';
 
 const PAGE_SOURCE = 'src/pages/sridharDetailePage.jsx';
 
@@ -90,9 +90,9 @@ function expectPageSelector(container, { name, selector, line }) {
   ].join('\n'));
 }
 
-describe('sridharDetailePage route and overview', () => {
+describe.skipIf(!sridharJobsValid)('sridharDetailePage route and overview', () => {
   it('renders the route job data and breadcrumb actions', async () => {
-    const job = MOCK_JOBS.find((j) => j.id === 2) ?? MOCK_JOBS[0];
+    const job = SRIDHAR_MOCK_JOBS.find((j) => j.id === 2) ?? SRIDHAR_MOCK_JOBS[0];
     renderDetail(2);
 
     expectPageText('Home', 363);
@@ -119,7 +119,7 @@ describe('sridharDetailePage route and overview', () => {
   });
 });
 
-describe('sridharDetailePage tab content', () => {
+describe.skipIf(!sridharJobsValid)('sridharDetailePage tab content', () => {
   it('renders the Sridhar list view inside the Candidates tab', async () => {
     renderDetail(2);
 

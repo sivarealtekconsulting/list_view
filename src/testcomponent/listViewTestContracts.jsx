@@ -1,50 +1,55 @@
-import { MOCK_JOBS } from '../data/jobs';
+import { MOCK_JOBS, SRIDHAR_MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY } from '../data/jobs';
 
 const LIST_VIEW_SOURCES = {
   ListView: 'src/components/ListView.jsx:63',
-  SridharListView: 'src/components/sridharListView.jsx:83',
+  SridharListView: 'src/components/sridharListView.jsx:79',
 };
 
-const firstJob = MOCK_JOBS[0];
-
-const SRIDHAR_LIST_VIEW_LABELS = [
-  { text: 'My Jobs', source: 'src/components/sridharListView.jsx:341' },
-  { text: 'All Jobs', source: 'src/components/sridharListView.jsx:342' },
-  { text: 'View Summary', source: 'src/components/sridharListView.jsx:381' },
-  { text: 'Actions', source: 'src/components/sridharListView.jsx:412' },
-  { text: 'Selected (2)', source: 'src/components/sridharListView.jsx:417' },
-  { text: firstJob.title, source: 'src/components/sridharListView.jsx:192' },
-  { text: firstJob.client, source: 'src/components/sridharListView.jsx:194' },
-  { text: firstJob.location, source: 'src/components/sridharListView.jsx:207' },
-  { text: firstJob.experience, source: 'src/components/sridharListView.jsx:220' },
-  { text: firstJob.status, source: 'src/components/sridharListView.jsx:269' },
-  { text: firstJob.createdAt, source: 'src/components/sridharListView.jsx:279' },
-];
+function getListViewLabels(firstJob) {
+  return [
+    { text: 'My Jobs', source: 'src/components/sridharListView.jsx:345' },
+    { text: 'All Jobs', source: 'src/components/sridharListView.jsx:346' },
+    { text: 'View Summary', source: 'src/components/sridharListView.jsx:385' },
+    { text: 'Actions', source: 'src/components/sridharListView.jsx:416' },
+    { text: 'Selected (2)', source: 'src/components/sridharListView.jsx:421' },
+    { text: firstJob.title, source: 'src/components/sridharListView.jsx:196' },
+    { text: firstJob.client, source: 'src/components/sridharListView.jsx:198' },
+    { text: firstJob.location, source: 'src/components/sridharListView.jsx:211' },
+    { text: firstJob.experience, source: 'src/components/sridharListView.jsx:224' },
+    { text: firstJob.status, source: 'src/components/sridharListView.jsx:273' },
+    { text: firstJob.createdAt, source: 'src/components/sridharListView.jsx:283' },
+  ];
+}
 
 const SRIDHAR_LIST_VIEW_HEADERS = [
-  { text: 'Jobs', source: 'src/components/sridharListView.jsx:182' },
-  { text: 'Location', source: 'src/components/sridharListView.jsx:200' },
-  { text: 'Experience', source: 'src/components/sridharListView.jsx:213' },
-  { text: 'Client Rate (hr)', source: 'src/components/sridharListView.jsx:226' },
-  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:235' },
-  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:246' },
-  { text: 'Status', source: 'src/components/sridharListView.jsx:263' },
-  { text: 'Created date', source: 'src/components/sridharListView.jsx:272' },
+  { text: 'Jobs', source: 'src/components/sridharListView.jsx:186' },
+  { text: 'Location', source: 'src/components/sridharListView.jsx:204' },
+  { text: 'Experience', source: 'src/components/sridharListView.jsx:217' },
+  { text: 'Client Rate (hr)', source: 'src/components/sridharListView.jsx:230' },
+  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:239' },
+  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:250' },
+  { text: 'Status', source: 'src/components/sridharListView.jsx:267' },
+  { text: 'Created date', source: 'src/components/sridharListView.jsx:276' },
 ];
 
 const SRIDHAR_COLUMN_MENU_LABELS = [
-  { text: 'Select All', source: 'src/components/sridharListView.jsx:313' },
-  { text: 'Created Date', source: 'src/components/sridharListView.jsx:27' },
-  { text: 'Jobs', source: 'src/components/sridharListView.jsx:28' },
-  { text: 'Location', source: 'src/components/sridharListView.jsx:29' },
-  { text: 'Experience', source: 'src/components/sridharListView.jsx:30' },
-  { text: 'Client Rate', source: 'src/components/sridharListView.jsx:31' },
-  { text: 'Status', source: 'src/components/sridharListView.jsx:32' },
-  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:33' },
-  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:34' },
+  { text: 'Select All', source: 'src/components/sridharListView.jsx:317' },
+  { text: 'Created Date', source: 'src/components/sridharListView.jsx:23' },
+  { text: 'Jobs', source: 'src/components/sridharListView.jsx:24' },
+  { text: 'Location', source: 'src/components/sridharListView.jsx:25' },
+  { text: 'Experience', source: 'src/components/sridharListView.jsx:26' },
+  { text: 'Client Rate', source: 'src/components/sridharListView.jsx:27' },
+  { text: 'Status', source: 'src/components/sridharListView.jsx:28' },
+  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:29' },
+  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:30' },
 ];
 
 const getHeaderText = (container) => container.querySelector('.ant-table-thead')?.textContent || '';
+const getExpectedTabCounts = (componentName) => (
+  componentName === 'SridharListView'
+    ? SRIDHAR_JOB_LIST_SUMMARY
+    : { myJobsCount: 6, allJobsCount: 2456 }
+);
 
 function failContract({ componentName, source, message }) {
   throw new Error(
@@ -76,10 +81,14 @@ function assertSelector(container, selector, contract) {
 }
 
 function assertVisibleTableContract(container, contract) {
-  SRIDHAR_LIST_VIEW_LABELS.forEach((label) => assertText(container, label, contract));
+  const { myJobsCount, allJobsCount } = getExpectedTabCounts(contract.componentName);
+  const firstJob = contract.componentName === 'SridharListView' ? SRIDHAR_MOCK_JOBS[0] : MOCK_JOBS[0];
+  const labels = getListViewLabels(firstJob);
+
+  labels.forEach((label) => assertText(container, label, contract));
   assertSelector(container, '[placeholder="Min 3 Chars to search"]', contract);
-  assertSelector(container, '[title="6"]', contract);
-  assertSelector(container, '[title="2456"]', contract);
+  assertSelector(container, `[title="${myJobsCount}"]`, contract);
+  assertSelector(container, `[title="${allJobsCount}"]`, contract);
   assertSelector(container, '.antd', contract);
   assertSelector(container, '.job-list-table', contract);
   assertSelector(container, '.job-search-input', contract);
