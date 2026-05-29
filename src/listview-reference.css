@@ -35,7 +35,7 @@
 
 :is(.listview-shell, .antd) > .ant-card:first-of-type > .ant-card-body > .ant-flex {
   height: 47px;
-  padding: 0 16px 0 10px;
+  margin: 0 14px;
 }
 
 :is(.listview-shell, .antd) > .ant-card:nth-of-type(2) {
@@ -223,7 +223,7 @@
 }
 
 :is(.listview-shell, .antd) .ant-tabs-tab-active {
-  padding: 0 7px !important;
+  /* padding: 0 7px !important; */
   border-radius: 4px !important;
   background: #edf8fe !important;
 }
@@ -246,6 +246,7 @@
   white-space: nowrap !important;
   letter-spacing: 0 !important;
   font-weight: 600;
+  padding: 0px 7px !important;
 }
 
 :is(.listview-shell, .antd) .ant-tabs-tab .ant-badge {
