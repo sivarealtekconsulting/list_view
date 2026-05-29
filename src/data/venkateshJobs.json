@@ -1,0 +1,167 @@
+{
+  "summary": {
+    "myJobsCount": 6,
+    "allJobsCount": 2456
+  },
+  "jobs": [
+    {
+      "key": "VEN-001",
+      "id": 1,
+      "title": "Full Stack Developer (3 Years Experience)",
+      "location": "",
+      "locationType": "",
+      "experience": "3 years",
+      "employmentType": "",
+      "clientRate": 60,
+      "targetSub": { "filled": 3, "total": 5 },
+      "pipeline": 12,
+      "assignees": [
+        { "initials": "SW", "color": "#2563eb" },
+        { "initials": "MB", "color": "#16a34a" }
+      ],
+      "extraAssignees": 2,
+      "status": "Open",
+      "createdAt": "May 15, 2024",
+      "createdAgo": "2 days ago",
+      "client": "Zinnext Digital - 120431",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-002",
+      "id": 2,
+      "title": "Java Developer (Python Experience)",
+      "location": "Hyderabad",
+      "locationType": "Remote",
+      "experience": "5 years",
+      "employmentType": "Contract",
+      "clientRate": 72,
+      "targetSub": { "filled": 2, "total": 6 },
+      "pipeline": 9,
+      "assignees": [
+        { "initials": "ED", "color": "#f97316" },
+        { "initials": "DW", "color": "#7c3aed" }
+      ],
+      "extraAssignees": 1,
+      "status": "Submitted",
+      "createdAt": "May 14, 2024",
+      "createdAgo": "3 days ago",
+      "client": "TechNova Services - 338204",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-003",
+      "id": 3,
+      "title": "React UI Engineer",
+      "location": "Bengaluru",
+      "locationType": "On-site",
+      "experience": "4 years",
+      "employmentType": "Full-time",
+      "clientRate": 68,
+      "targetSub": { "filled": 4, "total": 8 },
+      "pipeline": 14,
+      "assignees": [
+        { "initials": "SM", "color": "#0891b2" }
+      ],
+      "extraAssignees": 3,
+      "status": "Interview",
+      "createdAt": "May 13, 2024",
+      "createdAgo": "4 days ago",
+      "client": "BrightLabs - 442190",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "VEN-004",
+      "id": 4,
+      "title": "Product Data Analyst",
+      "location": "Pune",
+      "locationType": "Hybrid",
+      "experience": "6 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 80,
+      "targetSub": { "filled": 1, "total": 4 },
+      "pipeline": 7,
+      "assignees": [
+        { "initials": "RJ", "color": "#dc2626" },
+        { "initials": "JL", "color": "#0f766e" }
+      ],
+      "extraAssignees": 0,
+      "status": "Screening",
+      "createdAt": "May 12, 2024",
+      "createdAgo": "5 days ago",
+      "client": "MetricRiver - 771005",
+      "hasBookmark": false,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "VEN-005",
+      "id": 5,
+      "title": "Cloud DevOps Specialist",
+      "location": "Mumbai",
+      "locationType": "Remote",
+      "experience": "7 years",
+      "employmentType": "Full-time",
+      "clientRate": 95,
+      "targetSub": { "filled": 5, "total": 10 },
+      "pipeline": 18,
+      "assignees": [
+        { "initials": "AK", "color": "#ca8a04" }
+      ],
+      "extraAssignees": 4,
+      "status": "Pipeline",
+      "createdAt": "May 11, 2024",
+      "createdAgo": "6 days ago",
+      "client": "CloudAxis - 662481",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-006",
+      "id": 6,
+      "title": "QA Automation Lead",
+      "location": "Coimbatore",
+      "locationType": "On-site",
+      "experience": "8 years",
+      "employmentType": "Contract",
+      "clientRate": 88,
+      "targetSub": { "filled": 2, "total": 5 },
+      "pipeline": 6,
+      "assignees": [
+        { "initials": "NI", "color": "#9333ea" },
+        { "initials": "PK", "color": "#059669" }
+      ],
+      "extraAssignees": 2,
+      "status": "Shortlisted",
+      "createdAt": "May 10, 2024",
+      "createdAgo": "1 week ago",
+      "client": "AssureWorks - 514209",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-007",
+      "id": 7,
+      "title": "Business Systems Consultant",
+      "location": "Delhi",
+      "locationType": "Hybrid",
+      "experience": "9 years",
+      "employmentType": "Full-time",
+      "clientRate": 105,
+      "targetSub": { "filled": 6, "total": 12 },
+      "pipeline": 20,
+      "assignees": [
+        { "initials": "AR", "color": "#1d4ed8" },
+        { "initials": "KT", "color": "#ea580c" }
+      ],
+      "extraAssignees": 5,
+      "status": "Offer",
+      "createdAt": "May 09, 2024",
+      "createdAgo": "1 week ago",
+      "client": "ProcessHive - 904118",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    }
+  ]
+}
