@@ -4,7 +4,25 @@ import '../../styles/ClientDetailsCard.css';
 
 const { Text, Title } = Typography;
 
-export default function ClientDetailsCard() {
+const defaultClientDetails = {
+  subtitle: 'Basic client and contact information for this job',
+  helperText: 'Select a client to view and complete the remaining job details.',
+  values: {},
+  options: {},
+};
+
+function toSelectOptions(options = []) {
+  return options.map((option) => ({ label: option, value: option }));
+}
+
+export default function ClientDetailsCard({ data = defaultClientDetails }) {
+  const details = {
+    ...defaultClientDetails,
+    ...data,
+    values: data.values ?? defaultClientDetails.values,
+    options: data.options ?? defaultClientDetails.options,
+  };
+
   return (
     <Card
       className="client-details-card"
@@ -16,7 +34,7 @@ export default function ClientDetailsCard() {
       }
       extra={
         <Text className="cd-card-subtitle">
-          Basic client and contact information for this job
+          {details.subtitle}
         </Text>
       }
     >
@@ -33,14 +51,18 @@ export default function ClientDetailsCard() {
                 <div className="cd-input-row">
                   <div className="cd-select-wrapper">
                     <BankOutlined className="cd-select-prefix-icon" />
-                    <Select className="cd-select" />
+                    <Select
+                      className="cd-select"
+                      defaultValue={details.values.clientName}
+                      options={toSelectOptions(details.options.clientName)}
+                    />
                   </div>
                   <PlusOutlined className="cd-add-icon" />
                 </div>
                 <div className="cd-helper">
                   <InfoCircleOutlined className="cd-helper-icon" />
                   <Text className="cd-helper-text">
-                    Select a client to view and complete the remaining job details.
+                    {details.helperText}
                   </Text>
                 </div>
               </div>
@@ -59,7 +81,7 @@ export default function ClientDetailsCard() {
               }
               className="cd-form-item"
             >
-              <Input className="cd-input" />
+              <Input className="cd-input" defaultValue={details.values.clientReqId} />
             </Form.Item>
           </Col>
         </Row>
@@ -73,6 +95,8 @@ export default function ClientDetailsCard() {
             >
               <Select
                 className="cd-input"
+                defaultValue={details.values.contactPerson}
+                options={toSelectOptions(details.options.contactPerson)}
                 suffixIcon={<UserOutlined style={{ color: '#9ca3af' }} />}
               />
             </Form.Item>
@@ -83,7 +107,7 @@ export default function ClientDetailsCard() {
               label={<Text className="cd-label">End Client</Text>}
               className="cd-form-item"
             >
-              <Input className="cd-input" />
+              <Input className="cd-input" defaultValue={details.values.endClient} />
             </Form.Item>
           </Col>
         </Row>
@@ -95,7 +119,7 @@ export default function ClientDetailsCard() {
               label={<Text className="cd-label">Client Location</Text>}
               className="cd-form-item"
             >
-              <Input className="cd-input" />
+              <Input className="cd-input" defaultValue={details.values.clientLocation} />
             </Form.Item>
           </Col>
 
@@ -106,6 +130,8 @@ export default function ClientDetailsCard() {
             >
               <Select
                 className="cd-input"
+                defaultValue={details.values.accountManager}
+                options={toSelectOptions(details.options.accountManager)}
                 suffixIcon={<UserOutlined style={{ color: '#9ca3af' }} />}
               />
             </Form.Item>

@@ -13,6 +13,7 @@ import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
 import JobFilters from './filters';
+import { SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
 import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
@@ -77,8 +78,8 @@ function filterMatches(record, filterRow) {
 }
 
 export default function ListView({
-  jobs = [],
-  summary = {},
+  jobs = SRIDHAR_MOCK_JOBS,
+  summary = SRIDHAR_JOB_LIST_SUMMARY,
   initialSelectedRowKeys,
 }) {
   const navigate = useNavigate();

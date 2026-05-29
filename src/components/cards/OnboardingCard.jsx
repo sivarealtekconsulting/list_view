@@ -3,14 +3,14 @@ import '../../styles/OnboardingCard.css';
 
 const { Title, Text } = Typography;
 
-const items = [
+const defaultItems = [
   { label: 'In Progress',       value: 107, sub: 'Under review',        color: 'blue'   },
   { label: 'Hired',             value: 2,   sub: 'Onboarded',           color: 'green'  },
   { label: 'Project Completed', value: 2,   sub: 'Project cycle closed', color: 'purple' },
   { label: 'Archive',           value: 2,   sub: 'No longer active',    color: 'peach'  },
 ];
 
-export default function OnboardingCard() {
+export default function OnboardingCard({ items = defaultItems }) {
   return (
     <Card
       className="onboarding-card"
