@@ -9,7 +9,7 @@ import {
   SearchOutlined, MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
+import { PUGAZH_MOCK_JOBS as MOCK_JOBS, JOB_STATS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -20,8 +20,8 @@ import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg
 
 const { Text } = Typography;
 
-const MY_JOBS_COUNT = 6;
-const ALL_JOBS_COUNT = 2456;
+const MY_JOBS_COUNT = JOB_STATS.myJobsCount;
+const ALL_JOBS_COUNT = JOB_STATS.allJobsCount;
 
 const columnOptions = [
   { key: 'createdAt', label: 'Created Date' },

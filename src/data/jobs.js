@@ -28,3 +28,16 @@ export const sridharJobErrors = SRIDHAR_MOCK_JOBS
   .filter(Boolean);
 
 export const sridharJobsValid = sridharJobErrors.length === 0;
+export {
+  PUGAZH_MOCK_JOBS,
+  PUGAZH_STATUS_TAG,
+  ONBOARDING_STATS,
+  JOB_STATS,
+  CLIENT_SUBMISSION_STATS,
+  CALENDAR_EVENTS,
+  CALENDAR_LEGEND,
+  STICKY_NOTES,
+  FORM_OPTIONS,
+  MOCK_CANDIDATES,
+  MOCK_CLIENTS,
+} from './pugazhJobs';
