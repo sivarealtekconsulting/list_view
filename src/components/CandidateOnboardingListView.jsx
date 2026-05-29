@@ -38,7 +38,7 @@ function sorterTitle(title) {
 export default function CandidateOnboardingListView({ dataSource = ONBOARDING_CANDIDATES }) {
   const columns = useMemo(() => [
     {
-      title: sorterTitle('Candidate Details'),
+      title: 'Candidate Details',
       dataIndex: 'candidate',
       key: 'candidate',
       width: 255,
@@ -53,7 +53,7 @@ export default function CandidateOnboardingListView({ dataSource = ONBOARDING_CA
       ),
     },
     {
-      title: sorterTitle('Job'),
+      title: 'Job',
       dataIndex: 'job',
       key: 'job',
       width: 275,

@@ -49,6 +49,33 @@ export const typographyColors = {
   success: colors.success,
 };
 
+export const onboardingStageToneColors = {
+  approved: {
+    background: '#f2f2e8',
+    text: '#79772d',
+  },
+  danger: {
+    background: '#fde7e9',
+    text: colors.danger,
+  },
+  issued: {
+    background: '#e9f2fb',
+    text: colors.textLink,
+  },
+  neutral: {
+    background: colors.surfaceSoft,
+    text: colors.textSecondary,
+  },
+  success: {
+    background: '#e7f5ee',
+    text: colors.success,
+  },
+  warning: {
+    background: '#fbf0e7',
+    text: colors.warning,
+  },
+};
+
 export const colorVars = {
   brand: 'var(--color-brand)',
   brandDark: 'var(--color-brand-dark)',
