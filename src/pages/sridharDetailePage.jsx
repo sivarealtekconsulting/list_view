@@ -30,90 +30,15 @@ import UserForm from '../components/form/forms';
 import { formatters, validationRules } from '../components/form/validation';
 import ParamListView from '../components/ParamListView';
 import SridharListView from '../components/sridharListView';
-import { MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
+import {
+  SRIDHAR_DASHBOARD_CARDS,
+  SRIDHAR_DASHBOARD_STATS,
+  SRIDHAR_DETAIL_DATA,
+  SRIDHAR_JOB_LIST_SUMMARY,
+  SRIDHAR_MOCK_JOBS,
+} from '../data/jobs';
 
 const { Text, Title, Paragraph } = Typography;
-
-const candidateRows = [
-  {
-    key: '1',
-    candidate: 'Jayaprakash A',
-    role: 'DevOps Engineer',
-    location: 'San Jose, CA',
-    experience: '6 years',
-    status: 'Submitted',
-    date: 'Mar 23, 2026',
-  },
-  {
-    key: '2',
-    candidate: 'Kiran Kumar',
-    role: 'Full Stack Developer',
-    location: 'Texas',
-    experience: '5 years',
-    status: 'Pipeline',
-    date: 'Mar 20, 2026',
-  },
-  {
-    key: '3',
-    candidate: 'Sano S',
-    role: 'Python Developer',
-    location: 'Chennai',
-    experience: '7 years',
-    status: 'Shortlisted',
-    date: 'Mar 18, 2026',
-  },
-  {
-    key: '4',
-    candidate: 'Haritha Yella',
-    role: 'QA Automation Lead',
-    location: 'Phoenix, AZ',
-    experience: '8 years',
-    status: 'Interview',
-    date: 'Mar 16, 2026',
-  },
-  {
-    key: '5',
-    candidate: 'Revathi Ravi',
-    role: 'Cloud Data Engineer',
-    location: 'Austin, TX',
-    experience: '6 years',
-    status: 'Screening',
-    date: 'Mar 14, 2026',
-  },
-];
-
-const activityRows = [
-  {
-    key: '1',
-    event: 'Candidate moved to pipeline',
-    owner: 'admin_realtek',
-    status: 'Shortlist',
-    time: '07:39 PM',
-  },
-  {
-    key: '2',
-    event: 'Candidate submitted to client',
-    owner: 'delivery_team',
-    status: 'Submitted',
-    time: '04:17 PM',
-  },
-  {
-    key: '3',
-    event: 'Client requested updated resume',
-    owner: 'account_owner',
-    status: 'Follow up',
-    time: '01:24 PM',
-  },
-  {
-    key: '4',
-    event: 'Interview slot confirmed',
-    owner: 'scheduler',
-    status: 'Interview',
-    time: '11:05 AM',
-  },
-];
-
-const skills = ['React', 'Node.js', 'AWS', 'REST APIs', 'Agile delivery'];
 
 const activityFields = [
   { label: 'Activity', value: 'event' },
@@ -141,6 +66,9 @@ export default function SridharDetailPage() {
   const { jobId } = useParams();
   const [form] = Form.useForm();
   const job = SRIDHAR_MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? SRIDHAR_MOCK_JOBS[0];
+  const candidateRows = SRIDHAR_DETAIL_DATA.candidates;
+  const activityRows = SRIDHAR_DETAIL_DATA.activity;
+  const skills = SRIDHAR_DETAIL_DATA.skills;
 
   const handleNoteSubmit = (values) => {
     console.log('Detail note:', values);
@@ -148,60 +76,81 @@ export default function SridharDetailPage() {
   };
 
   const detailTabs = [
-    {
-      key: 'overview',
-      label: (
-        <Space>
-          <FileTextOutlined />
-          <span>Overview</span>
+  {
+  key: 'overview',
+  label: (
+    <Space>
+      <FileTextOutlined />
+      <span>Overview</span>
+    </Space>
+  ),
+  children: (
+    <Row gutter={[16, 16]} align="top">
+      <Col xs={24} xl={16}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Card title="Job Summary">
+            <Paragraph>
+              {SRIDHAR_DETAIL_DATA.summaryText}
+            </Paragraph>
+
+            <Descriptions
+              bordered
+              size="small"
+              column={{ xs: 1, sm: 1, md: 2 }}
+            >
+              <Descriptions.Item label="Job Title">
+                {job.title}
+              </Descriptions.Item>
+              <Descriptions.Item label="Client">
+                {job.client}
+              </Descriptions.Item>
+              <Descriptions.Item label="Location">
+                {job.location}
+              </Descriptions.Item>
+              <Descriptions.Item label="Work Mode">
+                {job.locationType}
+              </Descriptions.Item>
+              <Descriptions.Item label="Experience">
+                {job.experience}
+              </Descriptions.Item>
+              <Descriptions.Item label="Employment Type">
+                {job.employmentType}
+              </Descriptions.Item>
+              <Descriptions.Item label="Client Rate">
+                {`$${job.clientRate}/hr`}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {job.createdAt}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+
+          <Card title="Skills">
+            <Space wrap>
+              {skills?.map((skill) => (
+                <Tag key={skill}>{skill}</Tag>
+              ))}
+            </Space>
+          </Card>
+
+          <ParamListView
+            listName="Activity"
+            fields={activityFields}
+            dataSource={activityRows}
+          />
         </Space>
-      ),
-      children: (
-        <Row gutter={[16, 16]}>
-          <Col xs={24} xl={16}>
-            <Space direction="vertical" size={16}>
-              <Card title="Job Summary">
-                <Paragraph>
-                  This detail view brings together the job context, candidate activity,
-                  submissions, notes, onboarding, and client information in one place.
-                </Paragraph>
-                <Descriptions bordered size="small" column={{ xs: 1, md: 2 }}>
-                  <Descriptions.Item label="Job Title">{job.title}</Descriptions.Item>
-                  <Descriptions.Item label="Client">{job.client}</Descriptions.Item>
-                  <Descriptions.Item label="Location">{job.location}</Descriptions.Item>
-                  <Descriptions.Item label="Work Mode">{job.locationType}</Descriptions.Item>
-                  <Descriptions.Item label="Experience">{job.experience}</Descriptions.Item>
-                  <Descriptions.Item label="Employment Type">{job.employmentType}</Descriptions.Item>
-                  <Descriptions.Item label="Client Rate">{`$${job.clientRate}/hr`}</Descriptions.Item>
-                  <Descriptions.Item label="Created">{job.createdAt}</Descriptions.Item>
-                </Descriptions>
-              </Card>
+      </Col>
 
-              <Card title="Skills">
-                <Space wrap>
-                  {skills.map((skill) => (
-                    <Tag key={skill}>{skill}</Tag>
-                  ))}
-                </Space>
-              </Card>
-
-              <ParamListView
-                listName="Activity"
-                fields={activityFields}
-                dataSource={activityRows}
-              />
-            </Space>
-          </Col>
-
-          <Col xs={24} xl={8}>
-            <Space direction="vertical" size={16}>
-              <ClientDetailsCard />
-              <CalendarCard />
-            </Space>
-          </Col>
-        </Row>
-      ),
-    },
+      <Col xs={24} xl={8}>
+        <Space direction="vertical" size="middle" block>
+          <CalendarCard
+            data={SRIDHAR_DASHBOARD_CARDS.calendar}
+          />
+        </Space>
+      </Col>
+    </Row>
+  ),
+},
     {
       key: 'candidates',
       label: (
@@ -228,17 +177,17 @@ export default function SridharDetailPage() {
         <Row gutter={[16, 16]}>
           <Col xs={24} xl={12}>
           <Space direction="vertical">
-              <ClientSubmissionCard />
-              <StickyNotesCard />
+              <ClientSubmissionCard data={SRIDHAR_DASHBOARD_CARDS.clientSubmission} />
+              <StickyNotesCard notes={SRIDHAR_DASHBOARD_CARDS.stickyNotes} />
               </Space>
           </Col>
         <Col xs={24} xl={12}>
           <Row gutter={[16, 16]}>
             <Col span={24}>
-              <StatsCards />
+              <StatsCards stats={SRIDHAR_DASHBOARD_STATS} />
             </Col>
             <Col span={24}>
-              <OnboardingCard />
+              <OnboardingCard items={SRIDHAR_DASHBOARD_CARDS.onboarding} />
             </Col>
           </Row>
           </Col>

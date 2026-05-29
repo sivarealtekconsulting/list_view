@@ -1,11 +1,14 @@
-import sridharJobsData from './sridharJobs.json';
+import sridharDashboardData from './sridharDashboardData.json';
 import { SONY_MOCK_JOBS } from './sonyMockData';
 
 export const MOCK_JOBS = SONY_MOCK_JOBS;
 
-export const SRIDHAR_JOBS_DATA = sridharJobsData;
-export const SRIDHAR_MOCK_JOBS = sridharJobsData.jobs;
-export const SRIDHAR_JOB_LIST_SUMMARY = sridharJobsData.summary;
+export const SRIDHAR_JOBS_DATA = sridharDashboardData;
+export const SRIDHAR_MOCK_JOBS = sridharDashboardData.jobs;
+export const SRIDHAR_JOB_LIST_SUMMARY = sridharDashboardData.summary;
+export const SRIDHAR_DASHBOARD_CARDS = sridharDashboardData.cards;
+export const SRIDHAR_DASHBOARD_STATS = sridharDashboardData.stats;
+export const SRIDHAR_DETAIL_DATA = sridharDashboardData.detail;
 
 export const STATUS_TAG = {
   Fulfilled: { color: 'default' },

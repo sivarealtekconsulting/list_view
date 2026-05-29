@@ -10,7 +10,7 @@ const MONTHS = ['January','February','March','April','May','June','July','August
 
 const DOT = { green: '#22c55e', red: '#ef4444', orange: '#f97316', blue: '#3b82f6' };
 
-const EVENTS = {
+const DEFAULT_EVENTS = {
   '3-2':  [DOT.blue],
   '3-4':  [DOT.orange],
   '3-7':  [DOT.green],
@@ -25,12 +25,16 @@ const EVENTS = {
   '3-30': [DOT.orange],
 };
 
-const LEGEND = [
+const DEFAULT_LEGEND = [
   { label: 'Onboarded date',      color: DOT.green  },
   { label: 'Exit date',           color: DOT.red    },
   { label: 'To-do mentioned',     color: DOT.orange },
   { label: 'Interview scheduled', color: DOT.blue   },
 ];
+
+function resolveColor(color) {
+  return DOT[color] || color;
+}
 
 function buildCells(year, month) {
   const first       = new Date(year, month, 1).getDay();
@@ -50,9 +54,12 @@ function chunk(arr, size) {
   return out;
 }
 
-export default function CalendarCard() {
+export default function CalendarCard({ data = {} }) {
   const today = new Date();
-  const [view, setView] = useState({ year: 2026, month: 3 });
+  const initialView = data.initialView ?? { year: 2026, month: 3 };
+  const events = data.events ?? DEFAULT_EVENTS;
+  const legend = data.legend ?? DEFAULT_LEGEND;
+  const [view, setView] = useState(initialView);
 
   const weeks = chunk(buildCells(view.year, view.month), 7);
   const prev  = () => setView(v => v.month === 0  ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 });
@@ -91,7 +98,7 @@ export default function CalendarCard() {
           <Row key={wi} gutter={[6, 0]} align="top" className="calendar-week-row">
             {week.map((c, i) => {
               const key     = `${view.month}-${c.day}`;
-              const dots    = c.cur ? (EVENTS[key] || []) : [];
+              const dots    = c.cur ? (events[key] || []).map(resolveColor) : [];
               const isToday = c.cur
                 && c.day   === today.getDate()
                 && view.month === today.getMonth()
@@ -119,9 +126,9 @@ export default function CalendarCard() {
 
       {/* Legend */}
       <div className="calendar-legend">
-        {LEGEND.map(({ label, color }) => (
+        {legend.map(({ label, color }) => (
           <div key={label} className="calendar-legend-item">
-            <span className="calendar-legend-dot" style={{ background: color }} />
+            <span className="calendar-legend-dot" style={{ background: resolveColor(color) }} />
             <Text>{label}</Text>
           </div>
         ))}

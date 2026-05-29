@@ -1,0 +1,350 @@
+{
+  "summary": {
+    "myJobsCount": 8,
+    "allJobsCount": 2468
+  },
+  "stats": [
+    { "label": "Total Jobs", "value": 1426, "icon": "fileText" },
+    { "label": "Active Jobs", "value": 1397, "icon": "checkCircle" },
+    { "label": "My Jobs", "value": 214, "icon": "user" }
+  ],
+  "jobs": [
+    {
+      "key": "SRI-201",
+      "id": 201,
+      "title": "Cloud FinOps Engineer - L2",
+      "location": "Charlotte",
+      "locationType": "Hybrid",
+      "experience": "7 years",
+      "employmentType": "Contract",
+      "clientRate": 104,
+      "targetSub": { "filled": 3, "total": 6 },
+      "pipeline": 9,
+      "assignees": [
+        { "initials": "RS", "color": "#2563eb" },
+        { "initials": "MA", "color": "#f59e0b" }
+      ],
+      "extraAssignees": 2,
+      "status": "Open",
+      "createdAt": "May 18, 2026",
+      "createdAgo": "11 days ago",
+      "client": "BlueHarbor Capital - 827514",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRI-202",
+      "id": 202,
+      "title": "Generative AI Product Analyst",
+      "location": "Seattle",
+      "locationType": "Remote",
+      "experience": "5 years",
+      "employmentType": "Full-time",
+      "clientRate": 121,
+      "targetSub": { "filled": 5, "total": 8 },
+      "pipeline": 13,
+      "assignees": [
+        { "initials": "VK", "color": "#16a34a" },
+        { "initials": "TN", "color": "#9333ea" }
+      ],
+      "extraAssignees": 1,
+      "status": "Interview",
+      "createdAt": "May 20, 2026",
+      "createdAgo": "9 days ago",
+      "client": "Northstar Retail - 409731",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRI-203",
+      "id": 203,
+      "title": "Epic Integration Specialist",
+      "location": "Nashville",
+      "locationType": "On-site",
+      "experience": "9 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 116,
+      "targetSub": { "filled": 2, "total": 5 },
+      "pipeline": 6,
+      "assignees": [
+        { "initials": "AL", "color": "#0891b2" }
+      ],
+      "extraAssignees": 3,
+      "status": "Submitted",
+      "createdAt": "May 22, 2026",
+      "createdAgo": "7 days ago",
+      "client": "MedBridge Systems - 638205",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRI-204",
+      "id": 204,
+      "title": "Zero Trust Security Consultant",
+      "location": "Tampa",
+      "locationType": "Remote",
+      "experience": "10 years",
+      "employmentType": "Contract",
+      "clientRate": 138,
+      "targetSub": { "filled": 4, "total": 7 },
+      "pipeline": 8,
+      "assignees": [
+        { "initials": "JP", "color": "#dc2626" },
+        { "initials": "KR", "color": "#64748b" }
+      ],
+      "extraAssignees": 0,
+      "status": "Screening",
+      "createdAt": "May 24, 2026",
+      "createdAgo": "5 days ago",
+      "client": "CipherWorks - 972140",
+      "hasBookmark": false,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRI-205",
+      "id": 205,
+      "title": "SAP S/4HANA Supply Chain Lead",
+      "location": "Columbus",
+      "locationType": "Hybrid",
+      "experience": "12 years",
+      "employmentType": "Full-time",
+      "clientRate": 147,
+      "targetSub": { "filled": 6, "total": 10 },
+      "pipeline": 15,
+      "assignees": [
+        { "initials": "SN", "color": "#ca8a04" }
+      ],
+      "extraAssignees": 4,
+      "status": "Pipeline",
+      "createdAt": "May 26, 2026",
+      "createdAgo": "3 days ago",
+      "client": "GreenRoute Manufacturing - 715902",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRI-206",
+      "id": 206,
+      "title": "Data Governance Program Manager",
+      "location": "Milwaukee",
+      "locationType": "On-site",
+      "experience": "11 years",
+      "employmentType": "Contract",
+      "clientRate": 129,
+      "targetSub": { "filled": 7, "total": 9 },
+      "pipeline": 11,
+      "assignees": [
+        { "initials": "BC", "color": "#0d9488" },
+        { "initials": "YD", "color": "#db2777" }
+      ],
+      "extraAssignees": 2,
+      "status": "Shortlisted",
+      "createdAt": "May 27, 2026",
+      "createdAgo": "2 days ago",
+      "client": "LakePoint Insurance - 183460",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "SRI-207",
+      "id": 207,
+      "title": "React Native Banking Developer",
+      "location": "Salt Lake City",
+      "locationType": "Remote",
+      "experience": "6 years",
+      "employmentType": "Full-time",
+      "clientRate": 112,
+      "targetSub": { "filled": 3, "total": 6 },
+      "pipeline": 10,
+      "assignees": [
+        { "initials": "ER", "color": "#7c3aed" },
+        { "initials": "PM", "color": "#84cc16" }
+      ],
+      "extraAssignees": 1,
+      "status": "Offer",
+      "createdAt": "May 28, 2026",
+      "createdAgo": "Yesterday",
+      "client": "Pinnacle Digital Bank - 550318",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "SRI-208",
+      "id": 208,
+      "title": "Snowflake Migration Architect",
+      "location": "Kansas City",
+      "locationType": "Hybrid",
+      "experience": "13 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 153,
+      "targetSub": { "filled": 1, "total": 4 },
+      "pipeline": 5,
+      "assignees": [
+        { "initials": "HN", "color": "#0284c7" }
+      ],
+      "extraAssignees": 3,
+      "status": "Open",
+      "createdAt": "May 29, 2026",
+      "createdAgo": "Today",
+      "client": "DataCrest Logistics - 894226",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    }
+  ],
+  "detail": {
+    "summaryText": "Sridhar's API mock detail view joins requisition context, candidate movement, client submissions, notes, onboarding, and account information from one JSON payload.",
+    "skills": ["Snowflake", "Data Governance", "React Native", "Zero Trust", "SAP S/4HANA"],
+    "candidates": [
+      {
+        "key": "1",
+        "candidate": "Meera Natarajan",
+        "role": "Snowflake Architect",
+        "location": "Dallas, TX",
+        "experience": "11 years",
+        "status": "Submitted",
+        "date": "May 24, 2026"
+      },
+      {
+        "key": "2",
+        "candidate": "Arvind Shetty",
+        "role": "Security Consultant",
+        "location": "Tampa, FL",
+        "experience": "10 years",
+        "status": "Interview",
+        "date": "May 25, 2026"
+      },
+      {
+        "key": "3",
+        "candidate": "Nisha Varma",
+        "role": "SAP Supply Chain Lead",
+        "location": "Columbus, OH",
+        "experience": "12 years",
+        "status": "Pipeline",
+        "date": "May 26, 2026"
+      }
+    ],
+    "activity": [
+      {
+        "key": "1",
+        "event": "Candidate moved to pipeline",
+        "owner": "sri_delivery",
+        "status": "Submitted",
+        "time": "09:20 AM"
+      },
+      {
+        "key": "2",
+        "event": "Security consultant interview moved to panel round",
+        "owner": "account_manager",
+        "status": "Interview",
+        "time": "11:45 AM"
+      },
+      {
+        "key": "3",
+        "event": "SAP lead profile shortlisted by client",
+        "owner": "recruiting_ops",
+        "status": "Shortlist",
+        "time": "02:10 PM"
+      },
+      {
+        "key": "4",
+        "event": "Updated rate card requested",
+        "owner": "client_success",
+        "status": "Follow up",
+        "time": "04:35 PM"
+      }
+    ]
+  },
+  "cards": {
+    "calendar": {
+      "initialView": { "year": 2026, "month": 4 },
+      "events": {
+        "4-5": ["blue"],
+        "4-9": ["orange"],
+        "4-12": ["green"],
+        "4-15": ["blue", "orange"],
+        "4-19": ["red"],
+        "4-22": ["green"],
+        "4-27": ["blue"],
+        "4-29": ["orange", "green"]
+      },
+      "legend": [
+        { "label": "Onboarded date", "color": "green" },
+        { "label": "Exit date", "color": "red" },
+        { "label": "To-do mentioned", "color": "orange" },
+        { "label": "Interview scheduled", "color": "blue" }
+      ]
+    },
+    "clientSubmission": {
+      "total": 986,
+      "rows": [
+        { "label": "Submitted", "value": 421, "barColor": "#2563eb", "accentColor": "#f59e0b", "showInfo": true },
+        { "label": "Rejected", "value": 64, "barColor": "#dc2626", "accentColor": null, "showInfo": false }
+      ]
+    },
+    "onboarding": [
+      { "label": "In Progress", "value": 84, "sub": "Background check", "color": "blue" },
+      { "label": "Hired", "value": 11, "sub": "Joined this month", "color": "green" },
+      { "label": "Project Completed", "value": 7, "sub": "Closed assignments", "color": "purple" },
+      { "label": "Archive", "value": 5, "sub": "Inactive profiles", "color": "peach" }
+    ],
+    "stickyNotes": [
+      {
+        "type": "purple",
+        "pill": "Tagged",
+        "heading": "Rate approval pending for DataCrest",
+        "body": "Client asked for the final Snowflake architect rate card before releasing the interview invite.",
+        "footerLeft": "Tagged by Sridhar",
+        "footerRight": "09:30 AM",
+        "dot": null,
+        "date": null
+      },
+      {
+        "type": "peach",
+        "pill": "Note",
+        "heading": "Send updated SAP availability",
+        "body": "GreenRoute wants revised start dates for the two shortlisted SAP consultants.",
+        "footerLeft": "Created by you",
+        "footerRight": "Yesterday",
+        "dot": "#f59e0b",
+        "date": "29 May, 2026"
+      },
+      {
+        "type": "green",
+        "pill": "Note",
+        "heading": "Follow up on mobile banking slot",
+        "body": "Pinnacle panel prefers an early morning technical screen next week.",
+        "footerLeft": "Created by delivery",
+        "footerRight": "2 days ago",
+        "dot": null,
+        "date": null
+      },
+      {
+        "type": "purple",
+        "pill": "Tagged",
+        "heading": "Compliance resume update",
+        "body": "CipherWorks requested stronger Zero Trust implementation details in the consultant profile.",
+        "footerLeft": "Tagged by account team",
+        "footerRight": "04:15 PM",
+        "dot": null,
+        "date": null
+      }
+    ],
+    "clientDetails": {
+      "subtitle": "Sridhar client and contact information loaded from JSON",
+      "helperText": "Select a Sridhar client to view and complete the remaining job details.",
+      "values": {
+        "clientName": "DataCrest Logistics",
+        "clientReqId": "DC-894226-SNOW",
+        "contactPerson": "Priya Menon",
+        "endClient": "DataCrest Logistics",
+        "clientLocation": "Kansas City, MO",
+        "accountManager": "Sridhar R"
+      },
+      "options": {
+        "clientName": ["DataCrest Logistics", "BlueHarbor Capital", "GreenRoute Manufacturing"],
+        "contactPerson": ["Priya Menon", "Marcus Lee", "Helen Novak"],
+        "accountManager": ["Sridhar R", "Anusha P", "Vikram K"]
+      }
+    }
+  }
+}
