@@ -217,7 +217,7 @@ export default function ListView({
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/hari/jobs/${record.id}`}>
+            <RouterLink className="job-cell-link" to={`/jobs/${record.id}`}>
               {title}
             </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
