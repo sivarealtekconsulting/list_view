@@ -807,6 +807,110 @@
   justify-content: flex-start !important;
 }
 
+.candidate-onboarding__actions {
+  margin-left: auto;
+}
+
+.candidate-onboarding__search-icon {
+  color: #9aa6b2 !important;
+}
+
+.candidate-onboarding__icon-button:hover,
+.candidate-onboarding__icon-button:focus {
+  background: #dcecf7 !important;
+  color: #075c95 !important;
+}
+
+.candidate-onboarding__checkbox-wrap {
+  display: inline-flex;
+  padding-top: 8px;
+}
+
+.candidate-onboarding__sort-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.candidate-onboarding__sort-arrows {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.candidate-onboarding__sort-arrows span {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+
+.candidate-onboarding__sort-arrows span:first-child {
+  border-bottom: 4px solid #46627a;
+}
+
+.candidate-onboarding__sort-arrows span:last-child {
+  border-top: 4px solid #46627a;
+}
+
+.candidate-onboarding__candidate {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.candidate-onboarding__candidate-name {
+  color: #0065a8;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+.candidate-onboarding__candidate-name:hover {
+  color: #004f85;
+}
+
+.candidate-onboarding__muted {
+  color: #536988;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.candidate-onboarding__job {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.candidate-onboarding__job div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 0;
+  align-items: baseline;
+}
+
+.candidate-onboarding__job dt {
+  color: #232a31;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.candidate-onboarding__job dd {
+  margin: 0;
+  color: #536988;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+@media (max-width: 760px) {
+  .candidate-onboarding__actions,
+  .candidate-onboarding__search {
+    width: 100%;
+  }
+}
+
 @media (max-width: 1240px) {
   :is(.listview-shell, .antd) {
     max-width: calc(100vw - 64px);

@@ -35,6 +35,7 @@ import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 import SonyDashboard from './pages/SonyDashboard';
 import SonyDetailedView from './pages/SonyDetailedView';
+import CandidateOnboardingListView from './components/CandidateOnboardingListView';
 
 export default function App() {
   return (
@@ -94,6 +95,10 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
           <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
+          <Route
+            path="/candidate-onboarding"
+            element={<CandidateOnboardingListView />}
+          />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
