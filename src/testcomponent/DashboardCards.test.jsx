@@ -144,10 +144,14 @@ describe('DashboardCards StickyNotesCard slot', () => {
 // ════════════════════════════════════════════════════════════════════════════
 // 5. CalendarCard slot
 // ════════════════════════════════════════════════════════════════════════════
+const _MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const _today = new Date();
+const _currentMonthLabel = `${_MONTHS[_today.getMonth()]} ${_today.getFullYear()}`;
+
 describe('DashboardCards CalendarCard slot', () => {
-  it('renders "April 2026" calendar heading', () => {
+  it('renders the current calendar month heading', () => {
     renderDashboardCards();
-    expect(screen.getByText('April 2026')).toBeInTheDocument();
+    expect(screen.getByText(_currentMonthLabel)).toBeInTheDocument();
   });
 
   it('renders all 7 day-name headers', () => {
