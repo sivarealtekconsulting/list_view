@@ -4,7 +4,7 @@ import '../../styles/StickyNotesCard.css';
 
 const { Title, Text } = Typography;
 
-const notes = [
+const defaultNotes = [
   {
     type: 'purple',
     pill: 'Tagged',
@@ -47,7 +47,7 @@ const notes = [
   },
 ];
 
-export default function StickyNotesCard() {
+export default function StickyNotesCard({ notes = defaultNotes }) {
   return (
     <Card
       className="sticky-card"

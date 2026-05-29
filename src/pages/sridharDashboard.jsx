@@ -18,7 +18,12 @@ import OnboardingCard from '../components/cards/OnboardingCard';
 import StatsCards from '../components/cards/StatsCards';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import { formatters, validationRules } from '../components/form/validation';
-import { MOCK_JOBS, SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
+import {
+  SRIDHAR_DASHBOARD_CARDS,
+  SRIDHAR_DASHBOARD_STATS,
+  SRIDHAR_JOB_LIST_SUMMARY,
+  SRIDHAR_MOCK_JOBS,
+} from '../data/jobs';
 
 const { Text } = Typography;
 
@@ -46,7 +51,7 @@ export default function SridharDashboardPage() {
 
         <Row gutter={[16, 16]}>
           <Col span={24}>
-            <StatsCards />
+            <StatsCards stats={SRIDHAR_DASHBOARD_STATS} />
           </Col>
         </Row>
 
@@ -169,7 +174,7 @@ export default function SridharDashboardPage() {
           </Col>
 
           <Col xs={24} xl={12}>
-            <CalendarCard />
+            <CalendarCard data={SRIDHAR_DASHBOARD_CARDS.calendar} />
           </Col>
         </Row>
 
@@ -191,15 +196,15 @@ export default function SridharDashboardPage() {
         <Row gutter={[16, 16]} align="top">
           <Col xs={24} xl={8}>
             <Space direction="vertical" size={16}>
-              <ClientSubmissionCard />
-              <OnboardingCard />
+              <ClientSubmissionCard data={SRIDHAR_DASHBOARD_CARDS.clientSubmission} />
+              <OnboardingCard items={SRIDHAR_DASHBOARD_CARDS.onboarding} />
             </Space>
           </Col>
 
           <Col xs={24} xl={16}>
             <Space direction="vertical" size={16}>
-              <StickyNotesCard />
-              <ClientDetailsCard />
+              <StickyNotesCard notes={SRIDHAR_DASHBOARD_CARDS.stickyNotes} />
+              <ClientDetailsCard data={SRIDHAR_DASHBOARD_CARDS.clientDetails} />
             </Space>
           </Col>
         </Row>

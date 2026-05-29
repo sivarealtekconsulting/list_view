@@ -14,6 +14,7 @@ import {
 } from 'antd';
 import {
   BankOutlined,
+  CheckCircleOutlined,
   ClockCircleOutlined,
   DollarOutlined,
   EnvironmentOutlined,
@@ -21,77 +22,80 @@ import {
   FileTextOutlined,
   InfoCircleOutlined,
   MoreOutlined,
+  SafetyCertificateOutlined,
   TeamOutlined,
+  ThunderboltOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
 import { MOCK_JOBS } from '../data/jobs';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
 
+
 const { Text, Title, Link, Paragraph } = Typography;
 
+const skillStack = [
+  'React JS',
+  'JavaScript',
+  'REST API',
+  'Ant Design',
+  'Frontend Architecture',
+  'Performance Optimization',
+];
+
+const goodFitSignals = [
+  'Strong frontend implementation experience',
+  'Good understanding of reusable component structure',
+  'Comfortable with dashboard and table-heavy UI',
+  'Good exposure to validated forms and routing',
+];
+
 const defaultDescription = [
-  'Bill Rate: 60 - 80',
-  'MSP Owner: William Bristol',
-  'Location: ~LOUISVILLE~',
-  'Duration: 6 months',
-  'GbaMS ReqID: 10428045',
-  'Consultant with GenAI',
-  'Experience: 8-15 years in AI/ML, 3+ years in GCP and AI/ML',
-  'Roles & Responsibilities',
-  'Architect and implement AI/ML solutions on GCP using services like Vertex AI, BigQuery, Cloud Storage, Cloud Composer, and Dataflow.',
-  'Develop and fine-tune Large Language Models and integrate them into enterprise applications.',
-  'Build Generative AI pipelines using LangChain, Semantic Kernel, and Vector Databases for Retrieval-Augmented Generation.',
-  'Collaborate with cross-functional teams to identify and prioritize GenAI use cases.',
-  'Ensure compliance with Responsible AI principles and security standards.',
-  'Optimize performance and scalability of AI models in production environments.',
-  'Mentor junior engineers and contribute to best practices in AI engineering.',
-  'Required Skills',
-  'Strong proficiency in GCP services: Vertex AI, BigQuery, Cloud Spanner, Cloud Functions, Pub/Sub.',
-  'Expertise in Python, Java, and AI/ML frameworks.',
-  'Hands-on experience with Prompt Engineering, Zero-shot, Few-shot, Chain-of-Thought.',
-  'Knowledge of LangChain, Azure/OpenAI APIs, and Vector DBs.',
-  'Familiarity with CI/CD pipelines, Docker, and Kubernetes.',
-  'Understanding of Responsible AI, data privacy, and model governance.',
+  'This requirement needs a candidate who can build clean, scalable and reusable frontend modules.',
+  'The role focuses on dashboard layouts, list views, form validation, detail pages and component-based UI.',
+  'Candidate should be comfortable working with Ant Design, React hooks, routing, table actions and responsive layouts.',
+  'Priority should be given to profiles with hands-on experience in recruitment, CRM, ATS, LMS or dashboard-based products.',
 ];
 
 const activityItems = [
   {
     color: 'blue',
-    status: 'Shortlist',
+    status: 'Skill Reviewed',
     tagColor: 'blue',
     time: '07:39 PM',
-    text: 'Move to Pipeline for ZNXTJOB24011527 lead by admin_realtek',
-  },
-  {
-    color: 'blue',
-    status: 'Shortlist',
-    tagColor: 'blue',
-    time: '07:39 PM',
-    text: 'Move to Pipeline for ZNXTJOB24011525 Product Architect by admin_realtek',
+    text: 'Primary skills reviewed and mapped against frontend dashboard requirement.',
   },
   {
     color: 'green',
-    status: 'Submitted',
+    status: 'Strong Match',
     tagColor: 'green',
-    time: '04:17 PM',
-    text: 'Candidate has been submitted to Job ID ZNXTJOB240011525',
+    time: '06:20 PM',
+    text: 'Candidate profile marked as strong match for React and Ant Design implementation.',
   },
   {
-    color: 'red',
-    status: 'Rejected',
-    tagColor: 'red',
-    time: '07:39 PM',
-    text: 'candidate submission status has been changed to re-submission for Job ID - ZNXTJOB2620532',
+    color: 'blue',
+    status: 'Shortlisted',
+    tagColor: 'blue',
+    time: '04:17 PM',
+    text: 'Candidate moved to shortlist after skill and experience validation.',
+  },
+  {
+    color: 'orange',
+    status: 'Needs Review',
+    tagColor: 'orange',
+    time: '02:45 PM',
+    text: 'Resume needs one more review for API integration and dashboard experience.',
   },
 ];
 
 const candidateFields = [
   { label: 'Candidate Name', value: 'candidateName' },
-  { label: 'Designation', value: 'designation' },
-  { label: 'Current Location', value: 'currentLocation' },
+  { label: 'Primary Skill', value: 'primarySkill' },
+  { label: 'Match Level', value: 'matchLevel' },
   { label: 'Experience', value: 'experience' },
   { label: 'Work Authorization', value: 'workAuthorization' },
   { label: 'Submission Status', value: 'submissionStatus' },
@@ -102,18 +106,18 @@ const candidateRows = [
   {
     id: 1,
     candidateName: 'Jayaprakash A',
-    designation: 'DevOps Engineer',
-    currentLocation: 'San Jose, CA',
+    primarySkill: 'React JS',
+    matchLevel: 'Excellent Match',
     experience: '6 years',
     workAuthorization: 'H1B',
-    submissionStatus: 'Submitted',
+    submissionStatus: 'Ready to Submit',
     submittedDate: 'Mar 23, 2026',
   },
   {
     id: 2,
     candidateName: 'Kiran Kumar',
-    designation: 'Full Stack Developer',
-    currentLocation: 'Texas',
+    primarySkill: 'Frontend Architecture',
+    matchLevel: 'Good Match',
     experience: '5 years',
     workAuthorization: 'GC EAD',
     submissionStatus: 'Pipeline',
@@ -122,11 +126,11 @@ const candidateRows = [
   {
     id: 3,
     candidateName: 'Sano S',
-    designation: 'Java Developer',
-    currentLocation: 'Chennai',
+    primarySkill: 'JavaScript',
+    matchLevel: 'Needs Review',
     experience: '7 years',
     workAuthorization: 'L2 EAD',
-    submissionStatus: 'Shortlisted',
+    submissionStatus: 'Skill Review',
     submittedDate: 'Mar 18, 2026',
   },
 ];
@@ -165,6 +169,7 @@ export default function GnaneshDetailedView() {
   const navigate = useNavigate();
   const { jobId } = useParams();
   const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
+
   const [activeDetailTab, setActiveDetailTab] = useState('details');
   const [activeActivityTab, setActiveActivityTab] = useState('activity');
 
@@ -174,9 +179,20 @@ export default function GnaneshDetailedView() {
         <Col span={24}>
           <Breadcrumb
             items={[
-              { title: <Text type="secondary" onClick={() => navigate('/')}>Home</Text> },
-              { title: <Text type="secondary" onClick={() => navigate('/gnanesh-dashboard')}>Jobs</Text> },
-              { title: <Text strong>Detailed View</Text> },
+              {
+                title: (
+                  <Text type="secondary" onClick={() => navigate('/gnanesh-dashboard')}>
+                    Gnanesh Dashboard
+                  </Text>
+                ),
+              },
+              {
+                title: (
+                  <Text strong>
+                    {job.title}
+                  </Text>
+                ),
+              },
             ]}
           />
         </Col>
@@ -184,13 +200,15 @@ export default function GnaneshDetailedView() {
         <Col span={24}>
           <Card size="small" className="client-details-card">
             <Row justify="space-between" gutter={[16, 16]}>
-              <Col xs={24} lg={16}>
-                <Space direction="vertical" size={5}>
+              <Col xs={24} lg={15}>
+                <Space direction="vertical" size={6}>
                   <Text type="secondary">TCS - MSP ID 10432419</Text>
+
                   <Space size={8} wrap>
-                    <Title level={4}>{job.title} - 38975</Title>
+                    <Title level={4}>{job.title} - </Title>
                     <StatusBadge status={job.status} />
                   </Space>
+
                   <Space size={12} wrap>
                     <Text type="secondary"><EnvironmentOutlined /> {job.location}</Text>
                     <Text type="secondary"><ClockCircleOutlined /> {job.experience}</Text>
@@ -198,34 +216,48 @@ export default function GnaneshDetailedView() {
                     <Text type="secondary">{job.locationType}</Text>
                     <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
                   </Space>
+
                   <Tabs
                     size="small"
                     activeKey={activeDetailTab}
                     onChange={setActiveDetailTab}
                     items={[
-                      { key: 'details', label: tabLabel('Details', 1) },
+                      { key: 'details', label: tabLabel('Skill Insights', 1) },
                       { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                      { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
+                      { key: 'candidate', label: tabLabel('Matched Candidates', candidateRows.length) },
                     ]}
                   />
                 </Space>
               </Col>
-              <Col xs={24} lg={8}>
-                <Row justify="end">
-                  <Col>
-                    <Space direction="vertical" size={8}>
-                      <Space>
-                        <Button type="link" icon={<TeamOutlined />}>Source Candidates</Button>
-                        <Button type="text" icon={<MoreOutlined />} />
-                      </Space>
-                      <Space size={32}>
-                        <DetailField label="Target submissions" value={job.targetSub?.total} />
-                        <DetailField label="In pipeline" value={job.pipeline} />
-                      </Space>
-                      <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
+
+              <Col xs={24} lg={9}>
+                <Card size="small" className="client-details-card">
+                  <Space direction="vertical" size={12}>
+                    <Space>
+                      <UsergroupAddOutlined />
+                      <Text strong>Source Candidate Control</Text>
                     </Space>
-                  </Col>
-                </Row>
+
+                    <Space wrap>
+                      <Button type="primary" icon={<TeamOutlined />}>
+                        Source Candidates
+                      </Button>
+                      <Button icon={<SafetyCertificateOutlined />}>
+                        View Matched Profiles
+                      </Button>
+                      <Button type="text" icon={<MoreOutlined />} />
+                    </Space>
+
+                    <Row gutter={[16, 16]}>
+                      <Col span={8}><DetailField label="Ready" value="12" /></Col>
+                      <Col span={8}><DetailField label="Strong Match" value="4" /></Col>
+                      <Col span={8}><DetailField label="Review" value="0" /></Col>
+                      
+                    </Row>
+
+                    <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
+                  </Space>
+                </Card>
               </Col>
             </Row>
           </Card>
@@ -236,60 +268,145 @@ export default function GnaneshDetailedView() {
             <DynamicListView moduleName="candidates" />
           </Col>
         ) : activeDetailTab === 'candidate' ? (
-          <Col span={24}>
-            <ParamListView
-              listName="candidate"
-              fields={candidateFields}
-              dataSource={candidateRows}
-            />
-          </Col>
-        ) : (
           <>
-            <Col xs={24} lg={15}>
-              <Space direction="vertical" size={12}>
-                <SectionCard title="Client" icon={<FileSearchOutlined />}>
-                  <Row gutter={[32, 16]}>
-                    <Col xs={24} md={8}><DetailField label="Contact Person" value="Jayaprakash A" /></Col>
-                    <Col xs={24} md={8}><DetailField label="Email" value={<Link>jayaprakash123@gmail.com</Link>} /></Col>
-                    <Col xs={24} md={8}><DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} /></Col>
-                  </Row>
-                </SectionCard>
-
-                <SectionCard title="Skills & Competencies" icon={<InfoCircleOutlined />}>
-                  <Space direction="vertical" size={12}>
-                    <DetailField
-                      label="Primary Skills"
-                      value={(
-                        <Space size={[6, 6]} wrap>
-                          {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training'].map((skill) => (
-                            <Tag key={skill} color="blue">{skill}</Tag>
-                          ))}
-                        </Space>
-                      )}
-                    />
-                    <DetailField label="Secondary Skills" value="-" />
-                    <DetailField label="Competencies" value="-" />
-                  </Space>
-                </SectionCard>
-
-                <SectionCard title="Description" icon={<FileTextOutlined />}>
-                  <Space direction="vertical">
-                    {defaultDescription.map((line) => (
-                      <Paragraph key={line}>{line}</Paragraph>
-                    ))}
-                  </Space>
-                </SectionCard>
-
-                <SectionCard title="Additional Details" icon={<InfoCircleOutlined />}>
-                  <Row gutter={[32, 16]}>
-                    <Col xs={24} md={6}><DetailField label="Notice Period" value="-" /></Col>
-                    <Col xs={24} md={10}><DetailField label="Business Unit" value="Realtek Consulting LLC" /></Col>
-                  </Row>
-                </SectionCard>
-              </Space>
+            <Col span={24}>
+              <SectionCard title="Matched Candidate Summary" icon={<TeamOutlined />}>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} md={6}>
+                    <DetailField label="Total Matches" value={candidateRows.length} />
+                  </Col>
+                  <Col xs={24} md={6}>
+                    <DetailField label="Excellent Match" value="1" />
+                  </Col>
+                  <Col xs={24} md={6}>
+                    <DetailField label="Good Match" value="1" />
+                  </Col>
+                  <Col xs={24} md={6}>
+                    <DetailField label="Needs Review" value="1" />
+                  </Col>
+                </Row>
+              </SectionCard>
             </Col>
 
-            <Col xs={24} lg={9}>
+            <Col xs={24} lg={14}>
+              <SectionCard title="Skill Coverage" icon={<SafetyCertificateOutlined />}>
+                <Space size={[6, 6]} wrap>
+                  {['React JS', 'Frontend Architecture', 'JavaScript', 'REST API'].map((skill) => (
+                    <Tag key={skill} color="blue">{skill}</Tag>
+                  ))}
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={10}>
+              <SectionCard title="Submission Focus" icon={<ThunderboltOutlined />}>
+                <Space direction="vertical" size={6}>
+                  <Text type="secondary">Prioritize excellent and good match profiles first.</Text>
+                  <Text type="secondary">Review missing API/dashboard exposure before submission.</Text>
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col span={24}>
+              <ParamListView
+                listName="matched candidate"
+                fields={candidateFields}
+                dataSource={candidateRows}
+              />
+            </Col>
+          </>
+        ) : (
+          <>
+            <Col span={24}>
+              <SectionCard title="Skill Match Overview" icon={<ThunderboltOutlined />}>
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} md={8}><DetailField label="Match Score" value="86%" /></Col>
+                  <Col xs={24} md={8}><DetailField label="Priority Skill" value="React JS" /></Col>
+                  <Col xs={24} md={8}><DetailField label="Submission Readiness" value="High" /></Col>
+                </Row>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={14}>
+              <SectionCard title="Required Skill Stack" icon={<InfoCircleOutlined />}>
+                <Space size={[6, 6]} wrap>
+                  {skillStack.map((skill) => (
+                    <Tag key={skill} color="blue">{skill}</Tag>
+                  ))}
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={10}>
+              <SectionCard title="Candidate Pipeline Snapshot" icon={<TeamOutlined />}>
+                <Row gutter={[16, 16]}>
+                  <Col span={8}><DetailField label="Ready" value="12" /></Col>
+                  <Col span={8}><DetailField label="Strong Match" value="4" /></Col>
+                  <Col span={8}><DetailField label="Review" value="0" /></Col>
+                </Row>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={14}>
+              <SectionCard title="Candidate Fit Signals" icon={<CheckCircleOutlined />}>
+                <Space direction="vertical" size={8}>
+                  {goodFitSignals.map((signal) => (
+                    <Text key={signal}>• {signal}</Text>
+                  ))}
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={10}>
+              <SectionCard title="Recruiter Notes" icon={<FileTextOutlined />}>
+                <Space direction="vertical" size={8}>
+                  <Text type="secondary">
+                    Prioritize candidates with React + Ant Design dashboard experience.
+                  </Text>
+                  <Text type="secondary">
+                    Check API integration exposure before client submission.
+                  </Text>
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={14}>
+              <SectionCard title="Client Snapshot" icon={<FileSearchOutlined />}>
+                <Row gutter={[32, 16]}>
+                  <Col xs={24} md={8}>
+                    <DetailField label="Contact Person" value="Jayaprakash A" />
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <DetailField label="Email" value={<Link>jayaprakash123@gmail.com</Link>} />
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} />
+                  </Col>
+                </Row>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={10}>
+              <SectionCard title="Submission Notes" icon={<InfoCircleOutlined />}>
+                <Row gutter={[16, 16]}>
+                  <Col span={8}><DetailField label="Target" value={job.targetSub?.total} /></Col>
+                  <Col span={8}><DetailField label="Pipeline" value={job.pipeline || '-'} /></Col>
+                  <Col span={8}><DetailField label="Unit" value="Realtek" /></Col>
+                </Row>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={14}>
+              <SectionCard title="Requirement Brief" icon={<FileTextOutlined />}>
+                <Space direction="vertical">
+                  {defaultDescription.map((line) => (
+                    <Paragraph key={line}>{line}</Paragraph>
+                  ))}
+                </Space>
+              </SectionCard>
+            </Col>
+
+            <Col xs={24} lg={10}>
               <Card size="small" className="client-details-card">
                 <Tabs
                   size="small"
@@ -298,7 +415,7 @@ export default function GnaneshDetailedView() {
                   items={[
                     {
                       key: 'activity',
-                      label: tabLabel('Activity', 2),
+                      label: tabLabel('Skill Activity', 4),
                       children: (
                         <Space direction="vertical" size={14}>
                           <Title level={5}>Mar 23, 2026</Title>
@@ -318,7 +435,9 @@ export default function GnaneshDetailedView() {
                               ),
                             }))}
                           />
+
                           <Divider />
+
                           <Title level={5}>Mar 20, 2026</Title>
                           <Timeline
                             items={activityItems.slice(2).map((item) => ({
@@ -339,7 +458,20 @@ export default function GnaneshDetailedView() {
                         </Space>
                       ),
                     },
-                    { key: 'notes', label: tabLabel('Notes', 0), children: <Text type="secondary">No notes found</Text> },
+                    {
+                      key: 'notes',
+                      label: tabLabel('Recruiter Notes', 2),
+                      children: (
+                        <Space direction="vertical" size={8}>
+                          <Text type="secondary">
+                            Prioritize candidates with React + Ant Design dashboard experience.
+                          </Text>
+                          <Text type="secondary">
+                            Check API integration exposure before client submission.
+                          </Text>
+                        </Space>
+                      ),
+                    },
                   ]}
                 />
               </Card>

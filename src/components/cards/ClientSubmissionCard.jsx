@@ -4,13 +4,18 @@ import '../../styles/ClientSubmissionCard.css';
 
 const { Text } = Typography;
 
-const TOTAL = 1324;
-const rows = [
+const defaultSubmissionData = {
+  total: 1324,
+  rows: [
   { label: 'Submitted', value: 534, barColor: '#1d4ed8', accentColor: '#f97316', showInfo: true  },
   { label: 'Rejected',  value: 87,  barColor: '#ef4444', accentColor: null,      showInfo: false },
-];
+  ],
+};
 
-export default function ClientSubmissionCard() {
+export default function ClientSubmissionCard({ data = defaultSubmissionData }) {
+  const total = data.total ?? defaultSubmissionData.total;
+  const rows = data.rows ?? defaultSubmissionData.rows;
+
   return (
     <Card className="submission-card">
 
@@ -19,7 +24,7 @@ export default function ClientSubmissionCard() {
           <Text className="submission-title">Total Client Submission:</Text>
         </Col>
         <Col>
-          <Text className="submission-total">{TOTAL.toLocaleString()}</Text>
+          <Text className="submission-total">{total.toLocaleString()}</Text>
         </Col>
       </Row>
 
@@ -58,8 +63,8 @@ export default function ClientSubmissionCard() {
                 style={{
                   left: r.accentColor ? '12%' : '0',
                   width: r.accentColor
-                    ? `${(r.value / TOTAL) * 100 - 12}%`
-                    : `${(r.value / TOTAL) * 100}%`,
+                    ? `${Math.max((r.value / total) * 100 - 12, 0)}%`
+                    : `${(r.value / total) * 100}%`,
                   background: r.barColor,
                 }}
               />
