@@ -208,7 +208,7 @@
 
 :is(.listview-shell, .antd) .ant-tabs-tab {
   height: 27px !important;
-  margin: 0 0 0 16px !important;
+  margin: 0 0 0 4px !important;
   padding: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
@@ -741,7 +741,7 @@
 }
 
 :is(.listview-shell, .antd) > .ant-flex .ant-select {
-  width: 39px !important;
+  width: 45px !important;
 }
 
 :is(.listview-shell, .antd) > .ant-flex .ant-select-selector {
