@@ -256,22 +256,39 @@
   },
   "cards": {
     "calendar": {
-      "initialView": { "year": 2026, "month": 4 },
-      "events": {
-        "4-5": ["blue"],
-        "4-9": ["orange"],
-        "4-12": ["green"],
-        "4-15": ["blue", "orange"],
-        "4-19": ["red"],
-        "4-22": ["green"],
-        "4-27": ["blue"],
-        "4-29": ["orange", "green"]
-      },
+    "events": {
+      "4-5": [
+        { "color": "blue", "message": "Technical interview scheduled for Senior React Developer position" }
+      ],
+      "4-9": [
+        { "color": "orange", "message": "New job matching your profile has been posted" }
+      ],
+      "4-12": [
+        { "color": "green", "message": "Candidate Ashok Kumar successfully completed onboarding" }
+      ],
+      "4-15": [
+        { "color": "blue", "message": "Client interview confirmed for Full Stack Developer role" },
+        { "color": "orange", "message": "Application review pending for Project Manager position" }
+      ],
+      "4-19": [
+        { "color": "red", "message": "Contract period ends for Ashok Kumar today" }
+      ],
+      "4-22": [
+        { "color": "green", "message": "Offer acceptance received from Priya Sharma" }
+      ],
+      "4-27": [
+        { "color": "blue", "message": "Final HR discussion scheduled with shortlisted candidate" }
+      ],
+      "4-29": [
+        { "color": "orange", "message": "Resume shortlisted for Data Analyst opening" },
+        { "color": "green", "message": "New employee onboarding process completed successfully" }
+      ]
+    },
       "legend": [
-        { "label": "Onboarded date", "color": "green" },
-        { "label": "Exit date", "color": "red" },
-        { "label": "To-do mentioned", "color": "orange" },
-        { "label": "Interview scheduled", "color": "blue" }
+        { "label": "Onboarded date",      "color": "green"  },
+        { "label": "Exit date",           "color": "red"    },
+        { "label": "To-do mentioned",     "color": "orange" },
+        { "label": "Interview scheduled", "color": "blue"   }
       ]
     },
     "clientSubmission": {
