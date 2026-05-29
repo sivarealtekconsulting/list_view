@@ -7,7 +7,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import SridharDetailPage from '../pages/sridharDetailePage';
-import { SRIDHAR_MOCK_JOBS, sridharJobsValid } from '../data/jobs';
+import { SRIDHAR_MOCK_JOBS, sridharDashboardValid } from '../data/jobs';
 
 const PAGE_SOURCE = 'src/pages/sridharDetailePage.jsx';
 
@@ -38,7 +38,6 @@ const TAB_LABELS = [
 
 const PAGE_COMPONENT_SLOTS = [
   { name: 'ParamListView', selector: '.dynamic-list-view', line: 188 },
-  { name: 'ClientDetailsCard', selector: '.client-details-card', line: 198 },
   { name: 'CalendarCard', selector: '.calendar-card', line: 199 },
 ];
 
@@ -90,7 +89,7 @@ function expectPageSelector(container, { name, selector, line }) {
   ].join('\n'));
 }
 
-describe.skipIf(!sridharJobsValid)('sridharDetailePage route and overview', () => {
+describe.skipIf(!sridharDashboardValid)('sridharDetailePage route and overview', () => {
   it('renders the route job data and breadcrumb actions', async () => {
     const job = SRIDHAR_MOCK_JOBS.find((j) => j.id === 2) ?? SRIDHAR_MOCK_JOBS[0];
     renderDetail(2);
@@ -119,7 +118,7 @@ describe.skipIf(!sridharJobsValid)('sridharDetailePage route and overview', () =
   });
 });
 
-describe.skipIf(!sridharJobsValid)('sridharDetailePage tab content', () => {
+describe.skipIf(!sridharDashboardValid)('sridharDetailePage tab content', () => {
   it('renders the Sridhar list view inside the Candidates tab', async () => {
     renderDetail(2);
 

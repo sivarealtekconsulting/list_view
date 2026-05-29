@@ -372,8 +372,8 @@ export default function GnaneshListView() {
                                 onClick={() => setFiltersOpen(true)}
                             />
                         </Tooltip>
-                        <Tooltip title="Add">
-                            <a href='/add'>
+                        <Tooltip title="Add Candidate">
+                            <a href="#gnanesh-candidate-form">
                                 <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
                             </a>
                         </Tooltip>

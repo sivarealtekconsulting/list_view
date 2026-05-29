@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Col, Row, Typography, Tooltip } from 'antd';
+import { Button, Card, Col, Popover, Row, Typography, Tooltip } from 'antd';
 import { CalendarOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import '../../styles/CalendarCard.css';
 
@@ -36,6 +36,12 @@ function resolveColor(color) {
   return DOT[color] || color;
 }
 
+// Accept both legacy string format ("blue") and new object format ({ color, message })
+function normalizeEvent(item) {
+  if (typeof item === 'string') return { color: item, message: null };
+  return { color: item.color ?? item, message: item.message ?? null };
+}
+
 function buildCells(year, month) {
   const first       = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -47,7 +53,6 @@ function buildCells(year, month) {
   return cells;
 }
 
-/* Split flat array into rows of `size` */
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -55,11 +60,13 @@ function chunk(arr, size) {
 }
 
 export default function CalendarCard({ data = {} }) {
-  const today = new Date();
-  const initialView = data.initialView ?? { year: 2026, month: 3 };
+  const today  = new Date();
   const events = data.events ?? DEFAULT_EVENTS;
   const legend = data.legend ?? DEFAULT_LEGEND;
-  const [view, setView] = useState(initialView);
+
+  // Always open on the current calendar month
+  const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
+  const [activePopover, setActivePopover] = useState(null);
 
   const weeks = chunk(buildCells(view.year, view.month), 7);
   const prev  = () => setView(v => v.month === 0  ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 });
@@ -85,34 +92,54 @@ export default function CalendarCard({ data = {} }) {
         </div>
       }
     >
-      {/* Day name headers - antd Row + Col flex="1" = 7 equal columns, no CSS grid needed */}
       <Row gutter={[6, 0]} className="calendar-day-names">
         {DAYS.map(d => (
           <Col key={d} flex="1" className="calendar-day-name">{d}</Col>
         ))}
       </Row>
 
-      {/* Week rows - CSS gap handles vertical spacing, antd gutter handles horizontal */}
       <div className="calendar-weeks">
         {weeks.map((week, wi) => (
           <Row key={wi} gutter={[6, 0]} align="top" className="calendar-week-row">
-            {week.map((c, i) => {
-              const key     = `${view.month}-${c.day}`;
-              const dots    = c.cur ? (events[key] || []).map(resolveColor) : [];
+            {week.map((c, ci) => {
+              const key  = `${view.month}-${c.day}`;
+              const dots = c.cur ? (events[key] || []).map(normalizeEvent) : [];
               const isToday = c.cur
-                && c.day   === today.getDate()
+                && c.day      === today.getDate()
                 && view.month === today.getMonth()
                 && view.year  === today.getFullYear();
+
               return (
-                <Col key={i} flex="1">
+                <Col key={ci} flex="1">
                   <div className={`calendar-cell${isToday ? ' today' : ''}${!c.cur ? ' faded' : ''}`}>
                     <div className="calendar-cell-inner">
                       <Text className="calendar-cell-number">{c.day}</Text>
                       {dots.length > 0 && (
                         <div className="calendar-cell-dots">
-                          {dots.map((col, j) => (
-                            <span key={j} className="calendar-dot" style={{ background: col }} />
-                          ))}
+                          {dots.map((event, j) => {
+                            const resolvedColor = resolveColor(event.color);
+                            const dotKey = `${wi}-${ci}-${j}`;
+
+                            if (!event.message) {
+                              return <span key={j} className="calendar-dot" style={{ background: resolvedColor }} />;
+                            }
+
+                            return (
+                              <Popover
+                                key={j}
+                                open={activePopover === dotKey}
+                                trigger={[]}
+                                content={<Text>{event.message}</Text>}
+                                destroyTooltipOnHide
+                              >
+                                <span
+                                  className="calendar-dot"
+                                  style={{ background: resolvedColor, cursor: 'pointer' }}
+                                  onClick={() => setActivePopover(prev => prev === dotKey ? null : dotKey)}
+                                />
+                              </Popover>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -124,7 +151,6 @@ export default function CalendarCard({ data = {} }) {
         ))}
       </div>
 
-      {/* Legend */}
       <div className="calendar-legend">
         {legend.map(({ label, color }) => (
           <div key={label} className="calendar-legend-item">
