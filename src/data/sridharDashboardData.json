@@ -192,7 +192,7 @@
     }
   ],
   "detail": {
-    "summaryText": "",
+    "summaryText": "Seeking an experienced Snowflake Migration Architect to lead cloud data warehouse migration initiatives for enterprise logistics clients.",
     "skills": ["Snowflake", "Data Governance", "React Native", "Zero Trust", "SAP S/4HANA"],
     "candidates": [
       {
@@ -308,7 +308,7 @@
       {
         "type": "purple",
         "pill": "Tagged",
-        "heading": "Rate approval pending for DataCrest",
+        "heading": "",
         "body": "Client asked for the final Snowflake architect rate card before releasing the interview invite.",
         "footerLeft": "Tagged by Sridhar",
         "footerRight": "09:30 AM",
