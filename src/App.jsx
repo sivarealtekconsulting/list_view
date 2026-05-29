@@ -16,18 +16,20 @@ import SridharDashboardPage from './pages/sridharDashboard';
 import SridharDetailPage from './pages/sridharDetailePage';
 import NewDemoPageNash from './pages/NewDemoPageNash';
 import StickyNotesCard from './components/cards/StickyNotesCard';
-import StudentDashboardPage from './pages/StudentDashboardPage';
+import StudentDashboardPage from './pages/suryaDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
-import PugazhDashboard      from './pages/pugazh-dashboard';
-import PugazhListView       from './pages/pugazh-listview';
+import PugazhDashboard from './pages/pugazh-dashboard';
+import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
-  
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 import SonyDashboard from './pages/SonyDashboard';
 import SonyDetailedView from './pages/SonyDetailedView';
+// import ListViews from './components/suryaListView';
+import DetailPages from './pages/suryaDetailview';
+import JobEditPage from './pages/suryaJobEditPage';
 
 export default function App() {
   return (
@@ -57,7 +59,7 @@ export default function App() {
 
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
-x          <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -65,14 +67,18 @@ x          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/submissions" element={<SubmissionsPage />} />
           <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/add" element={<StickyNotesCard />} />
-          <Route
-            path="/student-dashboard"
-            element={<StudentDashboardPage />}
-          />
           <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
+          {/* <Route path="/Surya-dashboard" element={<ListViews />} /> */}
+          <Route path="/Surya-dashboard" element={<StudentDashboardPage />} />
+          <Route path="/Surya-detailview/:jobId" element={<DetailPages />} />
+          <Route
+            path="/Surya-job-edit"
+            element={<JobEditPage />}
+          />
+
           <Route path="/pugazh-listview" element={<PugazhListView />} />
           <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
-          <Route path="/jobs" element={<JobCollapsePage />} />
+          {/* <Route path="/jobs" element={<JobCollapsePage />} /> */}
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
