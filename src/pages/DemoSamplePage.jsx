@@ -33,7 +33,7 @@ import { formatters, validationRules } from '../components/form/validation';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import OnboardingCard from '../components/cards/OnboardingCard';
-import { SONY_MOCK_JOBS } from '../data/sonyMockData';
+import venkateshJobsData from '../data/venkateshJobs.json';
 import StatusBadge from '../components/StatusBadge';
 import AssigneeAvatars from '../components/AssigneeAvatars';
 import CustomPagination from '../components/CustomPagination';
@@ -63,8 +63,10 @@ const assigneeOptions = [
   { value: 'David Wilson', label: 'David Wilson' },
 ];
 
-const MY_JOBS_COUNT = 6;
-const ALL_JOBS_COUNT = 2456;
+const VENKATESH_JOBS = venkateshJobsData.jobs;
+const MY_JOBS_COUNT = venkateshJobsData.summary.myJobsCount;
+const ALL_JOBS_COUNT = venkateshJobsData.summary.allJobsCount;
+const EMPTY_VALUE = '-';
 
 const columnOptions = [
   { key: 'createdAt', label: 'Created Date' },
@@ -86,6 +88,27 @@ const actionsMenu = {
     { key: 'delete', label: 'Delete', danger: true },
   ],
 };
+
+function displayValue(value) {
+  if (value === null || value === undefined) {
+    return EMPTY_VALUE;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return EMPTY_VALUE;
+  }
+
+  return value;
+}
+
+function getTextValue(value) {
+  const displayed = displayValue(value);
+  return displayed === EMPTY_VALUE ? '' : String(displayed);
+}
+
+function hasDisplayValue(value) {
+  return displayValue(value) !== EMPTY_VALUE;
+}
 
 function getComparableValue(record, field) {
   const value = record[field];
@@ -136,12 +159,12 @@ function VenkateshListView() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
-      ? SONY_MOCK_JOBS
-      : SONY_MOCK_JOBS.filter(
+      ? VENKATESH_JOBS
+      : VENKATESH_JOBS.filter(
         (job) => (
-          job.title.toLowerCase().includes(q)
-          || job.location.toLowerCase().includes(q)
-          || job.status.toLowerCase().includes(q)
+          getTextValue(job.title).toLowerCase().includes(q)
+          || getTextValue(job.location).toLowerCase().includes(q)
+          || getTextValue(job.status).toLowerCase().includes(q)
         ),
       );
 
@@ -179,52 +202,77 @@ function VenkateshListView() {
       key: 'icons',
       visibilityKey: 'jobsGroup',
       width: 60,
-      render: (_, record) => (
-        <Space size={4} className="job-row-icons">
-          <Tooltip title="Preview">
-            <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
-          </Tooltip>
-          {record.hasBookmark && (
-            <Tooltip title="Bookmarked">
-              <BookFilled className="job-row-bookmark-icon" />
-            </Tooltip>
-          )}
-          {record.hasLinkedIn && (
-            <Tooltip title="LinkedIn">
-              <LinkedinFilled className="job-row-linkedin-icon" />
-            </Tooltip>
-          )}
-        </Space>
-      ),
+      render: (_, record) => {
+        const showPreview = hasDisplayValue(record.id) && hasDisplayValue(record.title);
+        const showBookmark = Boolean(record.hasBookmark);
+        const showLinkedIn = Boolean(record.hasLinkedIn);
+
+        if (!showPreview && !showBookmark && !showLinkedIn) {
+          return null;
+        }
+
+        return (
+          <Space size={4} className="job-row-icons">
+            {showPreview && (
+              <Tooltip title="Preview">
+                <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
+              </Tooltip>
+            )}
+            {showBookmark && (
+              <Tooltip title="Bookmarked">
+                <BookFilled className="job-row-bookmark-icon" />
+              </Tooltip>
+            )}
+            {showLinkedIn && (
+              <Tooltip title="LinkedIn">
+                <LinkedinFilled className="job-row-linkedin-icon" />
+              </Tooltip>
+            )}
+          </Space>
+        );
+      },
     },
     {
       title: 'Jobs',
       dataIndex: 'title',
       key: 'title',
       visibilityKey: 'jobsGroup',
-      sorter: (a, b) => a.title.localeCompare(b.title),
+      sorter: (a, b) => getTextValue(a.title).localeCompare(getTextValue(b.title)),
       width: 190,
-      render: (title, record) => (
-        <Space align="start" size={6} className="job-title-cell">
-          <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/Venkatesh-detailview/${record.id}`}>
-              {title}
-            </RouterLink>
-            <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
+      render: (title, record) => {
+        const titleText = displayValue(title);
+        const canOpenDetail = hasDisplayValue(title) && hasDisplayValue(record.id);
+
+        return (
+          <Space align="start" size={6} className="job-title-cell">
+            <Space direction="vertical" size={2}>
+              {canOpenDetail ? (
+                <RouterLink className="job-cell-link" to={`/Venkatesh-detailview/${record.id}`}>
+                  {titleText}
+                </RouterLink>
+              ) : (
+                <Text className="job-cell-primary">{titleText}</Text>
+              )}
+              <Text type="secondary" className="job-cell-secondary">
+                {displayValue(record.client)}
+              </Text>
+            </Space>
           </Space>
-        </Space>
-      ),
+        );
+      },
     },
     {
       title: 'Location',
       dataIndex: 'location',
       key: 'location',
-      sorter: (a, b) => a.location.localeCompare(b.location),
+      sorter: (a, b) => getTextValue(a.location).localeCompare(getTextValue(b.location)),
       width: '100%',
       render: (location, record) => (
         <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{location}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.locationType}</Text>
+          <Text className="job-cell-primary">{displayValue(location)}</Text>
+          <Text type="secondary" className="job-cell-secondary">
+            {displayValue(record.locationType)}
+          </Text>
         </Space>
       ),
     },
@@ -232,12 +280,14 @@ function VenkateshListView() {
       title: 'Experience',
       dataIndex: 'experience',
       key: 'experience',
-      sorter: (a, b) => a.experience.localeCompare(b.experience),
+      sorter: (a, b) => getTextValue(a.experience).localeCompare(getTextValue(b.experience)),
       width: '100%',
       render: (experience, record) => (
         <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{experience}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.employmentType}</Text>
+          <Text className="job-cell-primary">{displayValue(experience)}</Text>
+          <Text type="secondary" className="job-cell-secondary">
+            {displayValue(record.employmentType)}
+          </Text>
         </Space>
       ),
     },
@@ -245,29 +295,39 @@ function VenkateshListView() {
       title: 'Client Rate (hr)',
       dataIndex: 'clientRate',
       key: 'clientRate',
-      sorter: (a, b) => a.clientRate - b.clientRate,
+      sorter: (a, b) => (Number(a.clientRate) || 0) - (Number(b.clientRate) || 0),
       onHeaderCell: () => ({ className: 'col-header-left' }),
       width: '100%',
-      render: (rate) => <Text className="job-cell-primary">${rate}</Text>,
+      render: (rate) => (
+        <Text className="job-cell-primary">
+          {hasDisplayValue(rate) ? `$${rate}` : EMPTY_VALUE}
+        </Text>
+      ),
     },
     {
       title: 'Target Sub',
       dataIndex: 'targetSub',
       key: 'targetSub',
-      sorter: (a, b) => a.targetSub.filled - b.targetSub.filled,
+      sorter: (a, b) => (a.targetSub?.filled ?? 0) - (b.targetSub?.filled ?? 0),
       onHeaderCell: () => ({ className: 'col-header-left' }),
       width: '100%',
-      render: (targetSub) => (
-        <Text className="job-cell-primary">{targetSub.filled} of {targetSub.total}</Text>
-      ),
+      render: (targetSub) => {
+        const hasTargetSub = hasDisplayValue(targetSub?.filled) && hasDisplayValue(targetSub?.total);
+
+        return (
+          <Text className="job-cell-primary">
+            {hasTargetSub ? `${targetSub.filled} of ${targetSub.total}` : EMPTY_VALUE}
+          </Text>
+        );
+      },
     },
     {
       title: 'Pipeline',
       dataIndex: 'pipeline',
       key: 'pipeline',
-      sorter: (a, b) => a.pipeline - b.pipeline,
+      sorter: (a, b) => (Number(a.pipeline) || 0) - (Number(b.pipeline) || 0),
       width: '100%',
-      render: (pipeline) => <Text className="job-cell-primary">{pipeline}</Text>,
+      render: (pipeline) => <Text className="job-cell-primary">{displayValue(pipeline)}</Text>,
     },
     {
       title: 'Assignee',
@@ -275,28 +335,36 @@ function VenkateshListView() {
       key: 'assignees',
       width: '100%',
       render: (assignees, record) => (
-        <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
+        Array.isArray(assignees) && assignees.length > 0
+          ? <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
+          : <Text className="job-cell-primary">{EMPTY_VALUE}</Text>
       ),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      sorter: (a, b) => a.status.localeCompare(b.status),
+      sorter: (a, b) => getTextValue(a.status).localeCompare(getTextValue(b.status)),
       onHeaderCell: () => ({ className: 'col-header-left' }),
       width: '100%',
-      render: (status) => <StatusBadge status={status} />,
+      render: (status) => (
+        hasDisplayValue(status)
+          ? <StatusBadge status={status} />
+          : <Text className="job-cell-primary">{EMPTY_VALUE}</Text>
+      ),
     },
     {
       title: 'Created date',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      sorter: (a, b) => new Date(getTextValue(a.createdAt)) - new Date(getTextValue(b.createdAt)),
       width: '100%',
       render: (date, record) => (
         <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{date}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.createdAgo}</Text>
+          <Text className="job-cell-primary">{displayValue(date)}</Text>
+          <Text type="secondary" className="job-cell-secondary">
+            {displayValue(record.createdAgo)}
+          </Text>
         </Space>
       ),
     },
