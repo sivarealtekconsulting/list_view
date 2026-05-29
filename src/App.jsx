@@ -39,6 +39,7 @@ import CandidateOnboardingListView from './components/CandidateOnboardingListVie
 // import ListViews from './components/suryaListView';
 import DetailPages from './pages/suryaDetailview';
 import JobEditPage from './pages/suryaJobEditPage';
+import ZinnextDetailedView from './pages/zinnext-detailedView';
 
 export default function App() {
   return (
@@ -107,6 +108,8 @@ export default function App() {
             path="/candidate-onboarding"
             element={<CandidateOnboardingListView />}
           />
+          <Route path="/zinnext-DetailedView" element={<ZinnextDetailedView />} />
+
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
