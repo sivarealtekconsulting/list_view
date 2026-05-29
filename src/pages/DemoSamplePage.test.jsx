@@ -39,8 +39,15 @@ function getPersonalityListCard() {
   return screen.getByText('Personality List').closest('.ant-card');
 }
 
+const _MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const _today = new Date();
+function _monthLabel(offset = 0) {
+  const d = new Date(_today.getFullYear(), _today.getMonth() + offset, 1);
+  return `${_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function getCalendarCard() {
-  return screen.getByText('April 2026').closest('.ant-card');
+  return screen.getByText(_monthLabel(0)).closest('.ant-card');
 }
 
 describe('DemoSamplePage dashboard', () => {
@@ -120,7 +127,7 @@ describe('DemoSamplePage calendar', () => {
   it('renders the default calendar month', () => {
     renderDemoPage();
 
-    expect(screen.getByText('April 2026')).toBeInTheDocument();
+    expect(screen.getByText(_monthLabel(0))).toBeInTheDocument();
   });
 
   it('moves between months using calendar navigation', async () => {
@@ -128,10 +135,10 @@ describe('DemoSamplePage calendar', () => {
 
     const calendarCard = getCalendarCard();
     await userEvent.click(within(calendarCard).getByRole('button', { name: /left/i }));
-    expect(screen.getByText('March 2026')).toBeInTheDocument();
+    expect(screen.getByText(_monthLabel(-1))).toBeInTheDocument();
 
     await userEvent.click(within(calendarCard).getByRole('button', { name: /right/i }));
-    expect(screen.getByText('April 2026')).toBeInTheDocument();
+    expect(screen.getByText(_monthLabel(0))).toBeInTheDocument();
   });
 
   it('renders calendar legend items', () => {

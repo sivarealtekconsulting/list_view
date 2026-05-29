@@ -7,21 +7,62 @@
  * Run   : npm test -- CalendarCard.test.jsx
  *
  * Coverage areas
- *  1. buildCells()       — pure function unit tests
- *  2. Default view       — April 2026 heading
- *  3. Month navigation   — prev and next month buttons
- *  4. Year boundary      — Dec 2025 ← and Jan 2027 →
- *  5. Day name headers   — Sun through Sat
- *  6. Legend items       — 4 event-type labels
- *  7. Event dots         — dots rendered for known event dates
- *  8. Navigation buttons — presence via icon selectors
+ *  1. buildCells()           — pure function unit tests
+ *  2. Default view           — opens on the current calendar month
+ *  3. Month navigation       — prev / next buttons
+ *  4. Year boundary          — crosses December / January
+ *  5. Day name headers       — Sun through Sat
+ *  6. Legend items           — 4 event-type dots
+ *  7. Event dots             — rendered for known event dates
+ *  8. Navigation buttons     — presence via icon selectors
+ *  9. Popover on dot click   — message appears / toggles / switches
  */
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CalendarCard from '../components/cards/CalendarCard';
 
-/** Local mirror of the buildCells logic in CalendarCard.jsx */
+// ── Shared helpers ────────────────────────────────────────────────────────────
+const MONTHS = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
+
+const today = new Date();
+
+/** "Month YYYY" string for an offset in months from today */
+function monthLabel(offset = 0) {
+  const d = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** Signed number of month clicks to reach (targetYear, targetMonthIdx) from today */
+function clicksTo(targetYear, targetMonthIdx) {
+  return (targetYear - today.getFullYear()) * 12 + (targetMonthIdx - today.getMonth());
+}
+
+/** Click prev or next `Math.abs(offset)` times */
+async function navigate(container, offset) {
+  if (offset === 0) return;
+  const btn = offset < 0
+    ? container.querySelector('.anticon-left').closest('button')
+    : container.querySelector('.anticon-right').closest('button');
+  for (let i = 0; i < Math.abs(offset); i++) await userEvent.click(btn);
+}
+
+const renderCard = () => render(<CalendarCard />);
+const getPrevBtn  = (c) => c.querySelector('.anticon-left').closest('button');
+const getNextBtn  = (c) => c.querySelector('.anticon-right').closest('button');
+
+// Pre-compute click counts for year-boundary tests
+const CLICKS_TO_DEC_2025 = Math.abs(clicksTo(2025, 11));
+const CLICKS_TO_NOV_2025 = Math.abs(clicksTo(2025, 10));
+const CLICKS_TO_JAN_2027 = clicksTo(2027, 0);
+const CLICKS_TO_APRIL_2026 = clicksTo(2026, 3); // DEFAULT_EVENTS live here
+
+// ════════════════════════════════════════════════════════════════════════════
+// 1. buildCells() — pure function unit tests
+// ════════════════════════════════════════════════════════════════════════════
 function buildCells(year, month) {
   const first       = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -33,14 +74,6 @@ function buildCells(year, month) {
   return cells;
 }
 
-const renderCard = () => render(<CalendarCard />);
-
-const getPrevBtn = (container) => container.querySelector('.anticon-left').closest('button');
-const getNextBtn = (container) => container.querySelector('.anticon-right').closest('button');
-
-// ════════════════════════════════════════════════════════════════════════════
-// 1. buildCells() — pure function unit tests
-// ════════════════════════════════════════════════════════════════════════════
 describe('buildCells() pure function', () => {
   it('returns a multiple of 7 cells (complete weeks)', () => {
     [[2026, 3], [2026, 0], [2026, 11], [2025, 1]].forEach(([y, m]) => {
@@ -49,55 +82,47 @@ describe('buildCells() pure function', () => {
   });
 
   it('marks April 2026 with 30 current-month cells', () => {
-    const cells = buildCells(2026, 3);
-    expect(cells.filter(c => c.cur)).toHaveLength(30);
+    expect(buildCells(2026, 3).filter(c => c.cur)).toHaveLength(30);
   });
 
   it('marks January 2026 with 31 current-month cells', () => {
-    const cells = buildCells(2026, 0);
-    expect(cells.filter(c => c.cur)).toHaveLength(31);
+    expect(buildCells(2026, 0).filter(c => c.cur)).toHaveLength(31);
   });
 
   it('marks February 2026 with 28 current-month cells', () => {
-    const cells = buildCells(2026, 1);
-    expect(cells.filter(c => c.cur)).toHaveLength(28);
+    expect(buildCells(2026, 1).filter(c => c.cur)).toHaveLength(28);
   });
 
   it('April 2026 first day is Wednesday — 3 leading filler cells', () => {
-    const cells = buildCells(2026, 3);
-    const leadingFillers = cells.findIndex(c => c.cur);
-    expect(leadingFillers).toBe(3);
+    expect(buildCells(2026, 3).findIndex(c => c.cur)).toBe(3);
   });
 
   it('all cells before the first current day are filler', () => {
     const cells = buildCells(2026, 3);
-    const firstCurrentIdx = cells.findIndex(c => c.cur);
-    cells.slice(0, firstCurrentIdx).forEach(c => expect(c.cur).toBe(false));
+    const firstIdx = cells.findIndex(c => c.cur);
+    cells.slice(0, firstIdx).forEach(c => expect(c.cur).toBe(false));
   });
 
   it('all cells after the last current day are filler', () => {
     const cells = buildCells(2026, 3);
-    const lastCurrentIdx = cells.map(c => c.cur).lastIndexOf(true);
-    cells.slice(lastCurrentIdx + 1).forEach(c => expect(c.cur).toBe(false));
+    const lastIdx = cells.map(c => c.cur).lastIndexOf(true);
+    cells.slice(lastIdx + 1).forEach(c => expect(c.cur).toBe(false));
   });
 
   it('handles December — 31 current-month cells', () => {
-    const cells = buildCells(2026, 11);
-    expect(cells.filter(c => c.cur)).toHaveLength(31);
+    expect(buildCells(2026, 11).filter(c => c.cur)).toHaveLength(31);
   });
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// 2. Default view — April 2026
+// 2. Default view — opens on the current month
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard default view', () => {
-  it('renders without crashing', () => {
-    renderCard();
-  });
+  it('renders without crashing', () => { renderCard(); });
 
-  it('shows "April 2026" as the default heading', () => {
+  it('shows the current month and year as the default heading', () => {
     renderCard();
-    expect(screen.getByText('April 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(0))).toBeInTheDocument();
   });
 
   it('renders the calendar-card container', () => {
@@ -105,14 +130,14 @@ describe('CalendarCard default view', () => {
     expect(container.querySelector('.calendar-card')).toBeInTheDocument();
   });
 
-  it('does not show March 2026 by default', () => {
+  it('does not show the previous month heading by default', () => {
     renderCard();
-    expect(screen.queryByText('March 2026')).not.toBeInTheDocument();
+    expect(screen.queryByText(monthLabel(-1))).not.toBeInTheDocument();
   });
 
-  it('does not show May 2026 by default', () => {
+  it('does not show the next month heading by default', () => {
     renderCard();
-    expect(screen.queryByText('May 2026')).not.toBeInTheDocument();
+    expect(screen.queryByText(monthLabel(1))).not.toBeInTheDocument();
   });
 });
 
@@ -120,37 +145,37 @@ describe('CalendarCard default view', () => {
 // 3. Month navigation
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard month navigation', () => {
-  it('shows March 2026 after clicking the previous button once', async () => {
+  it('shows 1 month back after clicking the previous button once', async () => {
     const { container } = renderCard();
     await userEvent.click(getPrevBtn(container));
-    expect(screen.getByText('March 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(-1))).toBeInTheDocument();
   });
 
-  it('shows May 2026 after clicking the next button once', async () => {
+  it('shows 1 month ahead after clicking the next button once', async () => {
     const { container } = renderCard();
     await userEvent.click(getNextBtn(container));
-    expect(screen.getByText('May 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(1))).toBeInTheDocument();
   });
 
-  it('returns to April 2026 when next then prev are clicked', async () => {
+  it('returns to the current month when next then prev are clicked', async () => {
     const { container } = renderCard();
     await userEvent.click(getNextBtn(container));
     await userEvent.click(getPrevBtn(container));
-    expect(screen.getByText('April 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(0))).toBeInTheDocument();
   });
 
-  it('shows February 2026 after clicking prev twice', async () => {
+  it('shows 2 months back after clicking prev twice', async () => {
     const { container } = renderCard();
     await userEvent.click(getPrevBtn(container));
     await userEvent.click(getPrevBtn(container));
-    expect(screen.getByText('February 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(-2))).toBeInTheDocument();
   });
 
-  it('shows June 2026 after clicking next twice', async () => {
+  it('shows 2 months ahead after clicking next twice', async () => {
     const { container } = renderCard();
     await userEvent.click(getNextBtn(container));
     await userEvent.click(getNextBtn(container));
-    expect(screen.getByText('June 2026')).toBeInTheDocument();
+    expect(screen.getByText(monthLabel(2))).toBeInTheDocument();
   });
 });
 
@@ -158,21 +183,21 @@ describe('CalendarCard month navigation', () => {
 // 4. Year boundary navigation
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard year boundary navigation', () => {
-  it('shows December 2025 after clicking prev 4 times from April 2026', async () => {
+  it(`shows December 2025 after clicking prev ${CLICKS_TO_DEC_2025} times`, async () => {
     const { container } = renderCard();
-    for (let i = 0; i < 4; i++) await userEvent.click(getPrevBtn(container));
+    await navigate(container, -CLICKS_TO_DEC_2025);
     expect(screen.getByText('December 2025')).toBeInTheDocument();
   });
 
-  it('shows January 2027 after clicking next 9 times from April 2026', async () => {
+  it(`shows January 2027 after clicking next ${CLICKS_TO_JAN_2027} times`, async () => {
     const { container } = renderCard();
-    for (let i = 0; i < 9; i++) await userEvent.click(getNextBtn(container));
+    await navigate(container, CLICKS_TO_JAN_2027);
     expect(screen.getByText('January 2027')).toBeInTheDocument();
   });
 
-  it('shows November 2025 after clicking prev 5 times from April 2026', async () => {
+  it(`shows November 2025 after clicking prev ${CLICKS_TO_NOV_2025} times`, async () => {
     const { container } = renderCard();
-    for (let i = 0; i < 5; i++) await userEvent.click(getPrevBtn(container));
+    await navigate(container, -CLICKS_TO_NOV_2025);
     expect(screen.getByText('November 2025')).toBeInTheDocument();
   });
 });
@@ -181,39 +206,11 @@ describe('CalendarCard year boundary navigation', () => {
 // 5. Day name headers
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard day name headers', () => {
-  it('renders "Sun" header', () => {
-    renderCard();
-    expect(screen.getByText('Sun')).toBeInTheDocument();
-  });
-
-  it('renders "Mon" header', () => {
-    renderCard();
-    expect(screen.getByText('Mon')).toBeInTheDocument();
-  });
-
-  it('renders "Tue" header', () => {
-    renderCard();
-    expect(screen.getByText('Tue')).toBeInTheDocument();
-  });
-
-  it('renders "Wed" header', () => {
-    renderCard();
-    expect(screen.getByText('Wed')).toBeInTheDocument();
-  });
-
-  it('renders "Thu" header', () => {
-    renderCard();
-    expect(screen.getByText('Thu')).toBeInTheDocument();
-  });
-
-  it('renders "Fri" header', () => {
-    renderCard();
-    expect(screen.getByText('Fri')).toBeInTheDocument();
-  });
-
-  it('renders "Sat" header', () => {
-    renderCard();
-    expect(screen.getByText('Sat')).toBeInTheDocument();
+  ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+    it(`renders "${day}" header`, () => {
+      renderCard();
+      expect(screen.getByText(day)).toBeInTheDocument();
+    });
   });
 
   it('renders exactly 7 day-name header cells', () => {
@@ -223,9 +220,7 @@ describe('CalendarCard day name headers', () => {
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// 6. Legend items — dot indicators
-//    Tests are dot-based because the text labels are currently hidden.
-//    Add text assertions here if <Text>{label}</Text> is re-enabled.
+// 6. Legend items
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard legend items', () => {
   it('renders 4 legend items in the legend container', () => {
@@ -267,11 +262,6 @@ describe('CalendarCard legend items', () => {
 // 7. Event dots
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard event dots', () => {
-  it('renders at least one calendar-dot in April 2026 (which has events)', () => {
-    const { container } = renderCard();
-    expect(container.querySelectorAll('.calendar-dot').length).toBeGreaterThan(0);
-  });
-
   it('renders the week rows container', () => {
     const { container } = renderCard();
     expect(container.querySelector('.calendar-weeks')).toBeInTheDocument();
@@ -282,18 +272,26 @@ describe('CalendarCard event dots', () => {
     expect(container.querySelectorAll('.calendar-cell').length).toBeGreaterThan(0);
   });
 
-  it('dot count decreases when navigating to a month without events', async () => {
+  it('renders dots when navigating to April 2026 (default events month)', async () => {
     const { container } = renderCard();
+    await navigate(container, CLICKS_TO_APRIL_2026);
+    expect(container.querySelectorAll('.calendar-dot').length).toBeGreaterThan(0);
+  });
+
+  it('dot count decreases when navigating away from a month with events', async () => {
+    const { container } = renderCard();
+    // Navigate to April 2026 — has DEFAULT_EVENTS
+    await navigate(container, CLICKS_TO_APRIL_2026);
     const dotsBefore = container.querySelectorAll('.calendar-dot').length;
-    // Navigate to August 2026 (month 7) — no EVENTS defined for that month
+    expect(dotsBefore).toBeGreaterThan(0);
+    // Advance 4 months to August — no events
     for (let i = 0; i < 4; i++) await userEvent.click(getNextBtn(container));
-    const dotsAfter = container.querySelectorAll('.calendar-dot').length;
-    expect(dotsAfter).toBeLessThan(dotsBefore);
+    expect(container.querySelectorAll('.calendar-dot').length).toBeLessThan(dotsBefore);
   });
 });
 
 // ════════════════════════════════════════════════════════════════════════════
-// 8. Navigation buttons — presence via icon selectors
+// 8. Navigation buttons
 // ════════════════════════════════════════════════════════════════════════════
 describe('CalendarCard navigation buttons', () => {
   it('renders the calendar icon in the header', () => {
@@ -320,15 +318,75 @@ describe('CalendarCard navigation buttons', () => {
 
   it('prev button contains the anticon-left icon', () => {
     const { container } = renderCard();
-    const prevBtn = getPrevBtn(container);
-    expect(prevBtn).toBeInTheDocument();
-    expect(prevBtn.querySelector('.anticon-left')).toBeInTheDocument();
+    const btn = getPrevBtn(container);
+    expect(btn).toBeInTheDocument();
+    expect(btn.querySelector('.anticon-left')).toBeInTheDocument();
   });
 
   it('next button contains the anticon-right icon', () => {
     const { container } = renderCard();
-    const nextBtn = getNextBtn(container);
-    expect(nextBtn).toBeInTheDocument();
-    expect(nextBtn.querySelector('.anticon-right')).toBeInTheDocument();
+    const btn = getNextBtn(container);
+    expect(btn).toBeInTheDocument();
+    expect(btn.querySelector('.anticon-right')).toBeInTheDocument();
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// 9. Popover on dot click
+// ════════════════════════════════════════════════════════════════════════════
+describe('CalendarCard popover on dot click', () => {
+  const m = today.getMonth(); // 0-indexed current month
+
+  // Events defined for the current month so they appear on the first render
+  const popoverData = {
+    events: {
+      [`${m}-10`]: [{ color: 'blue',  message: 'Interview scheduled for day 10' }],
+      [`${m}-20`]: [{ color: 'green', message: 'Candidate onboarded on day 20'  }],
+    },
+    legend: [
+      { label: 'Interview scheduled', color: 'blue'  },
+      { label: 'Onboarded date',      color: 'green' },
+    ],
+  };
+
+  function renderWithData() {
+    return render(<CalendarCard data={popoverData} />);
+  }
+
+  it('renders event dots for the current month when data is passed', () => {
+    const { container } = renderWithData();
+    expect(container.querySelectorAll('.calendar-dot').length).toBeGreaterThan(0);
+  });
+
+  it('event dots with messages have pointer cursor', () => {
+    const { container } = renderWithData();
+    const dot = container.querySelector('.calendar-dot');
+    expect(dot.style.cursor).toBe('pointer');
+  });
+
+  it('clicking a message dot shows the popover text', async () => {
+    const { container } = renderWithData();
+    const dot = container.querySelector('.calendar-dot');
+    await userEvent.click(dot);
+    expect(screen.getByText('Interview scheduled for day 10')).toBeInTheDocument();
+  });
+
+  it('clicking the same dot again closes the popover', async () => {
+    const { container } = renderWithData();
+    const dot = container.querySelector('.calendar-dot');
+    await userEvent.click(dot);
+    expect(screen.getByText('Interview scheduled for day 10')).toBeInTheDocument();
+    await userEvent.click(dot);
+    expect(screen.queryByText('Interview scheduled for day 10')).not.toBeInTheDocument();
+  });
+
+  it('clicking a second dot closes the first popover and opens the second', async () => {
+    const { container } = renderWithData();
+    const [dot1, dot2] = container.querySelectorAll('.calendar-dot');
+    await userEvent.click(dot1);
+    expect(screen.getByText('Interview scheduled for day 10')).toBeInTheDocument();
+    await userEvent.click(dot2);
+    expect(screen.queryByText('Interview scheduled for day 10')).not.toBeInTheDocument();
+    expect(screen.getByText('Candidate onboarded on day 20')).toBeInTheDocument();
   });
 });

@@ -120,16 +120,6 @@ export default function CalendarCard({ data = {} }) {
                             const resolvedColor = resolveColor(event.color);
                             const dotKey = `${wi}-${ci}-${j}`;
 
-                            const dotSpan = (
-                              <span
-                                className="calendar-dot"
-                                style={{
-                                  background: resolvedColor,
-                                  cursor: event.message ? 'pointer' : 'default',
-                                }}
-                              />
-                            );
-
                             if (!event.message) {
                               return <span key={j} className="calendar-dot" style={{ background: resolvedColor }} />;
                             }
@@ -138,11 +128,15 @@ export default function CalendarCard({ data = {} }) {
                               <Popover
                                 key={j}
                                 open={activePopover === dotKey}
-                                onOpenChange={(open) => setActivePopover(open ? dotKey : null)}
-                                trigger="click"
+                                trigger={[]}
                                 content={<Text>{event.message}</Text>}
+                                destroyTooltipOnHide
                               >
-                                {dotSpan}
+                                <span
+                                  className="calendar-dot"
+                                  style={{ background: resolvedColor, cursor: 'pointer' }}
+                                  onClick={() => setActivePopover(prev => prev === dotKey ? null : dotKey)}
+                                />
                               </Popover>
                             );
                           })}

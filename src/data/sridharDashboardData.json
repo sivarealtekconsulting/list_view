@@ -192,7 +192,7 @@
     }
   ],
   "detail": {
-    "summaryText": "Sridhar's API mock detail view joins requisition context, candidate movement, client submissions, notes, onboarding, and account information from one JSON payload.",
+    "summaryText": "",
     "skills": ["Snowflake", "Data Governance", "React Native", "Zero Trust", "SAP S/4HANA"],
     "candidates": [
       {
