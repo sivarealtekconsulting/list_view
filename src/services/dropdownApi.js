@@ -1,6 +1,8 @@
 const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
-const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+// const AUTH_URL = 'http://192.168.1.66/authapi/v1';
 const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
+export const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+export const SUBMISSIONS_URL = BASE_URL;
 
 const LOGIN_CREDENTIALS = {
   email: 'zinnext@realtekconsulting.net',
@@ -48,20 +50,46 @@ async function authHeaders() {
   };
 }
 
-async function apiGet(path) {
+export async function fetchJsonWithAuth(baseUrl, path, options = {}) {
   const headers = await authHeaders();
-  let res = await fetch(`${BASE_URL}${path}`, { headers });
+  const requestOptions = {
+    ...options,
+    headers: {
+      ...headers,
+      ...options.headers,
+    },
+  };
+
+  let res = await fetch(`${baseUrl}${path}`, requestOptions);
 
   // Token expired — re-login once and retry
   if (res.status === 401) {
     localStorage.removeItem('authToken');
     const freshHeaders = await authHeaders();
-    res = await fetch(`${BASE_URL}${path}`, { headers: freshHeaders });
+    res = await fetch(`${baseUrl}${path}`, {
+      ...requestOptions,
+      headers: {
+        ...freshHeaders,
+        ...options.headers,
+      },
+    });
   }
 
-  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
-  const json = await res.json();
+  if (!res.ok) {
+    const error = new Error(`API ${res.status}: ${res.statusText}`);
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+}
+
+export async function apiGetWithAuth(baseUrl, path) {
+  const json = await fetchJsonWithAuth(baseUrl, path);
   return json.data ?? json;
+}
+
+async function apiGet(path) {
+  return apiGetWithAuth(BASE_URL, path);
 }
 
 /**

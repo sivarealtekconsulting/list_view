@@ -7,6 +7,7 @@ import {
   Dropdown,
   Flex,
   Input,
+  Spin,
   Space,
   Table,
   Tabs,
@@ -60,17 +61,33 @@ function tabLabel(label, count) {
   );
 }
 
-export default function ParamListView({ listName = 'List', fields = [], dataSource = [] }) {
+export default function ParamListView({
+  listName = 'List',
+  fields = [],
+  dataSource = [],
+  loading = false,
+  total,
+  current,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  rowSelection = true,
+  className = '',
+  tableClassName = 'job-list-table',
+}) {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState([]);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const isControlledPagination = typeof current === 'number' && typeof pageSize === 'number';
+  const activePagination = isControlledPagination ? { current, pageSize } : pagination;
 
   const normalizedFields = useMemo(() => (
     fields
       .map((field) => ({
+        ...field,
         key: getFieldValue(field),
         label: getFieldLabel(field),
       }))
@@ -92,10 +109,16 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
     ));
   }, [dataSource, normalizedFields, search]);
 
+  const displayTotal = search.trim()
+    ? filteredData.length
+    : typeof total === 'number' ? total : filteredData.length;
+
   const pagedData = useMemo(() => {
-    const start = (pagination.current - 1) * pagination.pageSize;
-    return filteredData.slice(start, start + pagination.pageSize);
-  }, [filteredData, pagination]);
+    if (isControlledPagination) return filteredData;
+
+    const start = (activePagination.current - 1) * activePagination.pageSize;
+    return filteredData.slice(start, start + activePagination.pageSize);
+  }, [activePagination.current, activePagination.pageSize, filteredData, isControlledPagination]);
 
   const columns = useMemo(() => (
     normalizedFields
@@ -104,11 +127,15 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
         title: field.label,
         dataIndex: field.key,
         key: field.key,
-        sorter: (a, b) => String(getRecordValue(a, field.key)).localeCompare(String(getRecordValue(b, field.key))),
-        width: 180,
-        ellipsis: true,
-        render: (_, record) => (
-          <Text className="job-cell-primary">{getRecordValue(record, field.key)}</Text>
+        sorter: field.sorter === false
+          ? false
+          : field.sorter ?? ((a, b) => String(getRecordValue(a, field.key)).localeCompare(String(getRecordValue(b, field.key)))),
+        width: field.width ?? 180,
+        ellipsis: field.ellipsis ?? true,
+        render: (value, record, index) => (
+          field.render
+            ? field.render(value, record, index)
+            : <Text className="job-cell-primary">{getRecordValue(record, field.key)}</Text>
         ),
       }))
   ), [normalizedFields, visibleKeys]);
@@ -148,12 +175,12 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
   );
 
   return (
-    <div className="antd dynamic-list-view">
+    <div className={`antd dynamic-list-view ${className}`.trim()}>
       <Card>
         <Flex align="center" justify="space-between">
           <Tabs
             activeKey={activeTab}
-            items={[{ key: 'all', label: tabLabel(listName, filteredData.length) }]}
+            items={[{ key: 'all', label: tabLabel(listName, displayTotal) }]}
             onChange={(key) => {
               setActiveTab(key);
               setPagination({ ...pagination, current: 1 });
@@ -164,7 +191,11 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
               prefix={<SearchOutlined className="job-search-icon" />}
               placeholder="Min 3 Chars to search"
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                if (isControlledPagination) onPageChange?.(1);
+                else setPagination({ ...pagination, current: 1 });
+              }}
               allowClear
               className="job-search-input"
             />
@@ -213,29 +244,37 @@ export default function ParamListView({ listName = 'List', fields = [], dataSour
         </Flex>
       </Card>
 
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          selectedRowKeys,
-          onChange: setSelectedRowKeys,
-        }}
-        columns={columns}
-        dataSource={pagedData}
-        size="middle"
-        scroll={{ x: 'max-content' }}
-        showSorterTooltip={false}
-        tableLayout="auto"
-        pagination={false}
-        className="job-list-table"
-        rowKey={(record) => record.id ?? record.key}
-      />
+      <Spin spinning={loading}>
+        <Table
+          rowSelection={rowSelection ? {
+            type: 'checkbox',
+            selectedRowKeys,
+            onChange: setSelectedRowKeys,
+          } : undefined}
+          columns={columns}
+          dataSource={pagedData}
+          size="middle"
+          scroll={{ x: 'max-content' }}
+          showSorterTooltip={false}
+          tableLayout="auto"
+          pagination={false}
+          className={tableClassName}
+          rowKey={(record) => record.id ?? record.key}
+        />
+      </Spin>
 
       <CustomPagination
-        current={pagination.current}
-        pageSize={pagination.pageSize}
-        total={filteredData.length}
-        onChange={(page) => setPagination((current) => ({ ...current, current: page }))}
-        onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
+        current={activePagination.current}
+        pageSize={activePagination.pageSize}
+        total={displayTotal}
+        onChange={(page) => {
+          if (isControlledPagination) onPageChange?.(page);
+          else setPagination((currentState) => ({ ...currentState, current: page }));
+        }}
+        onPageSizeChange={(size) => {
+          if (isControlledPagination) onPageSizeChange?.(size);
+          else setPagination({ current: 1, pageSize: size });
+        }}
       />
     </div>
   );
