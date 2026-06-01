@@ -1,5 +1,6 @@
 const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
 const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
 
 const LOGIN_CREDENTIALS = {
   email: 'zinnext@realtekconsulting.net',
@@ -84,4 +85,59 @@ export async function getDropdownValues(module, field, search = '', limit = 50, 
     offset: String(offset),
   });
   return apiGet(`/filter-dropdown-values?${params}`);
+}
+
+export async function getDashboardOnboardingCount(
+  payload,
+  limit = 10,
+  offset = 0
+) {
+  const headers = await authHeaders();
+
+  const response = await fetch(
+    `${SUBMISSION_URL}/dashboard-onboarding-count?offset=${offset}&limit=${limit}`,
+    {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const json = await response.json();
+  return json.data ?? json;
+}
+
+export async function getJobs({
+  jobStatus = 'active',
+  jobRecruitmentStatus = 'unread',
+  limit = 50,
+  offset = 0,
+  userId = 1,
+  sortBy = 'id',
+} = {}) {
+  const headers = await authHeaders();
+
+  const params = new URLSearchParams({
+    jobStatus,
+    jobRecruitmentStatus,
+    limit: String(limit),
+    offset: String(offset),
+    userId: String(userId),
+    sortBy,
+  });
+
+  const response = await fetch(
+    `${JOBS_URL}/jobs?${params.toString()}`,
+    {
+      method: 'GET',
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`API ${response.status}: ${response.statusText}`);
+  }
+
+  const json = await response.json();
+  return json.data ?? json;
 }
