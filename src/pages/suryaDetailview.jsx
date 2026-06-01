@@ -51,12 +51,9 @@ export default function DetailPages() {
     return (
 
         <div className="dashboard-wrapper">
-
             <Row gutter={[16, 16]}>
-
                 {/* BREADCRUMB */}
                 <Col span={24}>
-
                     <Breadcrumb
                         items={[
                             {
@@ -88,7 +85,6 @@ export default function DetailPages() {
                             },
                         ]}
                     />
-
                 </Col>
 
                 {/* ROW 1 */}
@@ -99,39 +95,29 @@ export default function DetailPages() {
                 {/* ROW 2 */}
                 <Col xs={24} md={16}>
                     <Card className="dashboard-card">
-
                         <div>
-
                             <div>
-
+                                {/* 
                                 <Text type="secondary">
                                     Infosys • Job ID #JOB10245
-                                </Text>
-
+                                </Text> */}
                                 <Row
                                     justify="space-between"
                                     align="middle"
                                 >
-
                                     <Col>
-
                                         <Space
                                             wrap
                                             align="center"
                                         >
-
                                             <Title level={3}>
                                                 {job.title}
                                             </Title>
-
                                             <StatusBadge status="Applied" />
-
                                         </Space>
-
                                     </Col>
 
                                     <Col>
-
                                         <Button
                                             type="primary"
                                             onClick={() =>
@@ -157,31 +143,23 @@ export default function DetailPages() {
                                         >
                                             Edit
                                         </Button>
-
                                     </Col>
-
                                 </Row>
-
                             </div>
 
                             <Space wrap>
-
                                 <Text>
                                     <EnvironmentOutlined /> Texas
                                 </Text>
-
                                 <Text>
                                     <ClockCircleOutlined /> 8+ Years
                                 </Text>
-
                                 <Text>
                                     <BankOutlined /> Full Time
                                 </Text>
-
                                 <Text>
                                     <DollarOutlined /> $85/hr
                                 </Text>
-
                             </Space>
 
                             <Paragraph type="secondary">
@@ -191,45 +169,33 @@ export default function DetailPages() {
                             </Paragraph>
 
                             <Space wrap>
-
                                 <Tag color="blue">
                                     React
                                 </Tag>
-
                                 <Tag color="green">
                                     Node.js
                                 </Tag>
-
                                 <Tag color="purple">
                                     AWS
                                 </Tag>
-
                                 <Tag color="orange">
                                     MongoDB
                                 </Tag>
-
                                 <Tag color="cyan">
                                     Docker
                                 </Tag>
-
                                 <Tag color="red">
                                     Kubernetes
                                 </Tag>
-
                             </Space>
-
                         </div>
-
                     </Card>
                 </Col>
 
                 <Col xs={24} md={8}>
                     <Card className="dashboard-card">
-
                         <Space direction="vertical">
-
                             <StatusBadge status="Shortlisted" />
-
                             <Text type="secondary">
                                 Your profile has been shortlisted
                                 for the next interview round.
@@ -241,9 +207,7 @@ export default function DetailPages() {
                             >
                                 Track Application
                             </Button>
-
                         </Space>
-
                     </Card>
                 </Col>
 
@@ -253,7 +217,6 @@ export default function DetailPages() {
                         title="About this Role"
                         className="dashboard-card"
                     >
-
                         <Paragraph>
                             We are seeking an experienced and highly motivated
                             React Developer with strong expertise in building
@@ -272,7 +235,6 @@ export default function DetailPages() {
                             and modern DevOps workflows will be considered
                             an added advantage.
                         </Paragraph>
-
                     </Card>
                 </Col>
 
@@ -282,7 +244,6 @@ export default function DetailPages() {
                         title="Interview Process"
                         className="dashboard-card"
                     >
-
                         <Timeline
                             items={[
                                 {
@@ -307,7 +268,6 @@ export default function DetailPages() {
                                 },
                             ]}
                         />
-
                     </Card>
                 </Col>
 
@@ -316,62 +276,46 @@ export default function DetailPages() {
                         title="Job Summary"
                         className="dashboard-card"
                     >
-
                         <Space
                             direction="vertical"
                             size="middle"
                         >
-
                             <Row justify="space-between">
-
                                 <Text type="secondary">
                                     Experience
                                 </Text>
-
                                 <Text strong>
                                     8+ Years
                                 </Text>
-
                             </Row>
 
                             <Row justify="space-between">
-
                                 <Text type="secondary">
                                     Work Mode
                                 </Text>
-
                                 <Text strong>
                                     Remote
                                 </Text>
-
                             </Row>
 
                             <Row justify="space-between">
-
                                 <Text type="secondary">
                                     Employment
                                 </Text>
-
                                 <Text strong>
                                     Full Time
                                 </Text>
-
                             </Row>
 
                             <Row justify="space-between">
-
                                 <Text type="secondary">
                                     Notice Period
                                 </Text>
-
                                 <Text strong>
                                     Immediate
                                 </Text>
-
                             </Row>
-
                         </Space>
-
                     </Card>
                 </Col>
 
@@ -380,9 +324,7 @@ export default function DetailPages() {
                         title="Responsibilities"
                         className="dashboard-card"
                     >
-
                         <Space direction="vertical">
-
                             <Text>
                                 • Design and develop scalable React applications
                                 for enterprise-level platforms.
@@ -407,9 +349,7 @@ export default function DetailPages() {
                                 • Participate in code reviews and ensure
                                 best coding practices are followed.
                             </Text>
-
                         </Space>
-
                     </Card>
                 </Col>
 
@@ -418,53 +358,36 @@ export default function DetailPages() {
                         title="Recruiter"
                         className="dashboard-card"
                     >
-
                         <Space direction="vertical">
-
                             <Space align="center">
-
                                 <Avatar
                                     icon={<UserOutlined />}
                                 />
-
                                 <div>
-
                                     <Text strong>
                                         David Warner
                                     </Text>
-
                                     <br />
-
                                     <Text type="secondary">
                                         Senior Recruiter
                                     </Text>
-
                                 </div>
-
                             </Space>
 
                             <Space>
-
                                 <MailOutlined />
-
                                 <Text>
                                     hiring@infosys.com
                                 </Text>
-
                             </Space>
 
                             <Space>
-
                                 <PhoneOutlined />
-
                                 <Text>
                                     +1 9876543210
                                 </Text>
-
                             </Space>
-
                         </Space>
-
                     </Card>
                 </Col>
 
@@ -473,9 +396,7 @@ export default function DetailPages() {
                         title="Documents"
                         className="dashboard-card"
                     >
-
                         <Space direction="vertical">
-
                             <Button
                                 icon={<FilePdfOutlined />}
                                 block
@@ -496,9 +417,7 @@ export default function DetailPages() {
                             >
                                 Experience.pdf
                             </Button>
-
                         </Space>
-
                     </Card>
                 </Col>
 
@@ -506,9 +425,7 @@ export default function DetailPages() {
                     <Col span={24}>
                         <StickyNotesCard />
                     </Col> */}
-
             </Row>
-
         </div>
     );
 }
