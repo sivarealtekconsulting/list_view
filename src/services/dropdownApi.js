@@ -99,6 +99,14 @@ async function apiGet(path) {
 export async function getDropdownFields(module) {
   return apiGet(`/filter-dropdown-fields?module=${encodeURIComponent(module)}`);
 }
+export async function getHeaderFields(userId, roleId, module) {
+  const params = new URLSearchParams({
+    userId: String(userId ?? ''),
+    roleId: String(roleId ?? ''),
+    module,
+  });
+  return apiGetWithAuth(AUTH_URL, `/admin/field-config?${params}`);
+}
 
 /**
  * Fetch distinct values for a specific field in a module.
@@ -138,7 +146,7 @@ export async function getDashboardOnboardingCount(
 export async function getJobs({
   jobStatus = 'active',
   jobRecruitmentStatus = 'unread',
-  limit = 50,
+  limit,
   offset = 0,
   userId = 1,
   sortBy = 'id',
