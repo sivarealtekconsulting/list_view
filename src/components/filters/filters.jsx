@@ -1,9 +1,14 @@
 import DynamicFieldFilter from './DynamicFieldFilter';
 
-export function JobFilters({ open = false, onClose, onApply }) {
+export function JobFilters({
+  moduleName = 'jobs',
+  open = false,
+  onClose,
+  onApply,
+}) {
   return (
     <DynamicFieldFilter
-      moduleName="jobs"
+      moduleName={moduleName}
       open={open}
       onClose={onClose}
       onApply={onApply}

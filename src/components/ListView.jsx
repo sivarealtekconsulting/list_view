@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
 } from 'antd';
@@ -8,7 +8,6 @@ import {
   FilterOutlined, PlusOutlined, DownOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
@@ -80,14 +79,40 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView({ rowDetailPath }) {
+export default function ListView({
+  dataSource,
+  columns: customColumns,
+  tabs: customTabs,
+  initialActiveTab = 'my',
+  searchPredicate,
+  toolbarActions,
+  showActionsToolbar = true,
+  showColumnVisibility = true,
+  defaultSelectedRowKeys,
+  initialPageSize = 7,
+  rowKey,
+  rowSelectionProps,
+  tableClassName = 'job-list-table',
+  tableLayout = 'fixed',
+  tableScroll = { x: '100%' },
+  className = 'antd',
+  topToolbarClassName,
+  toolbarActionsClassName,
+  searchInputClassName = 'job-search-input',
+  searchIconClassName = 'job-search-icon',
+  onFilterClick,
+  filtersSlot,
+  rowDetailPath,
+}) {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('my');
+  const isCustomList = Boolean(customColumns);
+  const listDataSource = dataSource ?? MOCK_JOBS;
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
+  const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys ?? (isCustomList ? [] : ['1', '2']));
+  const [pagination, setPagination] = useState({ current: 1, pageSize: initialPageSize });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
@@ -116,9 +141,15 @@ export default function ListView({ rowDetailPath }) {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
+    if (isCustomList) {
+      if (!q || q.length < 3 || !searchPredicate) return listDataSource;
+
+      return listDataSource.filter((record) => searchPredicate(record, q));
+    }
+
     const searchableJobs = !q || q.length < 3
-      ? MOCK_JOBS
-      : MOCK_JOBS.filter(
+      ? listDataSource
+      : listDataSource.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -146,7 +177,7 @@ export default function ListView({ rowDetailPath }) {
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, search]);
+  }, [appliedFilterRows, isCustomList, listDataSource, search, searchPredicate]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
@@ -281,11 +312,15 @@ export default function ListView({ rowDetailPath }) {
         </Space>
       ),
     },
-  ], [navigate]);
+  ], []);
 
   const visibleColumns = useMemo(
-    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
-    [columns, visibleColumnKeys],
+    () => {
+      if (isCustomList) return customColumns;
+
+      return columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key));
+    },
+    [columns, customColumns, isCustomList, visibleColumnKeys],
   );
 
   const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
@@ -328,6 +363,7 @@ export default function ListView({ rowDetailPath }) {
     type: 'checkbox',
     selectedRowKeys,
     onChange: setSelectedRowKeys,
+    ...rowSelectionProps,
   };
 
   const tabLabel = (label, count) => (
@@ -337,16 +373,16 @@ export default function ListView({ rowDetailPath }) {
     </Space>
   );
 
-  const tabItems = [
+  const tabItems = customTabs ?? [
     { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
     { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
   ];
 
   return (
-    <div className="antd">
+    <div className={className}>
 
       {/* Top toolbar */}
-      <Card>
+      <Card className={topToolbarClassName}>
         <Flex align="center" justify="space-between">
           <Tabs
             activeKey={activeTab}
@@ -358,50 +394,59 @@ export default function ListView({ rowDetailPath }) {
           />
           <Flex align="center" gap={8}>
             <Input
-              prefix={<SearchOutlined className="job-search-icon" />}
+              prefix={<SearchOutlined className={searchIconClassName} />}
               placeholder="Min 3 Chars to search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
               allowClear
-              className="job-search-input"
+              className={searchInputClassName}
             />
-            <Tooltip title="Filter">
-              <Button
-                className="job-toolbar-icon-button"
-                icon={<FilterOutlined />}
-                onClick={() => setFiltersOpen(true)}
-              />
-            </Tooltip>
-            <Tooltip title="Add">
-              <a href='/add'>
-                <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
-              </a>
-            </Tooltip>
-            <Button type="primary" className="job-summary-button">
-              View Summary
-            </Button>
+            <Flex align="center" gap={8} className={toolbarActionsClassName}>
+              {toolbarActions ?? (
+                <>
+                  <Tooltip title="Filter">
+                    <Button
+                      className="job-toolbar-icon-button"
+                      icon={<FilterOutlined />}
+                      onClick={onFilterClick ?? (() => setFiltersOpen(true))}
+                    />
+                  </Tooltip>
+                  <Tooltip title="Add">
+                    <a href='/add'>
+                      <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
+                    </a>
+                  </Tooltip>
+                  <Button type="primary" className="job-summary-button">
+                    View Summary
+                  </Button>
+                </>
+              )}
+            </Flex>
           </Flex>
         </Flex>
       </Card>
 
       {/* Actions toolbar */}
-      <Card>
+      {showActionsToolbar && (
+        <Card>
         <Flex align="center" gap={3}>
-          <Dropdown
-            open={columnMenuOpen}
-            onOpenChange={setColumnMenuOpen}
-            trigger={['click']}
-            dropdownRender={() => columnVisibilityContent}
-            placement="bottomLeft"
-            overlayClassName="column-visibility-dropdown"
-          >
-            <Button
-              type="text"
-              icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
-              size="small"
-              className="job-actions-button"
-            />
-          </Dropdown>
+          {showColumnVisibility && (
+            <Dropdown
+              open={columnMenuOpen}
+              onOpenChange={setColumnMenuOpen}
+              trigger={['click']}
+              dropdownRender={() => columnVisibilityContent}
+              placement="bottomLeft"
+              overlayClassName="column-visibility-dropdown"
+            >
+              <Button
+                type="text"
+                icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
+                size="small"
+                className="job-actions-button"
+              />
+            </Dropdown>
+          )}
           <Dropdown menu={actionsMenu} trigger={['click']}>
             <Button
               type="text"
@@ -418,7 +463,8 @@ export default function ListView({ rowDetailPath }) {
             </Text>
           )}
         </Flex>
-      </Card>
+        </Card>
+      )}
 
       {/* Table grid */}
       <Table
@@ -426,11 +472,12 @@ export default function ListView({ rowDetailPath }) {
         columns={visibleColumns}
         dataSource={pagedData}
         size="middle"
-        scroll={{ x: '100%' }}
+        scroll={tableScroll}
         showSorterTooltip={false}
-        tableLayout="fixed"
+        tableLayout={tableLayout}
         pagination={false}
-        className="job-list-table"
+        className={tableClassName}
+        rowKey={rowKey}
         onRow={rowDetailPath ? (record) => ({
           onClick: () => navigate(`${rowDetailPath}/${record.id}`),
           style: { cursor: 'pointer' },
@@ -446,15 +493,17 @@ export default function ListView({ rowDetailPath }) {
         onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
       />
 
-      <JobFilters
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        // valueOptionsByField={valueOptionsByField}
-        onApply={({ filters }) => {
-          setAppliedFilterRows(filters);
-          setPagination((current) => ({ ...current, current: 1 }));
-        }}
-      />
+      {filtersSlot ?? (!isCustomList && (
+        <JobFilters
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          // valueOptionsByField={valueOptionsByField}
+          onApply={({ filters }) => {
+            setAppliedFilterRows(filters);
+            setPagination((current) => ({ ...current, current: 1 }));
+          }}
+        />
+      ))}
 
     </div>
   );

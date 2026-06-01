@@ -17,19 +17,29 @@ import SridharDetailPage from './pages/sridharDetailePage';
 import GnaneshDashboard from './pages/gnanesh-dashboard';
 import GnaneshDetailedView from './pages/gnanesh-detailed-view';
 import StickyNotesCard from './components/cards/StickyNotesCard';
-import StudentDashboardPage from './pages/StudentDashboardPage';
+import StudentDashboardPage from './pages/suryaDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
 import PugazhDashboard from './pages/pugazh-dashboard';
 import PugazhListView from './pages/pugazh-listview';
 import PugazhDetailListView from './pages/pugazh-detail-listview';
 import VenkateshDetailViewPage from './pages/VenkateshDetailViewPage';
+import CandidateAddForm from './pages/AddFormPage';
+import CandidateAddFormV1 from './pages/CandidateAddFormV1';
+import CandidateAddFormV3 from './pages/CandidateAddFormV3';
+import VenkateshEditJobPage from './pages/VenkateshEditJobPage';
 import PugalDetailedView from './pages/pugal-detail-view-page'
-  
+import PugazhEditJob from './pages/PugazhEditJob';
+
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 import SonyDashboard from './pages/SonyDashboard';
 import SonyDetailedView from './pages/SonyDetailedView';
+import CandidateOnboardingListView from './components/CandidateOnboardingListView';
+// import ListViews from './components/suryaListView';
+import DetailPages from './pages/suryaDetailview';
+import JobEditPage from './pages/suryaJobEditPage';
+import UsersListPage from './pages/UsersListPage';
 
 export default function App() {
   return (
@@ -56,10 +66,12 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/Venkatesh" element={<DemoSamplePage />} />
           <Route path="/Venkatesh-detailview/:id" element={<VenkateshDetailViewPage />} />
+          <Route path="/Venkatesh-detailview/:id/edit-job" element={<VenkateshEditJobPage />} />
 
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/users" element={<UsersListPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -68,15 +80,24 @@ export default function App() {
           <Route path="/cmnlayout" element={<CmnLayout />} />
           <Route path="/sony-detailedview/:jobId" element={<SonyDetailedView />} />
           <Route path="/sony-dashboard" element={<SonyDashboard />} />
+          <Route path="/candidate-add" element={<CandidateAddForm />} />
+          <Route path="/candidate-add/v1" element={<CandidateAddFormV1 />} />
+          <Route path="/candidate-add/v3" element={<CandidateAddFormV3 />} />
 
           <Route path="/add" element={<StickyNotesCard />} />
-          <Route
-            path="/student-dashboard"
-            element={<StudentDashboardPage />}
-          />
           <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
+          {/* <Route path="/Surya-dashboard" element={<ListViews />} /> */}
+          <Route path="/Surya-dashboard" element={<StudentDashboardPage />} />
+          <Route path="/Surya-detailview/:jobId" element={<DetailPages />} />
+          <Route
+            path="/Surya-job-edit"
+            element={<JobEditPage />}
+          />
+
           <Route path="/pugazh-listview" element={<PugazhListView />} />
-          <Route path="/pugazh-detail-listview" element={<PugalDetailedView />} />
+          <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
+          <Route path="/pugazh-edit-job" element={<PugazhEditJob />} />
+          {/* <Route path="/jobs" element={<JobCollapsePage />} /> */}
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
@@ -84,6 +105,10 @@ export default function App() {
           <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
           <Route path="/subha-detailview/:jobId" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
+          <Route
+            path="/candidate-onboarding"
+            element={<CandidateOnboardingListView />}
+          />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
