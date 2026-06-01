@@ -41,10 +41,12 @@ import {
 const { Text, Title, Paragraph } = Typography;
 
 const activityFields = [
-  { label: 'Activity', value: 'event' },
-  { label: 'Owner', value: 'owner' },
-  { label: 'Status', value: 'status' },
-  { label: 'Time', value: 'time' },
+  { label: 'Candidate ID', value: 'event' },
+  { label: 'Name', value: 'owner' },
+  { label: 'Client Job ID', value: 'status' },
+  { label: 'Gross Margin', value: 'time' },
+  { label: 'Net Margin', value: 'netMargin' },
+  { label: 'Stage', value: 'stage' },
 ];
 
 function statusTag(status) {
@@ -133,13 +135,11 @@ export default function SridharDetailPage() {
             </Space>
           </Card>
 
-          <ParamListView
-            listName="Activity"
-            fields={activityFields}
-            dataSource={activityRows}
-          />
+     
         </Space>
       </Col>
+
+           
 
       <Col xs={24} xl={8}>
         <Space direction="vertical" size="middle" block>
@@ -148,6 +148,12 @@ export default function SridharDetailPage() {
           />
         </Space>
       </Col>
+
+      <ParamListView
+            listName="Activity"
+            fields={activityFields}
+            dataSource={activityRows}
+          />
     </Row>
   ),
 },
