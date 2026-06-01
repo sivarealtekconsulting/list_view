@@ -16,9 +16,11 @@ import CustomPagination from './CustomPagination';
 import JobFilters from './filters';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
-import { PERSONALITIES, PERSONALITY_STATUS_COLORS } from '../data/personalities';
+import personalitiesData from '../data/personalities.json';
 
 const { Text } = Typography;
+const PERSONALITIES = personalitiesData.personalities;
+const PERSONALITY_STATUS_COLORS = personalitiesData.statusColors;
 
 const columnOptions = [
   { key: 'serial', label: 'S.no' },

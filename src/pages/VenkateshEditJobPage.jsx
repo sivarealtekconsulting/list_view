@@ -16,10 +16,11 @@ import {
   message,
 } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
-import { PERSONALITIES } from '../data/personalities';
+import personalitiesData from '../data/personalities.json';
 import { formatters, validationRules } from '../components/form/validation';
 
 const { Text, Title } = Typography;
+const PERSONALITIES = personalitiesData.personalities;
 
 const categoryOptions = [
   { value: 'Type A', label: 'Type A' },
@@ -56,21 +57,21 @@ export default function VenkateshEditJobPage() {
     if (!record) return {};
 
     return {
-      personalityName: record.name,
-      code: record.code,
-      category: record.category,
-      role: record.role,
-      status: record.status,
-      priority: record.priority,
-      assignedTo: record.assignedTo,
-      dob: record.dob,
-      department: record.department,
-      completion: record.completion.replace('%', ''),
-      email: record.email,
-      phone: record.phone.replace(/\D/g, '').slice(-10),
-      location: record.location,
-      description: record.description,
-      notes: record.notes,
+      personalityName: record.name || '',
+      code: record.code || '',
+      category: record.category || undefined,
+      role: record.role || '',
+      status: record.status || undefined,
+      priority: record.priority || undefined,
+      assignedTo: record.assignedTo || undefined,
+      dob: record.dob || '',
+      department: record.department || '',
+      completion: String(record.completion || '').replace('%', ''),
+      email: record.email || '',
+      phone: String(record.phone || '').replace(/\D/g, '').slice(-10),
+      location: record.location || '',
+      description: record.description || '',
+      notes: record.notes || '',
     };
   }, [record]);
 

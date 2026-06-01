@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
@@ -20,18 +20,7 @@ import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg
 
 const { Text } = Typography;
 
-const columnOptions = [
-  { key: 'createdAt', label: 'Created Date' },
-  { key: 'jobsGroup', label: 'Jobs' },
-  { key: 'location', label: 'Location' },
-  { key: 'experience', label: 'Experience' },
-  { key: 'clientRate', label: 'Client Rate' },
-  { key: 'status', label: 'Status' },
-  { key: 'targetSub', label: 'Target Sub' },
-  { key: 'pipeline', label: 'Pipeline' },
-];
 
-const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
 
 const actionsMenu = {
   items: [
@@ -79,6 +68,7 @@ function filterMatches(record, filterRow) {
 
 export default function ListView({
   jobs = SRIDHAR_MOCK_JOBS,
+  dropdownFields = [],
   summary = SRIDHAR_JOB_LIST_SUMMARY,
   initialSelectedRowKeys,
 }) {
@@ -93,8 +83,23 @@ export default function ListView({
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
-  const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
+  const columnOptions = useMemo(() => {
+    if (!dropdownFields || dropdownFields.length === 0) return [];
+    return dropdownFields.map(f => ({ key: f.value, label: f.label }));
+  }, [dropdownFields]);
+
+  const defaultVisibleColumnKeys = useMemo(() => {
+    return columnOptions.map(({ key }) => key);
+  }, [columnOptions]);
+
+  const [visibleColumnKeys, setVisibleColumnKeys] = useState([]);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (visibleColumnKeys.length === 0 && defaultVisibleColumnKeys.length > 0) {
+      setVisibleColumnKeys(defaultVisibleColumnKeys);
+    }
+  }, [defaultVisibleColumnKeys, visibleColumnKeys.length]);
 
   // const valueOptionsByField = useMemo(() => {
   //   const fields = [
@@ -124,10 +129,9 @@ export default function ListView({
     const searchableJobs = !q || q.length < 3
       ? jobs
       : jobs.filter(
-        (j) =>
-          j.title.toLowerCase().includes(q) ||
-          j.location.toLowerCase().includes(q) ||
-          j.status.toLowerCase().includes(q),
+        (j) => Object.values(j).some(val => 
+            val && typeof val === 'string' && val.toLowerCase().includes(q)
+        )
       );
 
     const validFilterRows = appliedFilterRows.filter((row) => row.field);
@@ -158,135 +162,25 @@ export default function ListView({
     return filtered.slice(start, start + pagination.pageSize);
   }, [filtered, pagination]);
 
-  const columns = useMemo(() => [
-    {
-      dataIndex: 'icons',
-      key: 'icons',
-      visibilityKey: 'jobsGroup',
-      //width: '100%',
-      width: 60,
-      render: (title, record) => (
-        <Space size={4} className="job-row-icons">
-          <Tooltip title="Preview">
-            <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
-          </Tooltip>
-          {record.hasBookmark && (
-            <Tooltip title="Bookmarked">
-              <BookFilled className="job-row-bookmark-icon" />
-            </Tooltip>
-          )}
-          {record.hasLinkedIn && (
-            <Tooltip title="LinkedIn">
-              <LinkedinFilled className="job-row-linkedin-icon" />
-            </Tooltip>
-          )}
-        </Space>
-      ),
-    },
-    {
-      title: 'Jobs',
-      dataIndex: 'title',
-      key: 'title',
-      visibilityKey: 'jobsGroup',
-      sorter: (a, b) => a.title.localeCompare(b.title),
-      width: 190,
-      render: (title, record) => (
-        <Space align="start" size={6} className="job-title-cell">
-          <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/sri-detailview/${record.id}`}>
-              {title}
-            </RouterLink>
-            <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
-          </Space>
-        </Space>
-      ),
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-      key: 'location',
-      sorter: (a, b) => a.location.localeCompare(b.location),
-      width: '100%',
-      render: (loc, record) => (
-        <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{loc}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.locationType}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Experience',
-      dataIndex: 'experience',
-      key: 'experience',
-      sorter: (a, b) => a.experience.localeCompare(b.experience),
-      width: '100%',
-      render: (exp, record) => (
-        <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{exp}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.employmentType}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: 'Client Rate (hr)',
-      dataIndex: 'clientRate',
-      key: 'clientRate',
-      sorter: (a, b) => a.clientRate - b.clientRate,
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (rate) => <Text className="job-cell-primary">${rate}</Text>,
-    },
-    {
-      title: 'Target Sub',
-      dataIndex: 'targetSub',
-      key: 'targetSub',
-      sorter: (a, b) => a.targetSub.filled - b.targetSub.filled,
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (sub) => (
-        <Text className="job-cell-primary">{sub.filled} of {sub.total}</Text>
-      ),
-    },
-    {
-      title: 'Pipeline',
-      dataIndex: 'pipeline',
-      key: 'pipeline',
-      sorter: (a, b) => a.pipeline - b.pipeline,
-      width: '100%',
-      render: (val) => <Text className="job-cell-primary">{val}</Text>,
-    },
-    {
-      title: 'Assignee',
-      dataIndex: 'assignees',
-      key: 'assignees',
-      width: '100%',
-      render: (assignees, record) => (
-        <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      sorter: (a, b) => a.status.localeCompare(b.status),
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (status) => <StatusBadge status={status} />,
-    },
-    {
-      title: 'Created date',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-      width: '100%',
-      render: (date, record) => (
-        <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{date}</Text>
-          <Text type="secondary" className="job-cell-secondary">{record.createdAgo}</Text>
-        </Space>
-      ),
-    },
-  ], [navigate]);
+  const columns = useMemo(() => {
+    if (!dropdownFields || dropdownFields.length === 0) return [];
+    return dropdownFields.map(field => {
+      const dataIndex = field.value.includes('.') ? field.value.split('.') : field.value;
+      return {
+        title: field.label,
+        dataIndex: dataIndex,
+        key: field.value,
+        visibilityKey: field.value,
+        width: 200,
+        render: (val) => {
+          if (typeof val === 'object' && val !== null) {
+            return <Text className="job-cell-primary">{JSON.stringify(val)}</Text>;
+          }
+          return <Text className="job-cell-primary">{val !== undefined && val !== null ? String(val) : '-'}</Text>;
+        }
+      };
+    });
+  }, [dropdownFields]);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
