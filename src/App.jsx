@@ -103,7 +103,7 @@ export default function App() {
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/gnanesh-dashboard" element={<GnaneshDashboard />} />
           <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
-          <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
+          <Route path="/subha-detailview/:jobId" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
           <Route
             path="/candidate-onboarding"

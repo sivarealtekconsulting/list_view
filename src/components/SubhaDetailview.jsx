@@ -1,14 +1,15 @@
-import { useState, useMemo } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
 } from 'antd';
 import {
   BookFilled, LinkedinFilled,
   FilterOutlined, PlusOutlined, DownOutlined,
-  SearchOutlined,
+  SearchOutlined, UserAddOutlined, MoreOutlined,
 } from '@ant-design/icons';
-import { MOCK_JOBS } from '../data/jobs';
+import { useNavigate } from 'react-router-dom';
+import { getAllJobs } from '../services/jobsApi';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -79,42 +80,19 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView({
-  dataSource,
-  columns: customColumns,
-  tabs: customTabs,
-  initialActiveTab = 'my',
-  searchPredicate,
-  toolbarActions,
-  showActionsToolbar = true,
-  showColumnVisibility = true,
-  defaultSelectedRowKeys,
-  initialPageSize = 7,
-  rowKey,
-  rowSelectionProps,
-  tableClassName = 'job-list-table',
-  tableLayout = 'fixed',
-  tableScroll = { x: '100%' },
-  className = 'antd',
-  topToolbarClassName,
-  toolbarActionsClassName,
-  searchInputClassName = 'job-search-input',
-  searchIconClassName = 'job-search-icon',
-  onFilterClick,
-  filtersSlot,
-  rowDetailPath,
-}) {
+export default function ListView() {
   const navigate = useNavigate();
-  const isCustomList = Boolean(customColumns);
-  const listDataSource = dataSource ?? MOCK_JOBS;
-  const [activeTab, setActiveTab] = useState(initialActiveTab);
+  const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys ?? (isCustomList ? [] : ['1', '2']));
-  const [pagination, setPagination] = useState({ current: 1, pageSize: initialPageSize });
+  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const [detailActiveTab, setDetailActiveTab] = useState('details');
+
+  const [jobs, setJobs] = useState([]);
 
   // const valueOptionsByField = useMemo(() => {
   //   const fields = [
@@ -139,17 +117,17 @@ export default function ListView({
   //   }, {});
   // }, []);
 
+  useEffect(() => {
+    getAllJobs()
+      .then(setJobs)
+      .catch(() => setJobs([]));
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (isCustomList) {
-      if (!q || q.length < 3 || !searchPredicate) return listDataSource;
-
-      return listDataSource.filter((record) => searchPredicate(record, q));
-    }
-
     const searchableJobs = !q || q.length < 3
-      ? listDataSource
-      : listDataSource.filter(
+      ? jobs
+      : jobs.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -177,7 +155,7 @@ export default function ListView({
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, isCustomList, listDataSource, search, searchPredicate]);
+  }, [appliedFilterRows, search, jobs]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
@@ -219,7 +197,7 @@ export default function ListView({
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/jobs/${record.id}`}>
+            <RouterLink className="job-cell-link" to={`/subha-detailview/${record.jobId}`}>
               {title}
             </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
@@ -312,15 +290,11 @@ export default function ListView({
         </Space>
       ),
     },
-  ], []);
+  ], [navigate]);
 
   const visibleColumns = useMemo(
-    () => {
-      if (isCustomList) return customColumns;
-
-      return columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key));
-    },
-    [columns, customColumns, isCustomList, visibleColumnKeys],
+    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
+    [columns, visibleColumnKeys],
   );
 
   const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
@@ -363,7 +337,6 @@ export default function ListView({
     type: 'checkbox',
     selectedRowKeys,
     onChange: setSelectedRowKeys,
-    ...rowSelectionProps,
   };
 
   const tabLabel = (label, count) => (
@@ -373,16 +346,16 @@ export default function ListView({
     </Space>
   );
 
-  const tabItems = customTabs ?? [
+  const tabItems = [
     { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
     { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
   ];
 
   return (
-    <div className={className}>
+    <div className="antd">
 
       {/* Top toolbar */}
-      <Card className={topToolbarClassName}>
+      <Card>
         <Flex align="center" justify="space-between">
           <Tabs
             activeKey={activeTab}
@@ -394,59 +367,87 @@ export default function ListView({
           />
           <Flex align="center" gap={8}>
             <Input
-              prefix={<SearchOutlined className={searchIconClassName} />}
+              prefix={<SearchOutlined className="job-search-icon" />}
               placeholder="Min 3 Chars to search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
               allowClear
-              className={searchInputClassName}
+              className="job-search-input"
             />
-            <Flex align="center" gap={8} className={toolbarActionsClassName}>
-              {toolbarActions ?? (
-                <>
-                  <Tooltip title="Filter">
-                    <Button
-                      className="job-toolbar-icon-button"
-                      icon={<FilterOutlined />}
-                      onClick={onFilterClick ?? (() => setFiltersOpen(true))}
-                    />
-                  </Tooltip>
-                  <Tooltip title="Add">
-                    <a href='/add'>
-                      <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
-                    </a>
-                  </Tooltip>
-                  <Button type="primary" className="job-summary-button">
-                    View Summary
-                  </Button>
-                </>
-              )}
-            </Flex>
+            <Tooltip title="Filter">
+              <Button
+                className="job-toolbar-icon-button"
+                icon={<FilterOutlined />}
+                onClick={() => setFiltersOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip title="Add">
+              <a href='/add'>
+                <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
+              </a>
+            </Tooltip>
+            <Button type="primary" className="job-summary-button">
+              View Summary
+            </Button>
           </Flex>
         </Flex>
       </Card>
 
+      {/* Job Detail Card */}
+      <Card style={{ marginTop: 8 }}>
+        <Flex justify="space-between" align="flex-start">
+            {/* Left: job info + tabs */}
+            <div style={{ flex: 1 }}>
+            <Text type="secondary" style={{ fontSize: 12 }}>TCS - MSP ID 10432419</Text>
+            <Flex align="center" gap={8} style={{ margin: '6px 0' }}>
+                <Text strong style={{ fontSize: 16 }}>Software Developer (3 Years Experience) - 38975</Text>
+                <Badge color="default" text="Fulfilled" style={{ background: '#333', color: '#fff', borderRadius: 4, padding: '2px 8px' }} />
+            </Flex>
+            <Flex gap={16} style={{ marginBottom: 12 }}>
+                <Text type="secondary">📍 North Davidfurt</Text>
+                <Text type="secondary">⏱ 5+ years</Text>
+                <Text type="secondary">🏛 Full-time</Text>
+                <Text type="secondary">On-site</Text>
+                <Text type="secondary">💲 Client rate: $78/hr</Text>
+            </Flex>
+            <Tabs
+                activeKey={detailActiveTab}
+                onChange={setDetailActiveTab}
+                items={[
+                { key: 'details', label: <Badge>Details</Badge> },
+                { key: 'candidatesApi', label: 'Candidates API' },
+                { key: 'candidate', label: <Badge count={3} offset={[10, 0]}>Candidate</Badge> },
+                ]}
+            />
+            </div>
+
+            {/* Right: actions */}
+            <Flex gap={8} align="center" style={{ paddingTop: 8 }}>
+            <Button icon={<UserAddOutlined />} type="link">Source Candidates</Button>
+            <Button icon={<MoreOutlined />} type="text" />
+            </Flex>
+        </Flex>
+      </Card>
+
+
       {/* Actions toolbar */}
-      {showActionsToolbar && (
-        <Card>
+      <Card>
         <Flex align="center" gap={3}>
-          {showColumnVisibility && (
-            <Dropdown
-              open={columnMenuOpen}
-              onOpenChange={setColumnMenuOpen}
-              trigger={['click']}
-              dropdownRender={() => columnVisibilityContent}
-              placement="bottomLeft"
-              overlayClassName="column-visibility-dropdown"
-            >
-              <Button
-                type="text"
-                icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
-                size="small"
-                className="job-actions-button"
-              />
-            </Dropdown>
-          )}
+          <Dropdown
+            open={columnMenuOpen}
+            onOpenChange={setColumnMenuOpen}
+            trigger={['click']}
+            dropdownRender={() => columnVisibilityContent}
+            placement="bottomLeft"
+            overlayClassName="column-visibility-dropdown"
+          >
+            <Button
+              type="text"
+              icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
+              size="small"
+              className="job-actions-button"
+            />
+          </Dropdown>
           <Dropdown menu={actionsMenu} trigger={['click']}>
             <Button
               type="text"
@@ -463,25 +464,20 @@ export default function ListView({
             </Text>
           )}
         </Flex>
-        </Card>
-      )}
+      </Card>
 
       {/* Table grid */}
       <Table
+        rowKey="jobId" 
         rowSelection={rowSelection}
         columns={visibleColumns}
         dataSource={pagedData}
         size="middle"
-        scroll={tableScroll}
+        scroll={{ x: '100%' }}
         showSorterTooltip={false}
-        tableLayout={tableLayout}
+        tableLayout="fixed"
         pagination={false}
-        className={tableClassName}
-        rowKey={rowKey}
-        onRow={rowDetailPath ? (record) => ({
-          onClick: () => navigate(`${rowDetailPath}/${record.id}`),
-          style: { cursor: 'pointer' },
-        }) : undefined}
+        className="job-list-table"
       />
 
       {/* Pagination */}
@@ -493,17 +489,15 @@ export default function ListView({
         onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
       />
 
-      {filtersSlot ?? (!isCustomList && (
-        <JobFilters
-          open={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          // valueOptionsByField={valueOptionsByField}
-          onApply={({ filters }) => {
-            setAppliedFilterRows(filters);
-            setPagination((current) => ({ ...current, current: 1 }));
-          }}
-        />
-      ))}
+      <JobFilters
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        // valueOptionsByField={valueOptionsByField}
+        onApply={({ filters }) => {
+          setAppliedFilterRows(filters);
+          setPagination((current) => ({ ...current, current: 1 }));
+        }}
+      />
 
     </div>
   );
