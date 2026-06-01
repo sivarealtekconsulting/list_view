@@ -80,7 +80,7 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView() {
+export default function ListView({ rowDetailPath }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
@@ -431,6 +431,10 @@ export default function ListView() {
         tableLayout="fixed"
         pagination={false}
         className="job-list-table"
+        onRow={rowDetailPath ? (record) => ({
+          onClick: () => navigate(`${rowDetailPath}/${record.id}`),
+          style: { cursor: 'pointer' },
+        }) : undefined}
       />
 
       {/* Pagination */}

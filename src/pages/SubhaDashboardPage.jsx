@@ -39,7 +39,7 @@ export default function NaveenDashboardPage() {
           <ClientDetailsCard />
         </Col> */}
         <Col span={24}>
-          <ListView />
+          <ListView rowDetailPath="/subha-detailview" />
         </Col>
 
       </Row>

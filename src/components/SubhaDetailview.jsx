@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
@@ -9,7 +9,7 @@ import {
   SearchOutlined, UserAddOutlined, MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
+import { getAllJobs } from '../services/jobsApi';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -92,6 +92,8 @@ export default function ListView() {
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
   const [detailActiveTab, setDetailActiveTab] = useState('details');
 
+  const [jobs, setJobs] = useState([]);
+
   // const valueOptionsByField = useMemo(() => {
   //   const fields = [
   //     'title',
@@ -115,11 +117,17 @@ export default function ListView() {
   //   }, {});
   // }, []);
 
+  useEffect(() => {
+    getAllJobs()
+      .then(setJobs)
+      .catch(() => setJobs([]));
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
-      ? MOCK_JOBS
-      : MOCK_JOBS.filter(
+      ? jobs
+      : jobs.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -147,7 +155,7 @@ export default function ListView() {
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, search]);
+  }, [appliedFilterRows, search, jobs]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
@@ -189,7 +197,7 @@ export default function ListView() {
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/jobs/${record.id}`}>
+            <RouterLink className="job-cell-link" to={`/subha-detailview/${record.jobId}`}>
               {title}
             </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
@@ -460,6 +468,7 @@ export default function ListView() {
 
       {/* Table grid */}
       <Table
+        rowKey="jobId" 
         rowSelection={rowSelection}
         columns={visibleColumns}
         dataSource={pagedData}
