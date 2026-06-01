@@ -39,6 +39,7 @@ import CandidateOnboardingListView from './components/CandidateOnboardingListVie
 // import ListViews from './components/suryaListView';
 import DetailPages from './pages/suryaDetailview';
 import JobEditPage from './pages/suryaJobEditPage';
+import UsersListPage from './pages/UsersListPage';
 
 export default function App() {
   return (
@@ -70,6 +71,7 @@ export default function App() {
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/users" element={<UsersListPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />

@@ -28,7 +28,7 @@ export default function CustomPagination({ current, pageSize, total, onChange, o
       </Space>
 
       <Space size={16} align="center">
-        <Text>{`Showing of ${start} - ${end} of 30`}</Text>
+        <Text>{`Showing ${start} - ${end} of ${total}`}</Text>
         <Pagination
           current={current}
           pageSize={pageSize}
