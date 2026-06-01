@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest --config vitest.config.js"
+    "test": "vitest"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.3",
