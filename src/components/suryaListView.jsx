@@ -8,6 +8,7 @@ import {
   FilterOutlined, PlusOutlined, DownOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
@@ -79,38 +80,14 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView({
-  dataSource,
-  columns: customColumns,
-  tabs: customTabs,
-  initialActiveTab = 'my',
-  searchPredicate,
-  toolbarActions,
-  showActionsToolbar = true,
-  showColumnVisibility = true,
-  defaultSelectedRowKeys,
-  initialPageSize = 7,
-  rowKey,
-  rowSelectionProps,
-  tableClassName = 'job-list-table',
-  tableLayout = 'fixed',
-  tableScroll = { x: '100%' },
-  className = 'antd',
-  topToolbarClassName,
-  toolbarActionsClassName,
-  searchInputClassName = 'job-search-input',
-  searchIconClassName = 'job-search-icon',
-  onFilterClick,
-  filtersSlot,
-}) {
-  const isCustomList = Boolean(customColumns);
-  const listDataSource = dataSource ?? MOCK_JOBS;
-  const [activeTab, setActiveTab] = useState(initialActiveTab);
+export default function ListViews() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys ?? (isCustomList ? [] : ['1', '2']));
-  const [pagination, setPagination] = useState({ current: 1, pageSize: initialPageSize });
+  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
@@ -139,15 +116,9 @@ export default function ListView({
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (isCustomList) {
-      if (!q || q.length < 3 || !searchPredicate) return listDataSource;
-
-      return listDataSource.filter((record) => searchPredicate(record, q));
-    }
-
     const searchableJobs = !q || q.length < 3
-      ? listDataSource
-      : listDataSource.filter(
+      ? MOCK_JOBS
+      : MOCK_JOBS.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -175,7 +146,7 @@ export default function ListView({
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, isCustomList, listDataSource, search, searchPredicate]);
+  }, [appliedFilterRows, search]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
@@ -217,7 +188,7 @@ export default function ListView({
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/jobs/${record.id}`}>
+            <RouterLink className="job-cell-link" to={`/Surya-detailview/${record.id}`}>
               {title}
             </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
@@ -310,15 +281,11 @@ export default function ListView({
         </Space>
       ),
     },
-  ], []);
+  ], [navigate]);
 
   const visibleColumns = useMemo(
-    () => {
-      if (isCustomList) return customColumns;
-
-      return columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key));
-    },
-    [columns, customColumns, isCustomList, visibleColumnKeys],
+    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
+    [columns, visibleColumnKeys],
   );
 
   const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
@@ -361,7 +328,6 @@ export default function ListView({
     type: 'checkbox',
     selectedRowKeys,
     onChange: setSelectedRowKeys,
-    ...rowSelectionProps,
   };
 
   const tabLabel = (label, count) => (
@@ -371,16 +337,16 @@ export default function ListView({
     </Space>
   );
 
-  const tabItems = customTabs ?? [
+  const tabItems = [
     { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
     { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
   ];
 
   return (
-    <div className={className}>
+    <div className="antd">
 
       {/* Top toolbar */}
-      <Card className={topToolbarClassName}>
+      <Card>
         <Flex align="center" justify="space-between">
           <Tabs
             activeKey={activeTab}
@@ -392,59 +358,50 @@ export default function ListView({
           />
           <Flex align="center" gap={8}>
             <Input
-              prefix={<SearchOutlined className={searchIconClassName} />}
+              prefix={<SearchOutlined className="job-search-icon" />}
               placeholder="Min 3 Chars to search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
               allowClear
-              className={searchInputClassName}
+              className="job-search-input"
             />
-            <Flex align="center" gap={8} className={toolbarActionsClassName}>
-              {toolbarActions ?? (
-                <>
-                  <Tooltip title="Filter">
-                    <Button
-                      className="job-toolbar-icon-button"
-                      icon={<FilterOutlined />}
-                      onClick={onFilterClick ?? (() => setFiltersOpen(true))}
-                    />
-                  </Tooltip>
-                  <Tooltip title="Add">
-                    <a href='/add'>
-                      <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
-                    </a>
-                  </Tooltip>
-                  <Button type="primary" className="job-summary-button">
-                    View Summary
-                  </Button>
-                </>
-              )}
-            </Flex>
+            <Tooltip title="Filter">
+              <Button
+                className="job-toolbar-icon-button"
+                icon={<FilterOutlined />}
+                onClick={() => setFiltersOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip title="Add">
+              <a href='/add'>
+                <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
+              </a>
+            </Tooltip>
+            <Button type="primary" className="job-summary-button">
+              View Summary
+            </Button>
           </Flex>
         </Flex>
       </Card>
 
       {/* Actions toolbar */}
-      {showActionsToolbar && (
-        <Card>
+      <Card>
         <Flex align="center" gap={3}>
-          {showColumnVisibility && (
-            <Dropdown
-              open={columnMenuOpen}
-              onOpenChange={setColumnMenuOpen}
-              trigger={['click']}
-              dropdownRender={() => columnVisibilityContent}
-              placement="bottomLeft"
-              overlayClassName="column-visibility-dropdown"
-            >
-              <Button
-                type="text"
-                icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
-                size="small"
-                className="job-actions-button"
-              />
-            </Dropdown>
-          )}
+          <Dropdown
+            open={columnMenuOpen}
+            onOpenChange={setColumnMenuOpen}
+            trigger={['click']}
+            dropdownRender={() => columnVisibilityContent}
+            placement="bottomLeft"
+            overlayClassName="column-visibility-dropdown"
+          >
+            <Button
+              type="text"
+              icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
+              size="small"
+              className="job-actions-button"
+            />
+          </Dropdown>
           <Dropdown menu={actionsMenu} trigger={['click']}>
             <Button
               type="text"
@@ -461,8 +418,7 @@ export default function ListView({
             </Text>
           )}
         </Flex>
-        </Card>
-      )}
+      </Card>
 
       {/* Table grid */}
       <Table
@@ -470,12 +426,11 @@ export default function ListView({
         columns={visibleColumns}
         dataSource={pagedData}
         size="middle"
-        scroll={tableScroll}
+        scroll={{ x: '100%' }}
         showSorterTooltip={false}
-        tableLayout={tableLayout}
+        tableLayout="fixed"
         pagination={false}
-        className={tableClassName}
-        rowKey={rowKey}
+        className="job-list-table"
       />
 
       {/* Pagination */}
@@ -487,17 +442,15 @@ export default function ListView({
         onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
       />
 
-      {filtersSlot ?? (!isCustomList && (
-        <JobFilters
-          open={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          // valueOptionsByField={valueOptionsByField}
-          onApply={({ filters }) => {
-            setAppliedFilterRows(filters);
-            setPagination((current) => ({ ...current, current: 1 }));
-          }}
-        />
-      ))}
+      <JobFilters
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        // valueOptionsByField={valueOptionsByField}
+        onApply={({ filters }) => {
+          setAppliedFilterRows(filters);
+          setPagination((current) => ({ ...current, current: 1 }));
+        }}
+      />
 
     </div>
   );

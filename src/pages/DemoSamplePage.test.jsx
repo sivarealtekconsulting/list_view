@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import DemoSamplePage from './DemoSamplePage';
+import venkateshJobsData from '../data/venkateshJobs.json';
 
 vi.mock('../hooks/useDropdownFields', () => ({
   useDropdownFields: () => ({
@@ -48,6 +49,105 @@ function _monthLabel(offset = 0) {
 
 function getCalendarCard() {
   return screen.getByText(_monthLabel(0)).closest('.ant-card');
+}
+
+const mandatoryJobFields = [
+  'key',
+  'id',
+  'title',
+  'location',
+  'locationType',
+  'experience',
+  'employmentType',
+  'clientRate',
+  'targetSub',
+  'pipeline',
+  'assignees',
+  'extraAssignees',
+  'status',
+  'createdAt',
+  'createdAgo',
+  'client',
+  'hasBookmark',
+  'hasLinkedIn',
+];
+
+function isMissing(value) {
+  return value === null
+    || value === undefined
+    || (typeof value === 'string' && value.trim() === '');
+}
+
+function collectJobDataIssues(jobs) {
+  const issues = [];
+
+  jobs.forEach((job, index) => {
+    const jobLabel = job.key || `Job ${index + 1}`;
+
+    mandatoryJobFields.forEach((field) => {
+      if (!Object.prototype.hasOwnProperty.call(job, field) || isMissing(job[field])) {
+        issues.push(`${jobLabel} ${field} is missing`);
+      }
+    });
+
+    if (!isMissing(job.id) && typeof job.id !== 'number') {
+      issues.push(`${jobLabel} id must be a number`);
+    }
+
+    if (!isMissing(job.clientRate) && typeof job.clientRate !== 'number') {
+      issues.push(`${jobLabel} clientRate must be a number`);
+    }
+
+    if (!isMissing(job.pipeline) && typeof job.pipeline !== 'number') {
+      issues.push(`${jobLabel} pipeline must be a number`);
+    }
+
+    if (!isMissing(job.extraAssignees) && typeof job.extraAssignees !== 'number') {
+      issues.push(`${jobLabel} extraAssignees must be a number`);
+    }
+
+    if (!isMissing(job.hasBookmark) && typeof job.hasBookmark !== 'boolean') {
+      issues.push(`${jobLabel} hasBookmark must be a boolean`);
+    }
+
+    if (!isMissing(job.hasLinkedIn) && typeof job.hasLinkedIn !== 'boolean') {
+      issues.push(`${jobLabel} hasLinkedIn must be a boolean`);
+    }
+
+    if (!isMissing(job.targetSub)) {
+      if (typeof job.targetSub !== 'object') {
+        issues.push(`${jobLabel} targetSub must be an object`);
+      } else {
+        if (typeof job.targetSub.filled !== 'number') {
+          issues.push(`${jobLabel} targetSub.filled must be a number`);
+        }
+
+        if (typeof job.targetSub.total !== 'number') {
+          issues.push(`${jobLabel} targetSub.total must be a number`);
+        }
+      }
+    }
+
+    if (!isMissing(job.assignees)) {
+      if (!Array.isArray(job.assignees)) {
+        issues.push(`${jobLabel} assignees must be an array`);
+      } else if (job.assignees.length === 0) {
+        issues.push(`${jobLabel} assignees is missing`);
+      } else {
+        job.assignees.forEach((assignee, assigneeIndex) => {
+          if (isMissing(assignee.initials)) {
+            issues.push(`${jobLabel} assignees[${assigneeIndex}].initials is missing`);
+          }
+
+          if (isMissing(assignee.color)) {
+            issues.push(`${jobLabel} assignees[${assigneeIndex}].color is missing`);
+          }
+        });
+      }
+    }
+  });
+
+  return issues;
 }
 
 describe('DemoSamplePage dashboard', () => {
@@ -152,6 +252,12 @@ describe('DemoSamplePage calendar', () => {
 });
 
 describe('DemoSamplePage inline list view', () => {
+  it('has complete mandatory job data', () => {
+    const issues = collectJobDataIssues(venkateshJobsData.jobs);
+
+    expect(issues, issues.join('\n')).toHaveLength(0);
+  });
+
   it('renders list tabs and table headers', () => {
     renderDemoPage();
 
@@ -169,6 +275,8 @@ describe('DemoSamplePage inline list view', () => {
       'href',
       '/Venkatesh-detailview/1',
     );
+    expect(screen.getByText('Chennai')).toBeInTheDocument();
+    expect(screen.getAllByText('Hybrid').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders pagination controls and result range', () => {

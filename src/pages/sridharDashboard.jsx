@@ -24,16 +24,41 @@ import {
   SRIDHAR_JOB_LIST_SUMMARY,
   SRIDHAR_MOCK_JOBS,
 } from '../data/jobs';
+import { useEffect, useState } from 'react';
+import { getJobs, getDropdownFields } from '../services/dropdownApi';
 
 const { Text } = Typography;
 
 export default function SridharDashboardPage() {
   const [form] = Form.useForm();
+  const [jobs, setJobs] = useState([]);
+  const [dropdownFields, setDropdownFields] = useState([]);
 
   const handleQuickJobSubmit = (values) => {
     console.log('Quick job intake:', values);
     form.resetFields();
   };
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [jobsData, dropdownData] = await Promise.all([
+        getJobs(),
+        getDropdownFields('jobs'),
+      ]);
+
+      console.log('Fetched Jobs:', jobsData);
+      console.log('Fetched Dropdown Fields:', dropdownData);
+
+      setJobs(jobsData);
+      setDropdownFields(dropdownData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchData();
+}, []);
 
   return (
     <div className='dashboard-wrapper'>
@@ -188,7 +213,7 @@ export default function SridharDashboardPage() {
                 </Space>
               )}
             >
-              <ListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
+              <ListView jobs={jobs.length > 0 ? jobs : SRIDHAR_MOCK_JOBS} dropdownFields={dropdownFields} summary={SRIDHAR_JOB_LIST_SUMMARY} />
             </Card>
           </Col>
         </Row>

@@ -192,7 +192,7 @@
     }
   ],
   "detail": {
-    "summaryText": "",
+    "summaryText": "Seeking an experienced Snowflake Migration Architect to lead cloud data warehouse migration initiatives for enterprise logistics clients.",
     "skills": ["Snowflake", "Data Governance", "React Native", "Zero Trust", "SAP S/4HANA"],
     "candidates": [
       {
@@ -223,36 +223,62 @@
         "date": "May 26, 2026"
       }
     ],
-    "activity": [
-      {
-        "key": "1",
-        "event": "Candidate moved to pipeline",
-        "owner": "sri_delivery",
-        "status": "Submitted",
-        "time": "09:20 AM"
-      },
-      {
-        "key": "2",
-        "event": "Security consultant interview moved to panel round",
-        "owner": "account_manager",
-        "status": "Interview",
-        "time": "11:45 AM"
-      },
-      {
-        "key": "3",
-        "event": "SAP lead profile shortlisted by client",
-        "owner": "recruiting_ops",
-        "status": "Shortlist",
-        "time": "02:10 PM"
-      },
-      {
-        "key": "4",
-        "event": "Updated rate card requested",
-        "owner": "client_success",
-        "status": "Follow up",
-        "time": "04:35 PM"
-      }
-    ]
+   "activity": [
+    {
+      "key": "1",
+      "event": "AUTO123456",
+      "owner": "KIRAN ERRAVALLA",
+      "status": "101528088 - 51779",
+      "time": "$12.00",
+      "netMargin": "$2.80",
+      "stage": "PO Not Initiated"
+    },
+    {
+      "key": "2",
+      "event": "AUTO549812",
+      "owner": "HARITHA YELLA",
+      "status": "765484511",
+      "time": "$10.00",
+      "netMargin": "-$64.16",
+      "stage": "CFO Pending"
+    },
+    {
+      "key": "3",
+      "event": "AUTO945121",
+      "owner": "ANDRIY KUDASHEV",
+      "status": "478494510",
+      "time": "$8.00",
+      "netMargin": "$8.00",
+      "stage": "PO Issued"
+    },
+    {
+      "key": "4",
+      "event": "AUTO978451",
+      "owner": "REVATHI RAVI",
+      "status": "798464121",
+      "time": "$8.00",
+      "netMargin": "-$11.05",
+      "stage": "PO Not Initiated"
+    },
+    {
+      "key": "5",
+      "event": "AUTO961214",
+      "owner": "VENKATESH",
+      "status": "974623017",
+      "time": "$6.00",
+      "netMargin": "$1.27",
+      "stage": "PO Not Initiated"
+    },
+    {
+      "key": "6",
+      "event": "AUTO984671",
+      "owner": "ROHAN DHOYDA",
+      "status": "654715121",
+      "time": "$6.00",
+      "netMargin": "$255.84",
+      "stage": "PO Not Initiated"
+    }
+  ]
   },
   "cards": {
     "calendar": {

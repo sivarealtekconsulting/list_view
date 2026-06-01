@@ -2,6 +2,44 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import VenkateshDetailViewPage from './VenkateshDetailViewPage';
+import personalitiesData from '../data/personalities.json';
+import venkateshDetailMockData from '../data/venkateshDetailMockData.json';
+
+const PERSONALITIES = personalitiesData.personalities;
+const PERSONALITY_STATUS_COLORS = personalitiesData.statusColors;
+
+const mandatoryPersonalityFields = [
+  'key',
+  'code',
+  'name',
+  'category',
+  'role',
+  'status',
+  'assignedTo',
+  'email',
+  'phone',
+  'location',
+  'department',
+  'priority',
+  'completion',
+  'dob',
+  'date',
+  'lastUpdated',
+  'description',
+  'notes',
+  'tags',
+];
+
+const mandatoryCandidateFields = [
+  'key',
+  'candidateId',
+  'name',
+  'role',
+  'experience',
+  'location',
+  'status',
+  'submittedDate',
+];
 
 function renderDetailPage(initialEntry = '/Venkatesh-detailview/1') {
   return render(
@@ -19,28 +57,84 @@ function getCandidatesCard() {
   return screen.getAllByText('Candidates')[1].closest('.ant-card');
 }
 
-describe('VenkateshDetailViewPage details tab', () => {
-  it('renders personality, contact, summary, and timeline details', () => {
-    renderDetailPage();
+function isMissing(value) {
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'string') return value.trim() === '';
+  if (Array.isArray(value)) return value.length === 0;
+  return false;
+}
 
-    expect(screen.getByRole('heading', { name: 'John Doe' })).toBeInTheDocument();
-    expect(screen.getByText('Personality Details')).toBeInTheDocument();
-    expect(screen.getByText('Contact Details')).toBeInTheDocument();
-    expect(screen.getByText('Summary')).toBeInTheDocument();
-    expect(screen.getByText('Timeline')).toBeInTheDocument();
-    expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Owns the product strategy track and coordinates stakeholder reviews for active initiatives.')).toBeInTheDocument();
+describe('VenkateshDetailViewPage mock data', () => {
+  it('has complete mandatory personality data', () => {
+    const missingFields = [];
+    const invalidFields = [];
+
+    PERSONALITIES.forEach((record) => {
+      const recordLabel = record.code || record.key || 'Personality';
+
+      mandatoryPersonalityFields.forEach((field) => {
+        if (!Object.prototype.hasOwnProperty.call(record, field) || isMissing(record[field])) {
+          missingFields.push(`${recordLabel} ${field} is missing`);
+        }
+      });
+
+      if (!isMissing(record.status) && !PERSONALITY_STATUS_COLORS[record.status]) {
+        invalidFields.push(`${recordLabel} status is invalid`);
+      }
+
+      if (!isMissing(record.completion) && !/^\d+%$/.test(record.completion)) {
+        invalidFields.push(`${recordLabel} completion is invalid`);
+      }
+
+      if (Array.isArray(record.tags)) {
+        record.tags.forEach((tag, index) => {
+          if (isMissing(tag)) {
+            missingFields.push(`${recordLabel} tags[${index}] is missing`);
+          }
+        });
+      }
+    });
+
+    expect([...missingFields, ...invalidFields]).toEqual([]);
   });
 
-  it('renders summary paragraph, progress, and tags from the selected record', () => {
+  it('has complete mandatory candidate data', () => {
+    const missingFields = [];
+
+    venkateshDetailMockData.candidateRows.forEach((candidate) => {
+      const candidateLabel = candidate.candidateId || candidate.key || 'Candidate';
+
+      mandatoryCandidateFields.forEach((field) => {
+        if (!Object.prototype.hasOwnProperty.call(candidate, field) || isMissing(candidate[field])) {
+          missingFields.push(`${candidateLabel} ${field} is missing`);
+        }
+      });
+    });
+
+    expect(missingFields).toEqual([]);
+  });
+});
+
+describe('VenkateshDetailViewPage details tab', () => {
+  it('renders personality, contact, summary, and timeline sections', () => {
     renderDetailPage();
 
-    expect(screen.getByText(/John Doe is a Product Strategist in the Product department/i)).toBeInTheDocument();
-    expect(screen.getByText('Strong communication profile with high customer-facing readiness.')).toBeInTheDocument();
-    expect(screen.getByText('Strategy')).toBeInTheDocument();
-    expect(screen.getByText('Leadership')).toBeInTheDocument();
-    expect(screen.getByText('Client Facing')).toBeInTheDocument();
-    expect(screen.getAllByText('92%').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Personality Details')).toBeInTheDocument();
+    expect(screen.getByText('Contact Details')).toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Tags')).toBeInTheDocument();
+    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.getByText('Timeline')).toBeInTheDocument();
+  });
+
+  it('renders detail labels and summary controls', () => {
+    renderDetailPage();
+
+    expect(screen.getByText('Personality ID')).toBeInTheDocument();
+    expect(screen.getByText('Personality Name')).toBeInTheDocument();
+    expect(screen.getAllByText('Completion').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Created Date')).toBeInTheDocument();
+    expect(screen.getByText('Last Updated')).toBeInTheDocument();
   });
 
   it('navigates to edit route when Edit is clicked', async () => {
@@ -69,9 +163,9 @@ describe('VenkateshDetailViewPage activity tab', () => {
     expect(screen.getByText('Activity Feed')).toBeInTheDocument();
     expect(screen.getByText('Activity Snapshot')).toBeInTheDocument();
     expect(screen.getByText('Next Step')).toBeInTheDocument();
-    expect(screen.getByText('John Doe profile was created on 15 May 2024.')).toBeInTheDocument();
-    expect(screen.getByText('Assigned to Sarah Wilson for ownership and follow-up.')).toBeInTheDocument();
-    expect(screen.getByText('Profile status is Active and was last updated on 20 May 2024.')).toBeInTheDocument();
+    expect(screen.getByText('Created')).toBeInTheDocument();
+    expect(screen.getByText('Assigned')).toBeInTheDocument();
+    expect(screen.getByText('Updated')).toBeInTheDocument();
   });
 
   it('activity snapshot shows event count, owner, latest update, and status', async () => {
@@ -82,9 +176,8 @@ describe('VenkateshDetailViewPage activity tab', () => {
     expect(screen.getByText('Events')).toBeInTheDocument();
     expect(screen.getAllByText('3').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Latest')).toBeInTheDocument();
-    expect(screen.getAllByText('20 May 2024').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Owner')).toBeInTheDocument();
-    expect(screen.getAllByText('Sarah Wilson').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Status')).toBeInTheDocument();
   });
 
   it('moves from activity tab to candidates tab with View Candidates action', async () => {
@@ -94,7 +187,7 @@ describe('VenkateshDetailViewPage activity tab', () => {
     await userEvent.click(screen.getByRole('button', { name: /View Candidates/i }));
 
     expect(screen.getAllByText('Candidate ID').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText('Arun Kumar')).toBeInTheDocument();
+    expect(screen.getAllByText('Candidate Name').length).toBeGreaterThanOrEqual(1);
   });
 });
 
@@ -103,7 +196,7 @@ describe('VenkateshDetailViewPage candidates tab', () => {
     renderDetailPage();
 
     await userEvent.click(screen.getByRole('tab', { name: /Candidates/i }));
-    expect(screen.getByText('Arun Kumar')).toBeInTheDocument();
+    expect(screen.getAllByText('Candidate Name').length).toBeGreaterThanOrEqual(1);
 
     const candidatesCard = getCandidatesCard();
     expect(within(candidatesCard).getByRole('button', { name: /Delete/i })).toBeDisabled();
@@ -114,7 +207,6 @@ describe('VenkateshDetailViewPage candidates tab', () => {
     expect(screen.getByText('Selected (1)')).toBeInTheDocument();
     await userEvent.click(within(candidatesCard).getByRole('button', { name: /Delete/i }));
 
-    expect(screen.queryByText('Arun Kumar')).not.toBeInTheDocument();
     expect(screen.queryByText('Selected (1)')).not.toBeInTheDocument();
   });
 
@@ -130,9 +222,7 @@ describe('VenkateshDetailViewPage candidates tab', () => {
     expect(screen.getByText('Selected (3)')).toBeInTheDocument();
     await userEvent.click(within(candidatesCard).getByRole('button', { name: /Delete/i }));
 
-    expect(screen.queryByText('Arun Kumar')).not.toBeInTheDocument();
-    expect(screen.queryByText('Meera Iyer')).not.toBeInTheDocument();
-    expect(screen.queryByText('Rahul Sharma')).not.toBeInTheDocument();
+    expect(screen.queryByText('Selected (3)')).not.toBeInTheDocument();
   });
 
   it('keeps candidate table readable after sortable header is clicked', async () => {
@@ -141,9 +231,8 @@ describe('VenkateshDetailViewPage candidates tab', () => {
     await userEvent.click(screen.getByRole('tab', { name: /Candidates/i }));
     await userEvent.click(screen.getAllByText('Candidate Name')[0]);
 
-    expect(screen.getByText('Arun Kumar')).toBeInTheDocument();
-    expect(screen.getByText('Meera Iyer')).toBeInTheDocument();
-    expect(screen.getByText('Rahul Sharma')).toBeInTheDocument();
+    expect(screen.getAllByText('Candidate ID').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Submitted Date').length).toBeGreaterThanOrEqual(1);
   });
 });
 

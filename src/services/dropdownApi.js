@@ -1,5 +1,8 @@
 const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
-const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+// const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
+export const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+export const SUBMISSIONS_URL = BASE_URL;
 
 const LOGIN_CREDENTIALS = {
   email: 'zinnext@realtekconsulting.net',
@@ -47,20 +50,46 @@ async function authHeaders() {
   };
 }
 
-async function apiGet(path) {
+export async function fetchJsonWithAuth(baseUrl, path, options = {}) {
   const headers = await authHeaders();
-  let res = await fetch(`${BASE_URL}${path}`, { headers });
+  const requestOptions = {
+    ...options,
+    headers: {
+      ...headers,
+      ...options.headers,
+    },
+  };
+
+  let res = await fetch(`${baseUrl}${path}`, requestOptions);
 
   // Token expired — re-login once and retry
   if (res.status === 401) {
     localStorage.removeItem('authToken');
     const freshHeaders = await authHeaders();
-    res = await fetch(`${BASE_URL}${path}`, { headers: freshHeaders });
+    res = await fetch(`${baseUrl}${path}`, {
+      ...requestOptions,
+      headers: {
+        ...freshHeaders,
+        ...options.headers,
+      },
+    });
   }
 
-  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
-  const json = await res.json();
+  if (!res.ok) {
+    const error = new Error(`API ${res.status}: ${res.statusText}`);
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+}
+
+export async function apiGetWithAuth(baseUrl, path) {
+  const json = await fetchJsonWithAuth(baseUrl, path);
   return json.data ?? json;
+}
+
+async function apiGet(path) {
+  return apiGetWithAuth(BASE_URL, path);
 }
 
 /**
@@ -84,4 +113,59 @@ export async function getDropdownValues(module, field, search = '', limit = 50, 
     offset: String(offset),
   });
   return apiGet(`/filter-dropdown-values?${params}`);
+}
+
+export async function getDashboardOnboardingCount(
+  payload,
+  limit = 10,
+  offset = 0
+) {
+  const headers = await authHeaders();
+
+  const response = await fetch(
+    `${SUBMISSION_URL}/dashboard-onboarding-count?offset=${offset}&limit=${limit}`,
+    {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const json = await response.json();
+  return json.data ?? json;
+}
+
+export async function getJobs({
+  jobStatus = 'active',
+  jobRecruitmentStatus = 'unread',
+  limit = 50,
+  offset = 0,
+  userId = 1,
+  sortBy = 'id',
+} = {}) {
+  const headers = await authHeaders();
+
+  const params = new URLSearchParams({
+    jobStatus,
+    jobRecruitmentStatus,
+    limit: String(limit),
+    offset: String(offset),
+    userId: String(userId),
+    sortBy,
+  });
+
+  const response = await fetch(
+    `${JOBS_URL}/jobs?${params.toString()}`,
+    {
+      method: 'GET',
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`API ${response.status}: ${response.statusText}`);
+  }
+
+  const json = await response.json();
+  return json.data ?? json;
 }

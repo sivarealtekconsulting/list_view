@@ -33,42 +33,54 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { PERSONALITIES, PERSONALITY_STATUS_COLORS } from '../data/personalities';
+import personalitiesData from '../data/personalities.json';
+import venkateshDetailMockData from '../data/venkateshDetailMockData.json';
 
 const { Text, Title, Paragraph } = Typography;
+const PERSONALITIES = personalitiesData.personalities;
+const PERSONALITY_STATUS_COLORS = personalitiesData.statusColors;
+const EMPTY_VALUE = '-';
 
-const candidateRows = [
-  {
-    key: '1',
-    candidateId: 'CAND-001',
-    name: 'Arun Kumar',
-    role: 'Business Analyst',
-    experience: '6 years',
-    location: 'Dallas, TX',
-    status: 'Submitted',
-    submittedDate: '21 May 2024',
-  },
-  {
-    key: '2',
-    candidateId: 'CAND-002',
-    name: 'Meera Iyer',
-    role: 'Product Consultant',
-    experience: '5 years',
-    location: 'Austin, TX',
-    status: 'Shortlisted',
-    submittedDate: '20 May 2024',
-  },
-  {
-    key: '3',
-    candidateId: 'CAND-003',
-    name: 'Rahul Sharma',
-    role: 'Customer Success Lead',
-    experience: '7 years',
-    location: 'Chicago, IL',
-    status: 'Pipeline',
-    submittedDate: '18 May 2024',
-  },
-];
+function displayValue(value) {
+  if (value === null || value === undefined) return EMPTY_VALUE;
+  if (typeof value === 'string' && value.trim() === '') return EMPTY_VALUE;
+  return value;
+}
+
+function getTextValue(value) {
+  const displayed = displayValue(value);
+  return displayed === EMPTY_VALUE ? '' : String(displayed);
+}
+
+function DisplayText({ value, type }) {
+  return <Text type={type}>{displayValue(value)}</Text>;
+}
+
+function IconValue({ icon, value, type = 'secondary' }) {
+  if (displayValue(value) === EMPTY_VALUE) {
+    return <DisplayText value={value} type={type} />;
+  }
+
+  return <Text type={type}>{icon} {displayValue(value)}</Text>;
+}
+
+function InlineIconValue({ icon, value }) {
+  if (displayValue(value) === EMPTY_VALUE) {
+    return EMPTY_VALUE;
+  }
+
+  return (
+    <Space wrap>
+      {icon}
+      <DisplayText value={value} />
+    </Space>
+  );
+}
+
+function DataTag({ value, color }) {
+  const displayed = displayValue(value);
+  return displayed === EMPTY_VALUE ? EMPTY_VALUE : <Tag color={color}>{displayed}</Tag>;
+}
 
 const candidateStatusColors = {
   Submitted: 'blue',
@@ -80,38 +92,44 @@ const candidateColumns = [
   {
     title: 'Candidate ID',
     dataIndex: 'candidateId',
-    sorter: (a, b) => a.candidateId.localeCompare(b.candidateId),
+    sorter: (a, b) => getTextValue(a.candidateId).localeCompare(getTextValue(b.candidateId)),
+    render: (value) => displayValue(value),
   },
   {
     title: 'Candidate Name',
     dataIndex: 'name',
-    sorter: (a, b) => a.name.localeCompare(b.name),
+    sorter: (a, b) => getTextValue(a.name).localeCompare(getTextValue(b.name)),
+    render: (value) => displayValue(value),
   },
   {
     title: 'Role',
     dataIndex: 'role',
-    sorter: (a, b) => a.role.localeCompare(b.role),
+    sorter: (a, b) => getTextValue(a.role).localeCompare(getTextValue(b.role)),
+    render: (value) => displayValue(value),
   },
   {
     title: 'Experience',
     dataIndex: 'experience',
-    sorter: (a, b) => a.experience.localeCompare(b.experience),
+    sorter: (a, b) => getTextValue(a.experience).localeCompare(getTextValue(b.experience)),
+    render: (value) => displayValue(value),
   },
   {
     title: 'Location',
     dataIndex: 'location',
-    sorter: (a, b) => a.location.localeCompare(b.location),
+    sorter: (a, b) => getTextValue(a.location).localeCompare(getTextValue(b.location)),
+    render: (value) => displayValue(value),
   },
   {
     title: 'Status',
     dataIndex: 'status',
-    sorter: (a, b) => a.status.localeCompare(b.status),
-    render: (status) => <Tag color={candidateStatusColors[status]}>{status}</Tag>,
+    sorter: (a, b) => getTextValue(a.status).localeCompare(getTextValue(b.status)),
+    render: (status) => <DataTag value={status} color={candidateStatusColors[status]} />,
   },
   {
     title: 'Submitted Date',
     dataIndex: 'submittedDate',
     sorter: (a, b) => new Date(a.submittedDate) - new Date(b.submittedDate),
+    render: (value) => displayValue(value),
   },
 ];
 const { useBreakpoint } = Grid;
@@ -150,30 +168,36 @@ function DetailItem({ label, children }) {
   return (
     <Space direction="vertical" size={2}>
       <Text type="secondary">{label}</Text>
-      <Text>{children || '-'}</Text>
+      <Text>{displayValue(children)}</Text>
     </Space>
   );
 }
 
 function buildActivity(record) {
+  const name = displayValue(record.name);
+  const date = displayValue(record.date);
+  const assignedTo = displayValue(record.assignedTo);
+  const status = displayValue(record.status);
+  const lastUpdated = displayValue(record.lastUpdated);
+
   return [
     {
       color: 'blue',
       status: 'Created',
       tagColor: 'blue',
-      text: `${record.name} profile was created on ${record.date}.`,
+      text: `${name} profile was created on ${date}.`,
     },
     {
       color: 'green',
       status: 'Assigned',
       tagColor: 'green',
-      text: `Assigned to ${record.assignedTo} for ownership and follow-up.`,
+      text: `Assigned to ${assignedTo} for ownership and follow-up.`,
     },
     {
       color: 'orange',
       status: 'Updated',
       tagColor: 'orange',
-      text: `Profile status is ${record.status} and was last updated on ${record.lastUpdated}.`,
+      text: `Profile status is ${status} and was last updated on ${lastUpdated}.`,
     },
   ];
 }
@@ -183,7 +207,7 @@ export default function VenkateshDetailViewPage() {
   const { id } = useParams();
   const screens = useBreakpoint();
   const [activeTab, setActiveTab] = useState('details');
-  const [candidates, setCandidates] = useState(candidateRows);
+  const [candidates, setCandidates] = useState(venkateshDetailMockData.candidateRows);
   const [selectedCandidateKeys, setSelectedCandidateKeys] = useState([]);
   const record = PERSONALITIES.find((item) => item.key === String(id));
   const isMobile = !screens.md;
@@ -203,7 +227,8 @@ export default function VenkateshDetailViewPage() {
   }
 
   const activityItems = buildActivity(record);
-  const completionValue = Number(record.completion.replace('%', ''));
+  const completionValue = Number(String(record.completion || '0%').replace('%', '')) || 0;
+  const tags = Array.isArray(record.tags) ? record.tags : [];
   const candidateRowSelection = {
     type: 'checkbox',
     selectedRowKeys: selectedCandidateKeys,
@@ -224,7 +249,7 @@ export default function VenkateshDetailViewPage() {
           <Breadcrumb
             items={[
               { title: <Text type="secondary" onClick={() => navigate('/Venkatesh')}>Venkatesh</Text> },
-              { title: <Text strong>{record.name}</Text> },
+              { title: <Text strong>{displayValue(record.name)}</Text> },
             ]}
           />
         </Col>
@@ -234,20 +259,24 @@ export default function VenkateshDetailViewPage() {
             <Row justify="space-between" gutter={[16, 16]}>
               <Col xs={24} lg={16}>
                 <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                  <Text type="secondary">Personality ID #{record.key}</Text>
+                  <Text type="secondary">Personality ID #{displayValue(record.key)}</Text>
                   <Space size={8} wrap>
-                    <Title level={4} style={{ margin: 0 }}>{record.name}</Title>
-                    <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
-                    <Tag color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}>
-                      {record.priority} Priority
-                    </Tag>
+                    <Title level={4} style={{ margin: 0 }}>{displayValue(record.name)}</Title>
+                    <DataTag value={record.status} color={PERSONALITY_STATUS_COLORS[record.status]} />
+                    {displayValue(record.priority) === EMPTY_VALUE ? (
+                      EMPTY_VALUE
+                    ) : (
+                      <Tag color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}>
+                        {record.priority} Priority
+                      </Tag>
+                    )}
                   </Space>
                   <Space size={12} wrap>
-                    <Text type="secondary"><AuditOutlined /> {record.code}</Text>
-                    <Text type="secondary"><UserOutlined /> {record.category}</Text>
-                    <Text type="secondary"><InfoCircleOutlined /> {record.role}</Text>
-                    <Text type="secondary"><TeamOutlined /> {record.assignedTo}</Text>
-                    <Text type="secondary"><CalendarOutlined /> {record.date}</Text>
+                    <IconValue icon={<AuditOutlined />} value={record.code} />
+                    <IconValue icon={<UserOutlined />} value={record.category} />
+                    <IconValue icon={<InfoCircleOutlined />} value={record.role} />
+                    <IconValue icon={<TeamOutlined />} value={record.assignedTo} />
+                    <IconValue icon={<CalendarOutlined />} value={record.date} />
                   </Space>
                   <Tabs
                     size="small"
@@ -334,7 +363,7 @@ export default function VenkateshDetailViewPage() {
                       <Space direction="vertical" size={4}>
                         <Space wrap>
                           <Tag color={item.tagColor}>{item.status}</Tag>
-                          <Text type="secondary">{record.lastUpdated}</Text>
+                          <Text type="secondary">{displayValue(record.lastUpdated)}</Text>
                         </Space>
                         <Text>{item.text}</Text>
                       </Space>
@@ -359,7 +388,7 @@ export default function VenkateshDetailViewPage() {
                     </Col>
                     <Col xs={12}>
                       <DetailItem label="Status">
-                        <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
+                        <DataTag value={record.status} color={PERSONALITY_STATUS_COLORS[record.status]} />
                       </DetailItem>
                     </Col>
 
@@ -404,13 +433,16 @@ export default function VenkateshDetailViewPage() {
                     </Col>
                     <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Status">
-                        <Tag color={PERSONALITY_STATUS_COLORS[record.status]}>{record.status}</Tag>
+                        <DataTag value={record.status} color={PERSONALITY_STATUS_COLORS[record.status]} />
                       </DetailItem>
                     </Col>
                     <Col xs={24} sm={12} xl={6}>
-                      <DetailItem label="Priority">  <Tag color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}>
-                        {record.priority}
-                      </Tag></DetailItem>
+                      <DetailItem label="Priority">
+                        <DataTag
+                          value={record.priority}
+                          color={record.priority === 'High' ? 'red' : record.priority === 'Medium' ? 'gold' : 'default'}
+                        />
+                      </DetailItem>
                     </Col>
                     <Col xs={24} sm={12} xl={6}>
                       <DetailItem label="Assigned To">{record.assignedTo}</DetailItem>
@@ -431,26 +463,17 @@ export default function VenkateshDetailViewPage() {
                   <Row gutter={[24, 18]}>
                     <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Email">
-                        <Space wrap>
-                          <MailOutlined />
-                          <Text>{record.email}</Text>
-                        </Space>
+                        <InlineIconValue icon={<MailOutlined />} value={record.email} />
                       </DetailItem>
                     </Col>
                     <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Phone">
-                        <Space wrap>
-                          <PhoneOutlined />
-                          <Text>{record.phone}</Text>
-                        </Space>
+                        <InlineIconValue icon={<PhoneOutlined />} value={record.phone} />
                       </DetailItem>
                     </Col>
                     <Col xs={24} sm={12} xl={8}>
                       <DetailItem label="Location">
-                        <Space wrap>
-                          <EnvironmentOutlined />
-                          <Text>{record.location}</Text>
-                        </Space>
+                        <InlineIconValue icon={<EnvironmentOutlined />} value={record.location} />
                       </DetailItem>
                     </Col>
                     <Col xs={24} sm={12} xl={8}>
@@ -463,12 +486,12 @@ export default function VenkateshDetailViewPage() {
                 </SectionCard>
 
                 <SectionCard title="Description" icon={<FileTextOutlined />}>
-                  <Paragraph>{record.description}</Paragraph>
+                  <Paragraph>{displayValue(record.description)}</Paragraph>
                 </SectionCard>
 
                 <SectionCard title="Tags" icon={<InfoCircleOutlined />}>
                   <Space wrap>
-                    {record.tags.map((tag) => (
+                    {tags.length === 0 ? EMPTY_VALUE : tags.map((tag) => (
                       <Tag color="blue" key={tag}>{tag}</Tag>
                     ))}
                   </Space>
@@ -495,12 +518,12 @@ export default function VenkateshDetailViewPage() {
                       </Col> */}
                     </Space>
                     <Paragraph>
-                      {record.name} is a {record.role} in the {record.department} department.
-                      The profile is currently assigned to {record.assignedTo} and is {record.completion} complete.
+                      {displayValue(record.name)} is a {displayValue(record.role)} in the {displayValue(record.department)} department.
+                      The profile is currently assigned to {displayValue(record.assignedTo)} and is {displayValue(record.completion)} complete.
                     </Paragraph>
                     <Progress percent={completionValue} size="small" />
                     <Paragraph type="secondary">
-                      {record.notes}
+                      {displayValue(record.notes)}
                     </Paragraph>
                   </Space>
                 </SectionCard>
@@ -513,7 +536,7 @@ export default function VenkateshDetailViewPage() {
                         color: 'blue',
                         children: (
                           <CompactTimelineContent title="Created">
-                            {record.date}
+                            {displayValue(record.date)}
                           </CompactTimelineContent>
                         ),
                       },
@@ -521,7 +544,7 @@ export default function VenkateshDetailViewPage() {
                         color: 'green',
                         children: (
                           <CompactTimelineContent title="Updated">
-                            {record.lastUpdated}
+                            {displayValue(record.lastUpdated)}
                           </CompactTimelineContent>
                         ),
                       },
@@ -529,7 +552,7 @@ export default function VenkateshDetailViewPage() {
                         color: 'orange',
                         children: (
                           <CompactTimelineContent title="Assigned">
-                            {record.assignedTo}
+                            {displayValue(record.assignedTo)}
                           </CompactTimelineContent>
                         ),
                       },
