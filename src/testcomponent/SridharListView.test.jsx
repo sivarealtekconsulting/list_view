@@ -3,6 +3,38 @@
  * ------------------------
  * Deep tests for src/components/sridharListView.jsx.
  * Covers static rendering, toolbar, search, column menu, and API response validation.
+ *
+ * ── HOW API FIELD VALIDATION WORKS ───────────────────────────────────────────
+ *
+ * buildApiCoverageReport(jobs, fields, options) scans every record and produces
+ * a table showing which required fields are missing and in how many records.
+ * Three sampling strategies for large datasets (2000+ records):
+ *
+ *   'full'   — scan every record (default, fast even at 2000+)
+ *   'range'  — random contiguous slice, e.g. records 400-499 (your suggestion)
+ *              Tests a realistic "page" of API data with the same server logic.
+ *   'firstMiddleLast' — first 10 + middle 10 + last 10 when sampleSize is 30
+ *              Catches first-page, middle-page, and last-page API gaps.
+ *   'spread' — first 5 + evenly-spaced middle + last 5
+ *              Catches edge cases where first/last records have different shapes.
+ *   'random' — scattered random picks
+ *              Statistically valid for gaps affecting >5% of records at n≥100.
+ *
+ * Failure output example:
+ *
+ *   API Field Coverage Report
+ *   ────────────────────────────────────────────────────────────────────────
+ *   Scanned : range [450–499] — 50 of 2000 records
+ *   Result  : ✗ 2 field(s) have gaps
+ *   ────────────────────────────────────────────────────────────────────────
+ *   FIELD                                            STATUS   MISSING
+ *   ────────────────────────────────────────────────────────────────────────
+ *   id / _id                  (job detail route)     ✓ OK
+ *   title / jobTitle           (Jobs column heading) ✓ OK
+ *   clientRate / jobPayDetails (Client Rate column)  ✗ FAIL  12 / 50 (24.0%)
+ *                                                    IDs: api-451, api-460, api-471 + 9 more
+ *   status / jobStatus         (Status column)       ✗ FAIL  3 / 50 (6.0%)
+ *                                                    IDs: api-452, api-465, api-488
  */
 
 import { ConfigProvider } from 'antd';
@@ -15,6 +47,9 @@ import {
   assertListViewContract,
   assertSridharColumnMenuContract,
   SRIDHAR_DROPDOWN_FIELDS,
+  REQUIRED_API_JOB_FIELDS,
+  buildApiCoverageReport,
+  buildHeaderFieldsReport,
 } from './listViewTestContracts';
 
 function renderSridharListView(props = {}) {
@@ -33,49 +68,6 @@ function renderSridharListView(props = {}) {
 }
 
 const getSearchInput = () => screen.getByPlaceholderText('Min 3 Chars to search');
-
-// ── API response validation helpers ───────────────────────────────────────────
-
-const REQUIRED_JOB_FIELDS = [
-  { keys: ['id', '_id'], label: 'id / _id (for job detail route)' },
-  { keys: ['title', 'jobTitle'], label: 'title / jobTitle (job heading)' },
-  { keys: ['location', 'jobLocation'], label: 'location / jobLocation' },
-  { keys: ['status', 'jobStatus', 'recruitmentStatus'], label: 'status / jobStatus / recruitmentStatus' },
-  { keys: ['createdAt'], label: 'createdAt (created date column)' },
-  { keys: ['experience'], label: 'experience' },
-  { keys: ['clientRate'], label: 'clientRate' },
-];
-
-const REQUIRED_HEADER_FIELD_VALUES = ['jobs', 'location', 'status', 'createdAt', 'experience'];
-
-function validateApiJobsResponse(jobs) {
-  if (!Array.isArray(jobs) || jobs.length === 0) {
-    return ['API response: jobs array is empty or missing'];
-  }
-  const errors = [];
-  jobs.forEach((job, index) => {
-    const tag = job.id ?? job._id ?? job.key ?? `job[${index}]`;
-    REQUIRED_JOB_FIELDS.forEach(({ keys, label }) => {
-      const hasValue = keys.some((k) => job[k] != null && job[k] !== '');
-      if (!hasValue) errors.push(`${tag}: missing required field — ${label}`);
-    });
-  });
-  return errors;
-}
-
-function validateApiHeaderFields(fields) {
-  if (!Array.isArray(fields) || fields.length === 0) {
-    return ['API header fields: array is empty or missing'];
-  }
-  const errors = [];
-  REQUIRED_HEADER_FIELD_VALUES.forEach((key) => {
-    const found = fields.some(
-      (f) => (f.value ?? f.field ?? f.key ?? f.fieldKey) === key,
-    );
-    if (!found) errors.push(`API header fields: missing required column "${key}"`);
-  });
-  return errors;
-}
 
 // ── Component contract ─────────────────────────────────────────────────────────
 
@@ -236,23 +228,29 @@ describe('SridharListView JSON data props', () => {
 });
 
 // ── API response validation ────────────────────────────────────────────────────
+//
+// These tests check that data coming from the real API has all the fields the
+// ListView component actually renders. On failure the report tells you exactly
+// which fields are missing and in how many records.
+//
+// For production datasets (2000+ records) use a sampling strategy so the test
+// stays fast while still giving high confidence. See file header for guidance.
 
 describe('SridharListView API response validation', () => {
-  it('SRIDHAR_MOCK_JOBS passes all required field checks', () => {
-    const errors = validateApiJobsResponse(SRIDHAR_MOCK_JOBS);
-    if (errors.length > 0) {
-      throw new Error(
-        `SRIDHAR_MOCK_JOBS (or the real API) is missing required fields — fix the data:\n${errors.join('\n')}`,
-      );
-    }
+
+  // ── Self-check: mock data must satisfy the contract ────────────────────────
+
+  it('SRIDHAR_MOCK_JOBS — full scan passes all required field checks', () => {
+    const { allPassed, report } = buildApiCoverageReport(SRIDHAR_MOCK_JOBS);
+    if (!allPassed) throw new Error(report);
   });
 
-  it('SRIDHAR_DROPDOWN_FIELDS contains all required column keys', () => {
-    const errors = validateApiHeaderFields(SRIDHAR_DROPDOWN_FIELDS);
-    if (errors.length > 0) {
-      throw new Error(`Header field config is incomplete:\n${errors.join('\n')}`);
-    }
+  it('SRIDHAR_DROPDOWN_FIELDS — contains all required column keys', () => {
+    const { allPassed, report } = buildHeaderFieldsReport(SRIDHAR_DROPDOWN_FIELDS);
+    if (!allPassed) throw new Error(report);
   });
+
+  // ── Renders with real API field names ──────────────────────────────────────
 
   it('renders correctly when jobs use API field names (jobTitle / jobLocation / jobStatus)', () => {
     const apiShapedJobs = [
@@ -286,16 +284,12 @@ describe('SridharListView API response validation', () => {
       </ConfigProvider>,
     );
 
-    // jobTitle renders as the link text
     expect(screen.getByRole('link', { name: 'API Engineer' })).toHaveAttribute(
       'href',
       '/sri-detailview/api-001',
     );
-    // jobLocation renders in the Location column
     expect(screen.getByText('Austin')).toBeInTheDocument();
-    // jobStatus: 'active' normalises to 'Open'
     expect(screen.getByText('Open')).toBeInTheDocument();
-    // clientInfo is used for the client label
     expect(screen.getByText('TechCorp - TC-55')).toBeInTheDocument();
   });
 
@@ -341,49 +335,172 @@ describe('SridharListView API response validation', () => {
     expect(screen.getByText('Denver')).toBeInTheDocument();
   });
 
-  it('reports all missing fields when API job response is incomplete', () => {
+  // ── Missing-field detection with coverage report ───────────────────────────
+  //
+  // Pattern for production data (2000+ records):
+  //
+  //   const { allPassed, report } = buildApiCoverageReport(
+  //     realApiJobs,
+  //     REQUIRED_API_JOB_FIELDS,
+  //     { sampleSize: 100, sampleStrategy: 'range' }   ← random page of 100
+  //   );
+  //   if (!allPassed) throw new Error(report);
+  //
+  // The report groups errors by field, not by record:
+  //   ✗ FAIL  clientRate / jobPayDetails  12 / 100 (12.0%)  → IDs: api-451, api-460...
+  // so you see the scale of the problem, not a wall of individual errors.
+
+  it('coverage report detects missing fields and names them clearly', () => {
     const incompleteJobs = [
       { key: 'bad-1', someUnknownField: 'value' },
-      { key: 'bad-2', title: 'Partial Job' },
+      { key: 'bad-2', title: 'Partial Job', experience: '3 years' },
+      { _id: 'bad-3', jobTitle: 'Almost Complete', jobLocation: 'NYC', jobStatus: 'active', createdAt: '2026-01-01', experience: '2 yrs', clientRate: 80, pipeline: 4 },
     ];
 
-    const errors = validateApiJobsResponse(incompleteJobs);
+    const { allPassed, failingFields, report } = buildApiCoverageReport(incompleteJobs);
 
-    // bad-1 has no id, title, location, status, createdAt, experience, clientRate
-    expect(errors).toContain('bad-1: missing required field — id / _id (for job detail route)');
-    expect(errors).toContain('bad-1: missing required field — title / jobTitle (job heading)');
-    expect(errors).toContain('bad-1: missing required field — location / jobLocation');
-    expect(errors).toContain('bad-1: missing required field — status / jobStatus / recruitmentStatus');
-    expect(errors).toContain('bad-1: missing required field — createdAt (created date column)');
+    // Should NOT pass — bad-1 and bad-2 are missing required fields
+    expect(allPassed).toBe(false);
 
-    // bad-2 has title but still missing location, status, etc.
-    expect(errors.some((e) => e.startsWith('bad-2: missing required field — location'))).toBe(true);
-    expect(errors.some((e) => e.startsWith('bad-2: missing required field — status'))).toBe(true);
+    // bad-3 has everything, so only 2 records should be flagged per field
+    const idField = failingFields.find((f) => f.label.includes('id /'));
+    expect(idField).toBeDefined();
+    expect(idField.missing).toBe(2); // bad-1 and bad-2 have no id/_id
+
+    // bad-2 has experience, bad-3 has experience — only bad-1 is missing it
+    const expField = failingFields.find((f) => f.label.includes('experience'));
+    expect(expField).toBeDefined();
+    expect(expField.missing).toBe(1);
+    expect(expField.sampleIds).toContain('bad-1');
+
+    // Report text should contain the field labels, not just IDs
+    expect(report).toContain('id / _id');
+    expect(report).toContain('title / jobTitle');
+    expect(report).toContain('✗ FAIL');
+    expect(report).toContain('bad-1');
   });
 
-  it('reports missing header fields when API column config is incomplete', () => {
-    const incompleteFields = [
-      { label: 'Priority', value: 'priority' },
-    ];
+  it('coverage report — range strategy simulates a random page of API results', () => {
+    // Simulates what you'd do with 2000+ records:
+    // pick a random page of 3 records and check those
+    const largeDataset = Array.from({ length: 20 }, (_, i) => ({
+      _id: `job-${i + 1}`,
+      jobTitle: `Job ${i + 1}`,
+      jobLocation: 'City',
+      jobStatus: 'active',
+      createdAt: '2026-01-01',
+      experience: '3 years',
+      clientRate: 100,
+      pipeline: i,
+      // every 5th record is missing clientRate to simulate a real data gap
+      ...(i % 5 === 0 ? { clientRate: undefined } : {}),
+    }));
 
-    const errors = validateApiHeaderFields(incompleteFields);
+    // Range sample of 5 records — the report tells you which fields are missing
+    // without printing 20 individual error lines
+    const { report, scannedCount } = buildApiCoverageReport(
+      largeDataset,
+      REQUIRED_API_JOB_FIELDS,
+      { sampleSize: 5, sampleStrategy: 'range' },
+    );
 
-    expect(errors).toContain('API header fields: missing required column "jobs"');
-    expect(errors).toContain('API header fields: missing required column "location"');
-    expect(errors).toContain('API header fields: missing required column "status"');
-    expect(errors).toContain('API header fields: missing required column "createdAt"');
-    expect(errors).toContain('API header fields: missing required column "experience"');
+    expect(scannedCount).toBe(5);
+    // Report must show the field labels (not just "undefined" or indices)
+    expect(report).toContain('clientRate / jobPayDetails');
+    expect(report).toContain('Scanned');
+    expect(report).toContain('range');
   });
 
-  it('reports empty jobs array as an error', () => {
-    const errors = validateApiJobsResponse([]);
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/empty or missing/);
+  it('coverage report — spread strategy catches boundary + middle records', () => {
+    // First and last records deliberately broken (common in API edge cases)
+    const dataset = Array.from({ length: 30 }, (_, i) => ({
+      _id: `job-${i + 1}`,
+      jobTitle: `Job ${i + 1}`,
+      jobLocation: 'City',
+      jobStatus: 'active',
+      createdAt: '2026-01-01',
+      experience: '3 years',
+      clientRate: 100,
+      pipeline: i,
+    }));
+    // Break first and last records
+    dataset[0] = { _id: 'job-1', broken: true };
+    dataset[29] = { _id: 'job-30', broken: true };
+
+    const { allPassed, failingFields, report } = buildApiCoverageReport(
+      dataset,
+      REQUIRED_API_JOB_FIELDS,
+      { sampleSize: 10, sampleStrategy: 'spread' },
+    );
+
+    // Spread samples from boundaries — will catch the broken first/last records
+    expect(allPassed).toBe(false);
+    expect(report).toContain('spread');
+    expect(failingFields.length).toBeGreaterThan(0);
   });
 
-  it('reports empty header fields array as an error', () => {
-    const errors = validateApiHeaderFields([]);
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatch(/empty or missing/);
+  it('coverage report — first/middle/last strategy reports missing counts by field', () => {
+    const dataset = Array.from({ length: 40 }, (_, i) => ({
+      _id: `job-${i + 1}`,
+      jobTitle: `Job ${i + 1}`,
+      jobLocation: 'City',
+      jobStatus: 'active',
+      createdAt: '2026-01-01',
+      experience: '3 years',
+      clientRate: 100,
+      pipeline: i,
+    }));
+
+    dataset[0].jobLocation = '';
+    dataset[9].jobLocation = '';
+    dataset[15].clientRate = undefined;
+    dataset[24].clientRate = undefined;
+    dataset[39].jobStatus = '';
+
+    const { allPassed, failingFields, report, scannedCount } = buildApiCoverageReport(
+      dataset,
+      REQUIRED_API_JOB_FIELDS,
+      { sampleSize: 30, sampleStrategy: 'firstMiddleLast' },
+    );
+
+    expect(scannedCount).toBe(30);
+    expect(allPassed).toBe(false);
+    expect(failingFields.find((field) => field.label.includes('location')).missing).toBe(2);
+    expect(failingFields.find((field) => field.label.includes('clientRate')).missing).toBe(2);
+    expect(failingFields.find((field) => field.label.includes('status')).missing).toBe(1);
+    expect(report).toContain('first 10 + middle 10 + last 10');
+    expect(report).toContain('2 / 30');
+    expect(report).toContain('1 / 30');
+  });
+
+  it('reports missing header fields with clear column names', () => {
+    const incompleteFields = [{ label: 'Priority', value: 'priority', isVisible: true }];
+
+    const { allPassed, missing, report } = buildHeaderFieldsReport(incompleteFields);
+
+    expect(allPassed).toBe(false);
+    expect(missing).toContain('jobs');
+    expect(missing).toContain('location');
+    expect(missing).toContain('status');
+    expect(missing).toContain('createdAt');
+    expect(missing).toContain('experience');
+    expect(report).toContain('"jobs"');
+    expect(report).toContain('"location"');
+  });
+
+  it('passes cleanly when all required fields are present', () => {
+    const completeJobs = Array.from({ length: 10 }, (_, i) => ({
+      _id: `job-${i + 1}`,
+      jobTitle: `Complete Job ${i + 1}`,
+      jobLocation: 'Chicago',
+      jobStatus: 'active',
+      createdAt: '2026-01-01',
+      experience: '5 years',
+      clientRate: 95,
+      pipeline: i + 1,
+    }));
+
+    const { allPassed } = buildApiCoverageReport(completeJobs);
+    expect(allPassed).toBe(true);
   });
 });

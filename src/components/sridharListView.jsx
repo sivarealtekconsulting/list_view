@@ -518,8 +518,18 @@ export default function ListView({
     </Space>
   );
 
+  const getTabKey = (tab, index) => {
+    if (tab.key ?? tab.id) return String(tab.key ?? tab.id);
+    if (String(tab.title).toLowerCase() === 'my jobs') return '1';
+    if (String(tab.title).toLowerCase() === 'all jobs') return '4';
+    return String(tab.title ?? index);
+  };
+
   const tabItems = tabs?.length
-    ? tabs.map((tab) => ({ key: String(tab.key), label: tabLabel(tab.title, tab.count) }))
+    ? tabs.map((tab, index) => ({
+      key: getTabKey(tab, index),
+      label: tabLabel(tab.title, tab.count),
+    }))
     : [
       { key: '1', label: tabLabel('My Jobs', myJobsCount) },
       { key: '4', label: tabLabel('All Jobs', allJobsCount) },

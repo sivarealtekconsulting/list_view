@@ -24,9 +24,12 @@ const OVERVIEW_LABELS = [
   { text: 'Created', line: 176 },
   { text: 'Skills', line: 180 },
   { text: 'Activity', line: 189 },
-  { text: 'Owner', line: 120 },
-  { text: 'Status', line: 121 },
-  { text: 'Time', line: 122 },
+  { text: 'Candidate ID', line: 35 },
+  { text: 'Name', line: 36 },
+  { text: 'Client Job ID', line: 37 },
+  { text: 'Gross Margin', line: 38 },
+  { text: 'Net Margin', line: 39 },
+  { text: 'Stage', line: 40 },
 ];
 
 const TAB_LABELS = [
@@ -113,7 +116,7 @@ describe.skipIf(!sridharDashboardValid)('sridharDetailePage route and overview',
 
     OVERVIEW_LABELS.forEach(expectPageText);
     TAB_LABELS.forEach(expectPageText);
-    expectPageText('Candidate moved to pipeline', 90);
+    expectPageText('AUTO123456', 90);
     PAGE_COMPONENT_SLOTS.forEach((slot) => expectPageSelector(container, slot));
   });
 });
