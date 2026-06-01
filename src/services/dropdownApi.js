@@ -2,6 +2,7 @@ const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
 // const AUTH_URL = 'http://192.168.1.66/authapi/v1';
 const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
 export const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+const CANDIDATES_URL = 'http://192.168.1.66/candidatesapi/v1';
 export const SUBMISSIONS_URL = BASE_URL;
 
 const LOGIN_CREDENTIALS = {
@@ -11,6 +12,9 @@ const LOGIN_CREDENTIALS = {
 
 // In-flight login promise — prevents multiple simultaneous login calls
 let loginPromise = null;
+const dropdownFieldsCache = new Map();
+const dropdownFieldsPromises = new Map();
+const candidatePromises = new Map();
 
 async function login() {
   if (loginPromise) return loginPromise;
@@ -176,4 +180,44 @@ export async function getJobs({
 
   const json = await response.json();
   return json.data ?? json;
+}
+
+export async function getCandidate({
+  offset = 0,
+  limit = 10,
+  sortBy = '',
+} = {}) {
+  const requestKey = `${offset}-${limit}-${sortBy}`;
+  if (candidatePromises.has(requestKey)) {
+    return candidatePromises.get(requestKey);
+  }
+
+  const promise = (async () => {
+    const headers = await authHeaders();
+    const params = new URLSearchParams({
+      offset: String(offset),
+      limit: String(limit),
+      sortBy,
+    });
+
+    const response = await fetch(
+      `${CANDIDATES_URL}/candidates?${params.toString()}`,
+      {
+        method: 'GET',
+        headers,
+      }
+    );
+
+      if (!response.ok) {
+        throw new Error(`Candidate API ${response.status}: ${response.statusText}`);
+      }
+
+      return response.json();
+  })()
+    .finally(() => {
+      candidatePromises.delete(requestKey);
+    });
+
+  candidatePromises.set(requestKey, promise);
+  return promise;
 }
