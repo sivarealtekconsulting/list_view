@@ -5,6 +5,18 @@ const LIST_VIEW_SOURCES = {
   SridharListView: 'src/components/sridharListView.jsx:79',
 };
 
+// Matches FALLBACK_JOB_HEADER_FIELDS in src/pages/sridharDashboard.jsx
+export const SRIDHAR_DROPDOWN_FIELDS = [
+  { label: 'Created date', value: 'createdAt' },
+  { label: 'Jobs', value: 'jobs' },
+  { label: 'Location', value: 'location' },
+  { label: 'Experience', value: 'experience' },
+  { label: 'Client Rate', value: 'clientRate' },
+  { label: 'Status', value: 'status' },
+  { label: 'Priority', value: 'priority' },
+  { label: 'Pipeline', value: 'pipeline' },
+];
+
 function getListViewLabels(firstJob) {
   return [
     { text: 'My Jobs', source: 'src/components/sridharListView.jsx:345' },
@@ -21,27 +33,13 @@ function getListViewLabels(firstJob) {
   ];
 }
 
-const SRIDHAR_LIST_VIEW_HEADERS = [
-  { text: 'Jobs', source: 'src/components/sridharListView.jsx:186' },
-  { text: 'Location', source: 'src/components/sridharListView.jsx:204' },
-  { text: 'Experience', source: 'src/components/sridharListView.jsx:217' },
-  { text: 'Client Rate (hr)', source: 'src/components/sridharListView.jsx:230' },
-  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:239' },
-  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:250' },
-  { text: 'Status', source: 'src/components/sridharListView.jsx:267' },
-  { text: 'Created date', source: 'src/components/sridharListView.jsx:276' },
-];
-
+// Column menu labels driven by SRIDHAR_DROPDOWN_FIELDS
 const SRIDHAR_COLUMN_MENU_LABELS = [
   { text: 'Select All', source: 'src/components/sridharListView.jsx:317' },
-  { text: 'Created Date', source: 'src/components/sridharListView.jsx:23' },
-  { text: 'Jobs', source: 'src/components/sridharListView.jsx:24' },
-  { text: 'Location', source: 'src/components/sridharListView.jsx:25' },
-  { text: 'Experience', source: 'src/components/sridharListView.jsx:26' },
-  { text: 'Client Rate', source: 'src/components/sridharListView.jsx:27' },
-  { text: 'Status', source: 'src/components/sridharListView.jsx:28' },
-  { text: 'Target Sub', source: 'src/components/sridharListView.jsx:29' },
-  { text: 'Pipeline', source: 'src/components/sridharListView.jsx:30' },
+  ...SRIDHAR_DROPDOWN_FIELDS.map((f) => ({
+    text: f.label,
+    source: 'src/pages/sridharDashboard.jsx (FALLBACK_JOB_HEADER_FIELDS)',
+  })),
 ];
 
 const getHeaderText = (container) => container.querySelector('.ant-table-thead')?.textContent || '';
@@ -94,12 +92,12 @@ function assertVisibleTableContract(container, contract) {
   assertSelector(container, '.job-search-input', contract);
   assertSelector(container, '.job-actions-button', contract);
 
-  SRIDHAR_LIST_VIEW_HEADERS.forEach((header) => {
-    if (!getHeaderText(container).includes(header.text)) {
+  SRIDHAR_DROPDOWN_FIELDS.forEach((field) => {
+    if (!getHeaderText(container).includes(field.label)) {
       failContract({
         ...contract,
-        source: header.source,
-        message: `Missing table header: "${header.text}"`,
+        source: 'src/pages/sridharDashboard.jsx (FALLBACK_JOB_HEADER_FIELDS)',
+        message: `Missing table header: "${field.label}"`,
       });
     }
   });
