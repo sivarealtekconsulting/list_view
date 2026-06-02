@@ -5,8 +5,7 @@ import StickyNotesCard from '../components/cards/StickyNotesCard';
 import CalendarCard from '../components/cards/CalendarCard';
 import OnboardingCard from '../components/cards/OnboardingCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
-// import ListView from '../components/ListView';
-import ListViews from '../components/suryaListView';
+import ListView from '../components/ListView';
 // import '../../styles/DashboardCards.css';
 
 export default function NaveenDashboardPage() {
@@ -40,7 +39,7 @@ export default function NaveenDashboardPage() {
           <ClientDetailsCard />
         </Col> */}
         <Col span={24}>
-          <ListViews />
+          <ListView rowDetailPath="/subha-detailview" />
         </Col>
 
       </Row>

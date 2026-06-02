@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "allCandidateCount": 6
+  },
+  "candidates": [
+    {
+      "key": "1",
+      "name": "Loke M Shahid",
+      "role": "Developer",
+      "email": "loke232@gmail.com",
+      "phone": "(+91) 8879688646",
+      "location": "California Gully, Australia",
+      "experience": "12 Years",
+      "createdDate": "Dec 02, 2025",
+      "skills": ["Java", "Python", "HTML", "JIRA"],
+      "skillsExtra": 5,
+      "workAuth": "L2 EAD",
+      "source": "LinkedIn"
+    },
+    {
+      "key": "2",
+      "name": "Rahul Dev Mohamed",
+      "role": "Data Analyst",
+      "email": "rahul.dev56@gmail.com",
+      "phone": "(+1) 9445567123",
+      "location": "Texas",
+      "experience": "10 Years",
+      "createdDate": "Dec 01, 2025",
+      "skills": ["SQL", "Power BI", "ETL Pipelines"],
+      "skillsExtra": 2,
+      "workAuth": "H1B",
+      "source": "Email"
+    },
+    {
+      "key": "3",
+      "name": "David King",
+      "role": "Developer",
+      "email": "daviding@example.com",
+      "phone": "(+1) (123) 456-7890",
+      "location": "California Gully, Australia",
+      "experience": "12 Years",
+      "createdDate": "Nov 22, 2025",
+      "skills": ["Budget management", "Project s"],
+      "skillsExtra": 5,
+      "workAuth": "H2 EAD",
+      "source": "Email"
+    },
+    {
+      "key": "4",
+      "name": "Priya S",
+      "role": "Frontend Developer",
+      "email": "priya.singh20@gmail.com",
+      "phone": "(+91) 9094567812",
+      "location": "Texas",
+      "experience": "10 Years",
+      "createdDate": "Nov 22, 2025",
+      "skills": ["Testing", "JIRA"],
+      "skillsExtra": 0,
+      "workAuth": "L2 EAD",
+      "source": "LinkedIn"
+    },
+    {
+      "key": "5",
+      "name": "Sano s",
+      "role": "Developer",
+      "email": "sanojs@gmail.com",
+      "phone": "(+91) 9859856845",
+      "location": "California Gully, Australia",
+      "experience": "12 Years",
+      "createdDate": "Nov 21, 2025",
+      "skills": ["CSS", "JavaScript", "R", "HTML"],
+      "skillsExtra": 5,
+      "workAuth": "L2 EAD",
+      "source": "Email"
+    },
+    {
+      "key": "6",
+      "name": "Deepika Reddy",
+      "role": "QA Engineer",
+      "email": "deepika.reddy24@gmail.com",
+      "phone": "(+91) 9859851265",
+      "location": "Texas",
+      "experience": "10 Years",
+      "createdDate": "Nov 20, 2025",
+      "skills": ["SQL", "Power BI", "ETL Pipelines"],
+      "skillsExtra": 2,
+      "workAuth": "L2 EAD",
+      "source": "LinkedIn"
+    }
+  ]
+}

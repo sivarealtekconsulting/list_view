@@ -44,11 +44,11 @@ const skillStack = [
   'REST API',
   'Ant Design',
   'Frontend Architecture',
-  'Performance Optimization',
+  'Performance Tuning',
 ];
 
 const goodFitSignals = [
-  'Strong frontend implementation experience',
+  'Basic frontend implementation experience',
   'Good understanding of reusable component structure',
   'Comfortable with dashboard and table-heavy UI',
   'Good exposure to validated forms and routing',
@@ -202,7 +202,7 @@ export default function GnaneshDetailedView() {
             <Row justify="space-between" gutter={[16, 16]}>
               <Col xs={24} lg={15}>
                 <Space direction="vertical" size={6}>
-                  <Text type="secondary">TCS - MSP ID 10432419</Text>
+                  <Text type="secondary">TCS - MSP ID 99999999</Text>
 
                   <Space size={8} wrap>
                     <Title level={4}>{job.title} - </Title>
@@ -240,22 +240,22 @@ export default function GnaneshDetailedView() {
 
                     <Space wrap>
                       <Button type="primary" icon={<TeamOutlined />}>
-                        Source Candidates
+                        Find Candidates
                       </Button>
                       <Button icon={<SafetyCertificateOutlined />}>
-                        View Matched Profiles
+                        View Profiles
                       </Button>
                       <Button type="text" icon={<MoreOutlined />} />
                     </Space>
 
                     <Row gutter={[16, 16]}>
-                      <Col span={8}><DetailField label="Ready" value="12" /></Col>
-                      <Col span={8}><DetailField label="Strong Match" value="4" /></Col>
+                      <Col span={8}><DetailField label="Ready" value="10" /></Col>
+                      <Col span={8}><DetailField label="Strong Match" value="2" /></Col>
                       <Col span={8}><DetailField label="Review" value="0" /></Col>
                       
                     </Row>
 
-                    <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
+                    <Text type="secondary">Created on Nov 04, 2025 | 07:00PM</Text>
                   </Space>
                 </Card>
               </Col>
@@ -320,7 +320,7 @@ export default function GnaneshDetailedView() {
             <Col span={24}>
               <SectionCard title="Skill Match Overview" icon={<ThunderboltOutlined />}>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={8}><DetailField label="Match Score" value="86%" /></Col>
+                  <Col xs={24} md={8}><DetailField label="Match Score" value="80%" /></Col>
                   <Col xs={24} md={8}><DetailField label="Priority Skill" value="React JS" /></Col>
                   <Col xs={24} md={8}><DetailField label="Submission Readiness" value="High" /></Col>
                 </Row>
@@ -377,7 +377,7 @@ export default function GnaneshDetailedView() {
                     <DetailField label="Contact Person" value="Jayaprakash A" />
                   </Col>
                   <Col xs={24} md={8}>
-                    <DetailField label="Email" value={<Link>jayaprakash123@gmail.com</Link>} />
+                    <DetailField label="Email" value={<Link>jayaprakash.changed@gmail.com</Link>} />
                   </Col>
                   <Col xs={24} md={8}>
                     <DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} />

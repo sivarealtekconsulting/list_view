@@ -1,0 +1,267 @@
+.users-list-page {
+  min-height: 100vh;
+  padding: 18px;
+  background: #f3f5f8;
+  color: #111827;
+}
+
+.users-list-shell {
+  overflow: hidden;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 35px rgba(17, 24, 39, 0.08);
+}
+
+.users-list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.users-list-title {
+  color: #004fc4;
+  font-size: 15px;
+}
+
+.users-list-search {
+  width: min(320px, 52vw);
+  border-color: #e0e5ed;
+  border-radius: 8px;
+}
+
+.users-list-info-button {
+  width: 38px;
+  color: #0057d8;
+  border-color: #e1e7f0;
+  border-radius: 8px;
+}
+
+.users-list-alert {
+  margin: 14px 16px 0;
+}
+
+.users-list-table .ant-table {
+  background: #ffffff;
+}
+
+.users-list-table .ant-table-container {
+  border: 0;
+}
+
+.users-list-table .ant-table-thead > tr > th {
+  height: 54px;
+  padding: 13px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e7ebf0;
+  color: #707784;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.users-list-table .ant-table-tbody > tr > td {
+  min-height: 52px;
+  padding: 12px 20px;
+  border-bottom: 0;
+  color: #111827;
+  font-size: 13px;
+}
+
+.users-list-table .ant-table-tbody > tr:nth-child(odd) > td {
+  background: #ffffff;
+}
+
+.users-list-table .ant-table-tbody > tr:nth-child(even) > td {
+  background: #f7f8fa;
+}
+
+.users-list-table .ant-table-tbody > tr:hover > td {
+  background: #eef5ff !important;
+}
+
+.users-list-avatar {
+  background: linear-gradient(135deg, #d9e8ff, #c7f1df);
+  color: #0057d8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.users-list-name {
+  max-width: 140px;
+  color: #111827;
+}
+
+.users-list-contact {
+  max-width: 210px;
+}
+
+.users-list-phone {
+  color: #111827;
+}
+
+.users-list-actions .ant-btn {
+  width: 28px;
+  height: 28px;
+  color: #4b5563;
+}
+
+.users-list-actions .ant-btn:hover,
+.users-list-actions .ant-btn:focus-visible {
+  color: #0057d8;
+  background: #eef5ff;
+}
+
+.users-list-actions .ant-btn:last-child {
+  color: #0057d8;
+}
+
+.users-list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 54px;
+  padding: 8px 22px;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.users-list-page-size {
+  width: 116px;
+}
+
+.users-list-pagination .ant-btn {
+  width: 32px;
+  height: 32px;
+  border-color: #e4e9f0;
+  border-radius: 8px;
+}
+
+.users-list-modal .ant-modal-content {
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.users-list-modal .ant-modal-header {
+  margin: 0;
+  padding: 18px 22px 12px;
+  border-bottom: 1px solid #e6ebf2;
+}
+
+.users-list-modal .ant-modal-body {
+  padding: 0 20px 4px;
+}
+
+.users-list-modal .ant-modal-footer {
+  margin: 0;
+  padding: 16px 20px 20px;
+  border-top: 1px solid #eef1f5;
+}
+
+.users-list-modal-subtitle {
+  color: #111827;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.users-list-modal .ant-tabs-nav {
+  margin-bottom: 12px;
+}
+
+.module-fields-search {
+  margin: 10px 0 4px;
+  border-radius: 7px;
+}
+
+.module-fields-table {
+  border: 1px solid #e6ebf2;
+  border-radius: 6px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.module-fields-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 16px;
+  border-bottom: 1px solid #dce2ea;
+  background: #f7f8fa;
+  color: #8a92a0;
+  font-size: 12px;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.module-fields-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.module-fields-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.module-fields-scroll::-webkit-scrollbar-track {
+  background: #f3f5f8;
+}
+
+.module-fields-scroll::-webkit-scrollbar-thumb {
+  background: #c8d0dc;
+  border-radius: 4px;
+}
+
+.module-fields-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.module-fields-row:last-child {
+  border-bottom: 0;
+}
+
+.module-fields-row span {
+  font-size: 13px;
+}
+
+.module-fields-head span:last-child,
+.module-fields-row .ant-switch {
+  justify-self: end;
+}
+
+@media (max-width: 760px) {
+  .users-list-page {
+    padding: 10px;
+  }
+
+  .users-list-toolbar,
+  .users-list-pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .users-list-toolbar > .ant-space,
+  .users-list-pagination > .ant-space {
+    justify-content: space-between;
+  }
+
+  .users-list-search {
+    width: calc(100vw - 98px);
+  }
+}
