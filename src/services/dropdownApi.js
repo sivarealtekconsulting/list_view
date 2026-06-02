@@ -1,6 +1,7 @@
 const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
 const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
 export const AUTH_URL = 'http://192.168.1.66/authapi/v1';
+const CANDIDATES_URL = 'http://192.168.1.66/candidatesapi/v1';
 export const SUBMISSIONS_URL = BASE_URL;
 
 const LOGIN_CREDENTIALS = {
@@ -10,6 +11,9 @@ const LOGIN_CREDENTIALS = {
 
 // In-flight login promise — prevents multiple simultaneous login calls
 let loginPromise = null;
+const dropdownFieldsCache = new Map();
+const dropdownFieldsPromises = new Map();
+const candidatePromises = new Map();
 
 export async function login() {
   if (loginPromise) return loginPromise;
@@ -159,6 +163,15 @@ export async function getDropdownFields(module) {
 
   return apiGet(`/filter-dropdown-fields?module=${encodeURIComponent(module)}`);
 }
+export async function getHeaderFields(userId, roleId, module) {
+  const params = new URLSearchParams({
+    userId: String(userId ?? ''),
+    roleId: String(roleId ?? ''),
+    module,
+  });
+  return apiGetWithAuth(AUTH_URL, `/admin/field-config?${params}`);
+}
+
 /**
  * Fetch distinct values for a specific field in a module.
  * Returns: [{ label, value }, ...]
@@ -196,7 +209,7 @@ export async function getDashboardOnboardingCount(
 export async function getJobs({
   jobStatus = 'active',
   jobRecruitmentStatus = 'unread',
-  limit = 50,
+  limit,
   offset = 0,
   userId = 1,
   sortBy = 'id',
@@ -225,92 +238,42 @@ export async function getJobs({
   return json.data ?? json;
 }
 
-/**
- * Fetch submissions list with filters and pagination.
- *
- * Returns: { submissions, summary, pagination }
- * where submissions is an array of normalized submission objects.
- */
-export async function getSubmissions({
-  tenantId = '93c782a4aa626175e5d11afa',
-  businessId = '83c782a4aa626175e5d11afa',
-  businessUnitId = '63b57588fd768a839dbc0f63',
-  userId = 12,
-  sourceType = '',
-  submissionViewType = 'candidates',
+export async function getCandidate({
   offset = 0,
   limit = 10,
+  sortBy = '',
 } = {}) {
-  const headers = await authHeaders();
-
-  const params = new URLSearchParams({
-    tenantId,
-    businessId,
-    businessUnitId,
-    userId: String(userId),
-    sourceType,
-    submissionViewType,
-    offset: String(offset),
-    limit: String(limit),
-  });
-
-  const response = await fetch(
-    `${BASE_URL}/submissions?${params.toString()}`,
-    { method: 'GET', headers }
-  );
-
-  if (!response.ok) {
-    const error = new Error(`API ${response.status}: ${response.statusText}`);
-    error.status = response.status;
-    throw error;
+  const requestKey = `${offset}-${limit}-${sortBy}`;
+  if (candidatePromises.has(requestKey)) {
+    return candidatePromises.get(requestKey);
   }
 
-  const json = await response.json();
-  const payload = json.data ?? json;
+  const promise = (async () => {
+    const headers = await authHeaders();
+    const params = new URLSearchParams({
+      offset: String(offset),
+      limit: String(limit),
+      sortBy,
+    });
 
-  // IMPORTANT: this was the working logic
-  const rawSubmissions = Array.isArray(payload.submissionList)
-    ? payload.submissionList
-    : Array.isArray(payload)
-      ? payload
-      : [];
+    const response = await fetch(
+      `${CANDIDATES_URL}/candidates?${params.toString()}`,
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
-  const submissions = rawSubmissions.map((item) => ({
-    key: item._id ?? item.submissionReferenceId ?? item.reqId,
+      if (!response.ok) {
+        throw new Error(`Candidate API ${response.status}: ${response.statusText}`);
+      }
 
-    submissionId: item._id ?? '',
-    submissionRefId: item.submissionReferenceId ?? '',
-    reqId: item.reqId ?? '',
+      return response.json();
+  })()
+    .finally(() => {
+      candidatePromises.delete(requestKey);
+    });
 
-    candidateName: item.candidateName ?? '',
-    email: item.Email ?? item.email ?? '',
-    experience: item.experience ? `${item.experience} years` : '',
-    workAuthorisation: item.workAuthorisation ?? '',
-
-    jobTitle: item.jobTitle ?? '',
-    clientName: item.clientName ?? '',
-
-    acceptedRate: item.candidateRate?.candidateAcceptedRate ?? 0,
-    proposedRate: item.proposedRate?.candidateProposedRate ?? 0,
-    margin: item.margin ?? 0,
-
-    internalStatus: item.internalSubmissionStatus ?? '',
-    submissionStatus: item.submissionStatus ?? '',
-
-    submittedBy: item.submittedBy ?? '',
-    submittedAt: item.submittedAt ?? '',
-  }));
-
-  return {
-    submissions,
-    summary: {
-      totalSubmissionCount: payload.count?.totalSubmissionCount ?? submissions.length,
-      totalInternalSubmissionCount: payload.count?.totalInternalSubmissionCount ?? 0,
-      totalClientSubmissionCount: payload.count?.totalClientSubmissionCount ?? 0,
-    },
-    pagination: {
-      limit: payload.pagination?.limit ?? limit,
-      offset: payload.pagination?.offset ?? offset,
-    },
-  };
+  candidatePromises.set(requestKey, promise);
+  return promise;
 }

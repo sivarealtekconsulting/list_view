@@ -1,0 +1,125 @@
+.jdv-ats-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.jdv-ats-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafd;
+}
+
+.jdv-ats-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+}
+
+.jdv-ats-meta-key {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #64748b;
+}
+
+.jdv-ats-meta-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.jdv-ats-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.jdv-ats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jdv-ats-section-hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #0053A5;
+}
+
+.jdv-ats-section-hd::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(to right, #bfdbfe, transparent);
+  border-radius: 2px;
+}
+
+.jdv-ats-bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jdv-ats-bullet-item {
+  display: flex;
+  gap: 9px;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.jdv-ats-bullet-item::before {
+  content: '›';
+  flex-shrink: 0;
+  color: #0053A5;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.jdv-skill-tag.ant-tag {
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  background: #e0f0ff;
+  color: #0053A5;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 83, 165, 0.12);
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.jdv-skill-tag.ant-tag:hover {
+  background: #bfdbfe;
+  box-shadow: 0 4px 10px rgba(0, 83, 165, 0.2);
+  transform: translateY(-1px);
+}
+
+.jdv-desc-toggle {
+  font-size: 13px;
+  color: #0053A5;
+  cursor: pointer;
+  margin-top: 2px;
+  display: inline-block;
+}

@@ -1,0 +1,53 @@
+{
+    "job": [
+        {
+            "id": 101,
+            "companyName": "Infosys",
+            "jobId": "JOB10245",
+            "title": "React Developer",
+            "status": "Applied",
+            "location": "Texas",
+            "experience": "8+ Years",
+            "employmentType": "Full Time",
+            "salary": "$85/hr",
+            "workMode": "Remote",
+            "noticePeriod": "30 Days",
+            "description": "Looking for a senior React developer",
+            "skills": [
+                "React",
+                "Node.js"
+            ],
+            "aboutRole": {
+                "summary1": "We are seeking an experienced and highly motivated React Developer with strong expertise in building scalable, high-performance enterprise applications. The ideal candidate should possess deep knowledge of modern frontend technologies and best practices for developing responsive and user-friendly web applications.",
+                "summary2": "The candidate must have hands-on experience with React.js, Node.js, REST API integration, cloud deployment, and microservices architecture. Experience working with AWS services, Docker, and modern DevOps workflows will be considered an added advantage."
+            },
+            "interviewProcess": [
+                "Application Submitted",
+                "Technical Screening",
+                "Manager Discussion",
+                "HR Round"
+            ],
+            "responsibilities": [
+                "Design and develop scalable React applications for enterprise-level platforms.",
+                "Create reusable and maintainable frontend components with clean architecture.",
+                "Integrate REST APIs, microservices, and third-party services efficiently.",
+                "Collaborate closely with UI/UX designers, backend developers, and QA teams.",
+                "Participate in code reviews and ensure best coding practices are followed."
+            ],
+            "recruiter": {
+                "name": "",
+                "designation": "Senior Recruiter",
+                "email": "hiring@infosys.com",
+                "phone": "+1 9876543210"
+            },
+            "documents": [
+                "Resume.pdf",
+                "CoverLetter.pdf"
+            ],
+            "applicationStatus": {
+                "status": "Shortlisted",
+                "message": "Your profile has been shortlisted for the next interview round."
+            }
+        }
+    ]
+}

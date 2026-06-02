@@ -69,6 +69,12 @@ export function getUserId(user) {
   return Number.isFinite(numericValue) ? numericValue : value;
 }
 
+export function getUserRoleId(user) {
+  const value = firstValue(user?.raw ?? user, ['ROLE_ID', 'role_id', 'roleId', 'ROLEID'], 0);
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 0;
+}
+
 function normalizeModuleField(field, index) {
   const fieldName = firstValue(field, ['label', 'Label', 'fieldName', 'field_name', 'name', 'fieldLabel', 'value'], `Field ${index + 1}`);
   const fieldKey = firstValue(field, ['field', 'Field', 'fieldKey', 'field_key', 'key', 'value', 'fieldName', 'name'], fieldName);
@@ -83,10 +89,11 @@ function normalizeModuleField(field, index) {
   };
 }
 
-async function getFieldConfigModule(apiModule, userId) {
+async function getFieldConfigModule(apiModule, userId, roleId) {
   const params = new URLSearchParams({
     module: apiModule,
     userId: String(userId ?? ''),
+    roleId: String(roleId ?? ''),
   });
   const json = await fetchJsonWithAuth(AUTH_URL, `${FIELD_CONFIG_PATH}?${params}`);
   const payload = json.data ?? json;
@@ -101,13 +108,14 @@ async function getDropdownModuleFields(apiModule) {
 
 export async function getUserModuleFields(user) {
   const userId = getUserId(user);
+  const roleId = getUserRoleId(user);
   const entries = await Promise.all(
     CUSTOMIZABLE_MODULES.map(async ({ key, apiModule }) => {
       let fields;
       let source = 'field-config';
 
       try {
-        fields = await getFieldConfigModule(apiModule, userId);
+        fields = await getFieldConfigModule(apiModule, userId, roleId);
       } catch (err) {
         if (err.status !== 404) throw err;
         source = 'dropdown-fields';
@@ -122,6 +130,7 @@ export async function getUserModuleFields(user) {
           apiModule,
           source,
           userId,
+          roleId,
         })),
       ];
     })
@@ -136,11 +145,13 @@ function visibleFieldPayload(fields) {
     field: field.fieldKey,
     isVisible: field.isVisible,
     type: field.type ?? 'text',
+    isEditable: field.isEditable ?? false,
   }));
 }
 
 export async function updateUserModuleFieldConfig(user, module, fields) {
   const userId = getUserId(user);
+  const roleId = getUserRoleId(user);
   const apiModule = CUSTOMIZABLE_MODULES.find((item) => item.key === module)?.apiModule ?? module;
 
   return fetchJsonWithAuth(AUTH_URL, FIELD_CONFIG_PATH, {
@@ -148,6 +159,7 @@ export async function updateUserModuleFieldConfig(user, module, fields) {
     body: JSON.stringify({
       module: apiModule,
       userId,
+      roleId,
       visibleFields: visibleFieldPayload(fields),
     }),
   });

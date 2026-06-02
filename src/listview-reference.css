@@ -104,7 +104,9 @@
 
 :is(.listview-shell, .antd) .job-toolbar-icon-button {
   border-radius: 8px !important;
-  color: #595959 !important;
+  color: rgba(0, 0, 0, 0.85) !important; 
+  background-color: #f7fafd !important; 
+  border-color: #d9e8f5 !important;   
 }
 
 :is(.listview-shell, .antd) .job-summary-button {

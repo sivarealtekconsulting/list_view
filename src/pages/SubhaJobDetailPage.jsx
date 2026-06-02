@@ -4,9 +4,14 @@ import {
   Button,
   Card,
   Col,
-  Divider,
+  Collapse,
+  Empty,
+  Flex,
   Row,
+  Segmented,
   Space,
+  Spin,
+  Statistic,
   Tabs,
   Tag,
   Timeline,
@@ -23,39 +28,16 @@ import {
   MoreOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
+import { getJobById } from '../services/jobsApi';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
+import DescriptionBlock from '../components/DescriptionBlock';
+import '../styles/SubhaJobDetailPage.css';
 
-const { Text, Title, Link, Paragraph } = Typography;
-
-const defaultDescription = [
-  'Bill Rate: 60 - 80',
-  'MSP Owner: William Bristol',
-  'Location: ~LOUISVILLE~',
-  'Duration: 6 months',
-  'GbaMS ReqID: 10428045',
-  'Consultant with GenAI',
-  'Experience: 8-15 years in AI/ML, 3+ years in GCP and AI/ML',
-  'Roles & Responsibilities',
-  'Architect and implement AI/ML solutions on GCP using services like Vertex AI, BigQuery, Cloud Storage, Cloud Composer, and Dataflow.',
-  'Develop and fine-tune Large Language Models and integrate them into enterprise applications.',
-  'Build Generative AI pipelines using LangChain, Semantic Kernel, and Vector Databases for Retrieval-Augmented Generation.',
-  'Collaborate with cross-functional teams to identify and prioritize GenAI use cases.',
-  'Ensure compliance with Responsible AI principles and security standards.',
-  'Optimize performance and scalability of AI models in production environments.',
-  'Mentor junior engineers and contribute to best practices in AI engineering.',
-  'Required Skills',
-  'Strong proficiency in GCP services: Vertex AI, BigQuery, Cloud Spanner, Cloud Functions, Pub/Sub.',
-  'Expertise in Python, Java, and AI/ML frameworks.',
-  'Hands-on experience with Prompt Engineering, Zero-shot, Few-shot, Chain-of-Thought.',
-  'Knowledge of LangChain, Azure/OpenAI APIs, and Vector DBs.',
-  'Familiarity with CI/CD pipelines, Docker, and Kubernetes.',
-  'Understanding of Responsible AI, data privacy, and model governance.',
-];
+const { Text, Title, Link } = Typography;
 
 const activityItems = [
   {
@@ -89,13 +71,13 @@ const activityItems = [
 ];
 
 const candidateFields = [
-  { label: 'Candidate Name', value: 'candidateName' },
-  { label: 'Designation', value: 'designation' },
-  { label: 'Current Location', value: 'currentLocation' },
-  { label: 'Experience', value: 'experience' },
-  { label: 'Work Authorization', value: 'workAuthorization' },
-  { label: 'Submission Status', value: 'submissionStatus' },
-  { label: 'Submitted Date', value: 'submittedDate' },
+  { label: 'Candidate Name',    value: 'candidateName'     },
+  { label: 'Designation',       value: 'designation'       },
+  { label: 'Current Location',  value: 'currentLocation'   },
+  { label: 'Experience',        value: 'experience'        },
+  { label: 'Work Authorization',value: 'workAuthorization' },
+  { label: 'Submission Status', value: 'submissionStatus'  },
+  { label: 'Submitted Date',    value: 'submittedDate'     },
 ];
 
 const candidateRows = [
@@ -112,7 +94,7 @@ const candidateRows = [
   {
     id: 2,
     candidateName: 'Kiran Kumar',
-    designation: 'Full Stack Developer',
+    designation: 'Software Developer',
     currentLocation: 'Texas',
     experience: '5 years',
     workAuthorization: 'GC EAD',
@@ -133,19 +115,25 @@ const candidateRows = [
 
 function DetailField({ label, value }) {
   return (
-    <Space direction="vertical" size={2}>
-      <Text type="secondary">{label}</Text>
-      <Text>{value || '-'}</Text>
-    </Space>
+    <div className="jdv-field">
+      <Text className="jdv-field-label">{label}</Text>
+      <Text className="jdv-field-value">{value || '-'}</Text>
+    </div>
   );
 }
 
-function SectionCard({ title, icon, children }) {
+function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLight = 'rgba(0,83,165,0.08)' }) {
   return (
     <Card
       size="small"
-      className="client-details-card"
-      title={<Space size={6}>{icon}<Text strong>{title}</Text></Space>}
+      className="jdv-section-card"
+      style={{ '--section-accent': accentColor, '--section-accent-light': accentLight }}
+      title={
+        <Space size={12}>
+          <span className="jdv-section-icon-wrap">{icon}</span>
+          <Text strong className="jdv-section-title">{title}</Text>
+        </Space>
+      }
     >
       {children}
     </Card>
@@ -164,73 +152,132 @@ function tabLabel(label, count) {
 export default function JobDetailPage() {
   const navigate = useNavigate();
   const { jobId } = useParams();
-  const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
-  const [activeDetailTab, setActiveDetailTab] = useState('details');
-  const [activeActivityTab, setActiveActivityTab] = useState('activity');
+
+  const [job, setJob]                               = useState(null);
+  const [loading, setLoading]                       = useState(true);
+  const [activeDetailTab, setActiveDetailTab]       = useState('details');
+  const [activeActivityTab, setActiveActivityTab]   = useState('activity');
+
+  useEffect(() => {
+    setLoading(true);
+    getJobById(jobId)
+      .then((data) => setJob(data))
+      .catch(() => setJob(null))
+      .finally(() => setLoading(false));
+  }, [jobId]);
+
+  if (loading) {
+    return (
+      <div className="dashboard-wrapper jdv" style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!job) {
+    return (
+      <div className="dashboard-wrapper jdv">
+        <Empty description="Job not found" />
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-wrapper">
+    <div className="dashboard-wrapper jdv">
       <Row gutter={[16, 16]}>
+
+        {/* ── Breadcrumb ── */}
         <Col span={24}>
           <Breadcrumb
+            className="jdv-breadcrumb"
             items={[
-              { title: <Text type="secondary" onClick={() => navigate('/')}>Home</Text> },
-              { title: <Text type="secondary" onClick={() => navigate('/')}>Jobs</Text> },
-              { title: <Text strong>Detailed View</Text> },
+              {
+                title: (
+                  <span className="jdv-breadcrumb-link" onClick={() => navigate('/')}>
+                    Home
+                  </span>
+                ),
+              },
+              {
+                title: (
+                  <span className="jdv-breadcrumb-link" onClick={() => navigate('/')}>
+                    Jobs
+                  </span>
+                ),
+              },
+              {
+                title: <span className="jdv-breadcrumb-active">Detailed View</span>,
+              },
             ]}
           />
         </Col>
 
+        {/* ── Hero card ── */}
         <Col span={24}>
-          <Card size="small" className="client-details-card">
-            <Row justify="space-between" gutter={[16, 16]}>
+          <Card size="small" className="jdv-hero-card">
+            <Row justify="space-between" align="middle" gutter={[16, 16]}>
               <Col xs={24} lg={16}>
                 <Space direction="vertical" size={5}>
-                  <Text type="secondary">TCS - MSP ID 10432419</Text>
+                  <span className="jdv-client-code">{job.client}</span>
                   <Space size={8} wrap>
-                    <Title level={4}>{job.title} - 38975</Title>
+                    <Title level={4} className="jdv-job-title">
+                      {job.title}
+                    </Title>
                     <StatusBadge status={job.status} />
                   </Space>
                   <Space size={12} wrap>
-                    <Text type="secondary"><EnvironmentOutlined /> {job.location}</Text>
-                    <Text type="secondary"><ClockCircleOutlined /> {job.experience}</Text>
-                    <Text type="secondary"><BankOutlined /> {job.employmentType}</Text>
-                    <Text type="secondary">{job.locationType}</Text>
-                    <Text type="secondary"><DollarOutlined /> Client rate: ${job.clientRate}/hr</Text>
+                    <span className="jdv-meta-item"><EnvironmentOutlined /> {job.location}</span>
+                    <span className="jdv-meta-item"><ClockCircleOutlined /> {job.experience}</span>
+                    <span className="jdv-meta-item"><BankOutlined /> {job.employmentType}</span>
+                    <span className="jdv-meta-item">{job.locationType}</span>
+                    <span className="jdv-meta-item"><DollarOutlined /> Client rate: ${job.clientRate}/hr</span>
                   </Space>
-                  <Tabs
-                    size="small"
-                    activeKey={activeDetailTab}
-                    onChange={setActiveDetailTab}
-                    items={[
-                      { key: 'details', label: tabLabel('Details', 1) },
-                      { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                      { key: 'candidate', label: tabLabel('Candidate', candidateRows.length) },
-                    ]}
-                  />
                 </Space>
               </Col>
               <Col xs={24} lg={8}>
-                <Row justify="end">
-                  <Col>
-                    <Space direction="vertical" size={8}>
-                      <Space>
-                        <Button type="link" icon={<TeamOutlined />}>Source Candidates</Button>
-                        <Button type="text" icon={<MoreOutlined />} />
-                      </Space>
-                      <Space size={32}>
-                        <DetailField label="Target submissions" value={job.targetSub?.total} />
-                        <DetailField label="In pipeline" value={job.pipeline} />
-                      </Space>
-                      <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
-                    </Space>
-                  </Col>
-                </Row>
+                <Space direction="vertical" size={6} style={{ width: '100%' }}>
+                  <div className="jdv-stats-box">
+                    <div className="jdv-stat-col">
+                      <span className="jdv-stat-label">Target Submissions</span>
+                      <Statistic value={job.targetSub?.total ?? '-'} />
+                    </div>
+                    <div className="jdv-stat-divider" />
+                    <div className="jdv-stat-col">
+                      <span className="jdv-stat-label">In Pipeline</span>
+                      <Statistic value={job.pipeline ?? '-'} />
+                    </div>
+                  </div>
+                  <DetailField label="Created On" value={job.createdAt} />
+                </Space>
               </Col>
             </Row>
           </Card>
         </Col>
 
+        {/* ── Tabs toolbar ── */}
+        <Col span={24}>
+          <Card className="jdv-toolbar-card">
+            <Flex align="center" justify="space-between" gap={12} wrap>
+              <Tabs
+                activeKey={activeDetailTab}
+                onChange={setActiveDetailTab}
+                items={[
+                  { key: 'details',        label: tabLabel('Details', 0) },
+                  { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
+                  { key: 'candidate',      label: tabLabel('Candidate', candidateRows.length) },
+                ]}
+              />
+              <Flex align="center" gap={8}>
+                <Button type="primary" className="jdv-action-btn" icon={<TeamOutlined />}>
+                  Source Candidates
+                </Button>
+                <Button className="jdv-more-btn" icon={<MoreOutlined />} />
+              </Flex>
+            </Flex>
+          </Card>
+        </Col>
+
+        {/* ── Tab content ── */}
         {activeDetailTab === 'candidates-api' ? (
           <Col span={24}>
             <DynamicListView moduleName="candidates" />
@@ -245,13 +292,21 @@ export default function JobDetailPage() {
           </Col>
         ) : (
           <>
-            <Col xs={24} lg={15}>
-              <Space direction="vertical" size={12}>
+            {/* ── Left: detail sections ── */}
+            <Col xs={24} lg={17}>
+              <Space direction="vertical" size={12} style={{ width: '100%', display: 'flex' }}>
+
                 <SectionCard title="Client" icon={<FileSearchOutlined />}>
                   <Row gutter={[32, 16]}>
-                    <Col xs={24} md={8}><DetailField label="Contact Person" value="Subha Seline" /></Col>
-                    <Col xs={24} md={8}><DetailField label="Email" value={<Link>seline@gmail.com</Link>} /></Col>
-                    <Col xs={24} md={8}><DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} /></Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Contact Person" value="Subha Seline" />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Email" value={<Link>seline@gmail.com</Link>} />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} />
+                    </Col>
                   </Row>
                 </SectionCard>
 
@@ -259,93 +314,143 @@ export default function JobDetailPage() {
                   <Space direction="vertical" size={12}>
                     <DetailField
                       label="Primary Skills"
-                      value={(
-                        <Space size={[6, 6]} wrap>
-                          {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training'].map((skill) => (
-                            <Tag key={skill} color="blue">{skill}</Tag>
-                          ))}
-                        </Space>
-                      )}
+                      value={
+                        <div className="jdv-skills-group">
+                          <Space size={[6, 6]} wrap>
+                            {['Salesforce', 'Administration', 'Process Builder', 'Flows', 'User training', 'PHP', 'Python', 'Django', 'Flask', 'FastAPI', 'GO', 'RDBMS', 'Python Selenium', 'Java', 'MongoDB'].map((skill) => (
+                              <Tag key={skill} className="jdv-skill-tag">{skill}</Tag>
+                            ))}
+                          </Space>
+                        </div>
+                      }
                     />
                     <DetailField label="Secondary Skills" value="-" />
-                    <DetailField label="Competencies" value="-" />
+                    <DetailField label="Competencies"     value="-" />
                   </Space>
                 </SectionCard>
 
+                {/* Description — rendered directly from DB data, no parsing needed */}
                 <SectionCard title="Description" icon={<FileTextOutlined />}>
-                  <Space direction="vertical">
-                    {defaultDescription.map((line) => (
-                      <Paragraph key={line}>{line}</Paragraph>
-                    ))}
-                  </Space>
+                  <DescriptionBlock
+                    sections={job.descriptionSections}
+                    meta={(job.descriptionMeta ?? []).map(item => {
+                      switch (item.fieldKey) {
+                        case 'location':   return { ...item, value: job.location };
+                        case 'experience': return { ...item, value: job.experience };
+                        case 'bill_rate':  return { ...item, value: `$${job.clientRate}/hr` };
+                        default:           return item;
+                      }
+                    })}
+                  />
                 </SectionCard>
 
                 <SectionCard title="Additional Details" icon={<InfoCircleOutlined />}>
                   <Row gutter={[32, 16]}>
-                    <Col xs={24} md={6}><DetailField label="Notice Period" value="-" /></Col>
-                    <Col xs={24} md={10}><DetailField label="Business Unit" value="Realtek Consulting LLC" /></Col>
+                    <Col xs={24} md={6}>
+                      <DetailField label="Notice Period"  value="-" />
+                    </Col>
+                    <Col xs={24} md={10}>
+                      <DetailField label="Business Unit" value="Realtek Consulting LLC" />
+                    </Col>
                   </Row>
                 </SectionCard>
+
               </Space>
             </Col>
 
-            <Col xs={24} lg={9}>
-              <Card size="small" className="client-details-card">
-                <Tabs
-                  size="small"
-                  activeKey={activeActivityTab}
-                  onChange={setActiveActivityTab}
-                  items={[
-                    {
-                      key: 'activity',
-                      label: tabLabel('Activity', 2),
-                      children: (
-                        <Space direction="vertical" size={14}>
-                          <Title level={5}>Mar 23, 2026</Title>
-                          <Timeline
-                            items={activityItems.slice(0, 2).map((item) => ({
-                              color: item.color,
-                              children: (
-                                <Card size="small">
-                                  <Space direction="vertical" size={4}>
-                                    <Space>
-                                      <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary">{item.time}</Text>
+            {/* ── Right: Activity & Notes ── */}
+            <Col xs={24} lg={7}>
+              <Card size="small" className="jdv-activity-card" style={{ height: '100%' }}>
+                <Space direction="vertical" style={{ width: '100%' }} size={12}>
+
+                  <Segmented
+                    block
+                    className="jdv-activity-switcher"
+                    options={[
+                      { label: tabLabel('Activity', 2), value: 'activity' },
+                      { label: tabLabel('Notes', 0),    value: 'notes'    },
+                    ]}
+                    value={activeActivityTab}
+                    onChange={setActiveActivityTab}
+                  />
+
+                  {activeActivityTab === 'activity' ? (
+                    <Collapse
+                      accordion
+                      className="jdv-date-collapse"
+                      defaultActiveKey={['mar-23']}
+                      items={[
+                        {
+                          key: 'mar-23',
+                          label: (
+                            <Space size={6}>
+                              <span className="jdv-date-label">Mar 23, 2026</span>
+                              <Badge count={2} />
+                            </Space>
+                          ),
+                          children: (
+                            <Timeline
+                              items={activityItems.slice(0, 2).map((item) => ({
+                                color: item.color,
+                                children: (
+                                  <Card size="small" className="jdv-timeline-card">
+                                    <Space direction="vertical" size={4}>
+                                      <Space>
+                                        <Tag color={item.tagColor} className="jdv-activity-tag">
+                                          {item.status}
+                                        </Tag>
+                                        <span className="jdv-activity-time">{item.time}</span>
+                                      </Space>
+                                      <span className="jdv-activity-text">{item.text}</span>
                                     </Space>
-                                    <Text type="secondary">{item.text}</Text>
-                                  </Space>
-                                </Card>
-                              ),
-                            }))}
-                          />
-                          <Divider />
-                          <Title level={5}>Mar 20, 2026</Title>
-                          <Timeline
-                            items={activityItems.slice(2).map((item) => ({
-                              color: item.color,
-                              children: (
-                                <Card size="small">
-                                  <Space direction="vertical" size={4}>
-                                    <Space>
-                                      <Tag color={item.tagColor}>{item.status}</Tag>
-                                      <Text type="secondary">{item.time}</Text>
+                                  </Card>
+                                ),
+                              }))}
+                            />
+                          ),
+                        },
+                        {
+                          key: 'mar-20',
+                          label: (
+                            <Space size={6}>
+                              <span className="jdv-date-label">Mar 20, 2026</span>
+                              <Badge count={2} />
+                            </Space>
+                          ),
+                          children: (
+                            <Timeline
+                              items={activityItems.slice(2).map((item) => ({
+                                color: item.color,
+                                children: (
+                                  <Card size="small" className="jdv-timeline-card">
+                                    <Space direction="vertical" size={4}>
+                                      <Space>
+                                        <Tag color={item.tagColor} className="jdv-activity-tag">
+                                          {item.status}
+                                        </Tag>
+                                        <span className="jdv-activity-time">{item.time}</span>
+                                      </Space>
+                                      <span className="jdv-activity-text">{item.text}</span>
                                     </Space>
-                                    <Text type="secondary">{item.text}</Text>
-                                  </Space>
-                                </Card>
-                              ),
-                            }))}
-                          />
-                        </Space>
-                      ),
-                    },
-                    { key: 'notes', label: tabLabel('Notes', 0), children: <Text type="secondary">No notes found</Text> },
-                  ]}
-                />
+                                  </Card>
+                                ),
+                              }))}
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <Empty description="No data" />
+                  )}
+
+                </Space>
               </Card>
             </Col>
+
           </>
         )}
+
       </Row>
     </div>
   );
