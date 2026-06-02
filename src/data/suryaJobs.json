@@ -1,0 +1,190 @@
+{
+  "summary": {
+    "myJobsCount": 8,
+    "allJobsCount": 3184
+  },
+  "jobs": [
+    {
+      "key": "VEN-101",
+      "id": 101,
+      "title": "Senior Golang Backend Engineer",
+      "location": "Chennai",
+      "locationType": "Hybrid",
+      "experience": "5 years",
+      "employmentType": "Full-time",
+      "clientRate": 85,
+      "targetSub": { "filled": 4, "total": 7 },
+      "pipeline": 15,
+      "assignees": [
+        { "initials": "SR", "color": "#2563eb" },
+        { "initials": "VP", "color": "#16a34a" }
+      ],
+      "extraAssignees": 1,
+      "status": "Open",
+      "createdAt": "June 01, 2024",
+      "createdAgo": "1 day ago",
+      "client": "NextWave Technologies - 560231",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-102",
+      "id": 102,
+      "title": "Python Automation Engineer",
+      "location": "Hyderabad",
+      "locationType": "Remote",
+      "experience": "4 years",
+      "employmentType": "Contract",
+      "clientRate": 70,
+      "targetSub": { "filled": 3, "total": 6 },
+      "pipeline": 11,
+      "assignees": [
+        { "initials": "RM", "color": "#f97316" },
+        { "initials": "DK", "color": "#7c3aed" }
+      ],
+      "extraAssignees": 2,
+      "status": "Submitted",
+      "createdAt": "May 30, 2024",
+      "createdAgo": "3 days ago",
+      "client": "CodeSphere Solutions - 874520",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-103",
+      "id": 103,
+      "title": "Frontend React Architect",
+      "location": "Bengaluru",
+      "locationType": "On-site",
+      "experience": "8 years",
+      "employmentType": "Full-time",
+      "clientRate": 110,
+      "targetSub": { "filled": 5, "total": 9 },
+      "pipeline": 19,
+      "assignees": [
+        { "initials": "AJ", "color": "#0891b2" }
+      ],
+      "extraAssignees": 4,
+      "status": "Interview",
+      "createdAt": "May 29, 2024",
+      "createdAgo": "4 days ago",
+      "client": "Innovent Systems - 663112",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "VEN-104",
+      "id": 104,
+      "title": "Data Engineering Specialist",
+      "location": "Pune",
+      "locationType": "Hybrid",
+      "experience": "6 years",
+      "employmentType": "Contract-to-hire",
+      "clientRate": 92,
+      "targetSub": { "filled": 2, "total": 5 },
+      "pipeline": 10,
+      "assignees": [
+        { "initials": "KS", "color": "#dc2626" },
+        { "initials": "PG", "color": "#0f766e" }
+      ],
+      "extraAssignees": 1,
+      "status": "Screening",
+      "createdAt": "May 28, 2024",
+      "createdAgo": "5 days ago",
+      "client": "DataForge Analytics - 781004",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-105",
+      "id": 105,
+      "title": "AWS Cloud Solutions Architect",
+      "location": "Mumbai",
+      "locationType": "Remote",
+      "experience": "10 years",
+      "employmentType": "Full-time",
+      "clientRate": 125,
+      "targetSub": { "filled": 7, "total": 12 },
+      "pipeline": 23,
+      "assignees": [
+        { "initials": "NV", "color": "#ca8a04" }
+      ],
+      "extraAssignees": 5,
+      "status": "Pipeline",
+      "createdAt": "May 27, 2024",
+      "createdAgo": "6 days ago",
+      "client": "SkyBridge Cloud - 995430",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-106",
+      "id": 106,
+      "title": "QA Automation Manager",
+      "location": "Coimbatore",
+      "locationType": "On-site",
+      "experience": "7 years",
+      "employmentType": "Contract",
+      "clientRate": 98,
+      "targetSub": { "filled": 3, "total": 6 },
+      "pipeline": 8,
+      "assignees": [
+        { "initials": "BM", "color": "#9333ea" },
+        { "initials": "TJ", "color": "#059669" }
+      ],
+      "extraAssignees": 2,
+      "status": "Shortlisted",
+      "createdAt": "May 26, 2024",
+      "createdAgo": "1 week ago",
+      "client": "QualityEdge Systems - 321876",
+      "hasBookmark": false,
+      "hasLinkedIn": true
+    },
+    {
+      "key": "VEN-107",
+      "id": 107,
+      "title": "ERP Functional Consultant",
+      "location": "Delhi",
+      "locationType": "Hybrid",
+      "experience": "9 years",
+      "employmentType": "Full-time",
+      "clientRate": 115,
+      "targetSub": { "filled": 8, "total": 14 },
+      "pipeline": 24,
+      "assignees": [
+        { "initials": "GV", "color": "#1d4ed8" },
+        { "initials": "LP", "color": "#ea580c" }
+      ],
+      "extraAssignees": 3,
+      "status": "Offer",
+      "createdAt": "May 25, 2024",
+      "createdAgo": "1 week ago",
+      "client": "BusinessCore Consulting - 457802",
+      "hasBookmark": true,
+      "hasLinkedIn": false
+    },
+    {
+      "key": "VEN-108",
+      "id": 108,
+      "title": "Cyber Security Analyst",
+      "location": "Kochi",
+      "locationType": "Remote",
+      "experience": "5 years",
+      "employmentType": "Full-time",
+      "clientRate": 90,
+      "targetSub": { "filled": 4, "total": 8 },
+      "pipeline": 13,
+      "assignees": [
+        { "initials": "RA", "color": "#be123c" },
+        { "initials": "SN", "color": "#0369a1" }
+      ],
+      "extraAssignees": 2,
+      "status": "Open",
+      "createdAt": "May 24, 2024",
+      "createdAgo": "2 weeks ago",
+      "client": "SecureNet Labs - 612345",
+      "hasBookmark": true,
+      "hasLinkedIn": true
+    }
+  ]
+}

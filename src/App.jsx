@@ -39,7 +39,11 @@ import CandidateOnboardingListView from './components/CandidateOnboardingListVie
 // import ListViews from './components/suryaListView';
 import DetailPages from './pages/suryaDetailview';
 import JobEditPage from './pages/suryaJobEditPage';
+import ZinnextDetailedView from './pages/zinnext-detailedView';
 import UsersListPage from './pages/UsersListPage';
+import RolesListPage from './pages/RolesListPage';
+import TeamsListPage from './pages/TeamsListPage';
+import AdminSetupPage from './pages/AdminSetupPage';
 
 export default function App() {
   return (
@@ -71,7 +75,10 @@ export default function App() {
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/admin" element={<AdminSetupPage />} />
           <Route path="/users" element={<UsersListPage />} />
+          <Route path="/roles" element={<RolesListPage />} />
+          <Route path="/teams" element={<TeamsListPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -109,6 +116,8 @@ export default function App() {
             path="/candidate-onboarding"
             element={<CandidateOnboardingListView />}
           />
+          <Route path="/zinnext-DetailedView" element={<ZinnextDetailedView />} />
+
         </Routes>
       </BrowserRouter>
     </ConfigProvider>
