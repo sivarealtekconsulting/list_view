@@ -1,5 +1,4 @@
 const BASE_URL = 'http://192.168.1.66/submissionsapi/v1';
-// const AUTH_URL = 'http://192.168.1.66/authapi/v1';
 const JOBS_URL = 'http://192.168.1.66/jobsapi/v1';
 export const AUTH_URL = 'http://192.168.1.66/authapi/v1';
 const CANDIDATES_URL = 'http://192.168.1.66/candidatesapi/v1';
@@ -16,7 +15,7 @@ const dropdownFieldsCache = new Map();
 const dropdownFieldsPromises = new Map();
 const candidatePromises = new Map();
 
-async function login() {
+export async function login() {
   if (loginPromise) return loginPromise;
 
   loginPromise = fetch(`${AUTH_URL}/login`, {
@@ -27,10 +26,11 @@ async function login() {
     .then(async (res) => {
       if (!res.ok) throw new Error(`Login failed: ${res.status}`);
       const json = await res.json();
-      // Handle common token field names returned by auth APIs
-      const token = json.token ?? json.access_token ?? json.data?.token ?? json.data?.access_token;
+      const token = json.data?.access_token ?? json.data?.token ?? json.access_token ?? json.token;
       if (!token) throw new Error('No token in login response');
       localStorage.setItem('authToken', token);
+      // Also store expiry time (900 seconds)
+      localStorage.setItem('authTokenExpiry', String(Date.now() + 900 * 1000));
       return token;
     })
     .finally(() => {
@@ -42,7 +42,12 @@ async function login() {
 
 async function ensureToken() {
   const token = localStorage.getItem('authToken');
-  if (token) return token;
+  const expiry = localStorage.getItem('authTokenExpiry');
+  // If token exists and not expired (with 30s buffer), use it
+  if (token && expiry && Date.now() < Number(expiry) - 30000) return token;
+  // Otherwise clear and re-login
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('authTokenExpiry');
   return login();
 }
 
@@ -101,6 +106,61 @@ async function apiGet(path) {
  * Returns: [{ label, value, type }, ...]
  */
 export async function getDropdownFields(module) {
+  if (module === 'submissions') {
+    try {
+      const config = await getFieldConfig(module);
+
+      console.log('FIELD CONFIG RESULT:', config);
+
+      const fieldsArray =
+        Array.isArray(config)
+          ? config
+          : Array.isArray(config?.fields)
+            ? config.fields
+            : Array.isArray(config?.fieldConfig)
+              ? config.fieldConfig
+              : Array.isArray(config?.data)
+                ? config.data
+                : [];
+
+      const mappedFields = fieldsArray
+        .map((field) => ({
+          label:
+            field.label ??
+            field.fieldLabel ??
+            field.displayName ??
+            field.headerName ??
+            field.name,
+          value:
+            field.value ??
+            field.fieldName ??
+            field.key ??
+            field.name,
+          type: field.type ?? 'text',
+        }))
+        .filter((field) => field.label && field.value);
+
+      if (mappedFields.length) {
+        return mappedFields;
+      }
+    } catch (error) {
+      console.log('FIELD CONFIG FAILED:', error);
+    }
+
+    return [
+      { label: 'Sub ID', value: 'submissionRefId' },
+      { label: 'Candidate', value: 'candidateName' },
+      { label: 'Job', value: 'jobTitle' },
+      { label: 'Client', value: 'clientName' },
+      { label: 'Bill Rate', value: 'proposedRate' },
+      { label: 'Pay Rate', value: 'acceptedRate' },
+      { label: 'Internal Status', value: 'internalStatus' },
+      { label: 'Client Status', value: 'submissionStatus' },
+      { label: 'Client Sub ID', value: 'reqId' },
+      { label: 'Submitted By', value: 'submittedBy' },
+    ];
+  }
+
   return apiGet(`/filter-dropdown-fields?module=${encodeURIComponent(module)}`);
 }
 export async function getHeaderFields(userId, roleId, module) {
@@ -133,9 +193,8 @@ export async function getDashboardOnboardingCount(
   offset = 0
 ) {
   const headers = await authHeaders();
-
   const response = await fetch(
-    `${SUBMISSION_URL}/dashboard-onboarding-count?offset=${offset}&limit=${limit}`,
+    `${SUBMISSIONS_URL}/dashboard-onboarding-count?offset=${offset}&limit=${limit}`,
     {
       method: 'POST',
       headers,
@@ -168,10 +227,7 @@ export async function getJobs({
 
   const response = await fetch(
     `${JOBS_URL}/jobs?${params.toString()}`,
-    {
-      method: 'GET',
-      headers,
-    }
+    { method: 'GET', headers }
   );
 
   if (!response.ok) {
