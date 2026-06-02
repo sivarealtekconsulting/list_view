@@ -3,6 +3,7 @@ import { Row, Col, Space, Card, Form, Input, Button, Select, Affix, Breadcrumb }
 import { validationRules, formatters } from '../components/form/validation';
 import StatsCards from '../components/cards/StatsCards';
 import JobListView from '../components/pugalistView';
+import ListView from '../components/sridharListView';
 import CalendarCard from '../components/cards/CalendarCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
@@ -17,6 +18,13 @@ import {
   STICKY_NOTES,
   FORM_OPTIONS,
   MOCK_CLIENTS,
+  SRIDHAR_DASHBOARD_STATS,
+  PUG_DASHBOARD_STATS,
+  PUG_DASHBOARD_DETAIL_DATA,
+  PUG_DASHBOARD_DASHBOARD_CARDS,
+  PUG_DASHBOARD_JOB_LIST_SUMMARY,
+  PUG_DASHBOARD_MOCK_JOBS,
+  PUG_DASHBOARD_JOBS_DATA
 } from '../data/jobs';
 import pugData from '../data/pug-data.json';
 const { TextArea } = Input;
@@ -41,9 +49,9 @@ export default function PugazhDashboard() {
 
         <Col xs={24} lg={16}>
           <Space direction="vertical" size={12} className="jobs-page-left">
-            <OnboardingCard data={ONBOARDING_STATS  } />
-            <StatsCards data={pugData.stats} />
-            <JobListView />
+            <OnboardingCard items={PUG_DASHBOARD_DASHBOARD_CARDS.onboarding } />
+            <StatsCards stats={PUG_DASHBOARD_STATS} />
+            <JobListView jobs={PUG_DASHBOARD_MOCK_JOBS} summary={PUG_DASHBOARD_JOB_LIST_SUMMARY} />
           </Space>
         </Col>
 

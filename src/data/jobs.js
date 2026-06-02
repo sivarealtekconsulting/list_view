@@ -1,4 +1,5 @@
 import sridharDashboardData from './sridharDashboardData.json';
+import pugalDashboard from './pug-data.json'
 import { SONY_MOCK_JOBS } from './sonyMockData';
 
 export const MOCK_JOBS = SONY_MOCK_JOBS;
@@ -9,6 +10,15 @@ export const SRIDHAR_JOB_LIST_SUMMARY = sridharDashboardData.summary;
 export const SRIDHAR_DASHBOARD_CARDS = sridharDashboardData.cards;
 export const SRIDHAR_DASHBOARD_STATS = sridharDashboardData.stats;
 export const SRIDHAR_DETAIL_DATA = sridharDashboardData.detail;
+
+// export const PUG_DASHBOARD_STATS = pugalDashboard.stats;
+
+export const PUG_DASHBOARD_JOBS_DATA = pugalDashboard;
+export const PUG_DASHBOARD_MOCK_JOBS = pugalDashboard.jobs;
+export const PUG_DASHBOARD_JOB_LIST_SUMMARY = pugalDashboard.summary;
+export const PUG_DASHBOARD_DASHBOARD_CARDS = pugalDashboard.cards;
+export const PUG_DASHBOARD_STATS = pugalDashboard.stats;
+export const PUG_DASHBOARD_DETAIL_DATA = pugalDashboard.detail;
 
 export const STATUS_TAG = {
   Fulfilled: { color: 'default' },
