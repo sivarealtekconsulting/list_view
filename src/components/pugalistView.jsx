@@ -6,22 +6,19 @@ import {
 import {
   BookFilled, LinkedinFilled,
   FilterOutlined, PlusOutlined, DownOutlined,
-  SearchOutlined, MoreOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
 import JobFilters from './filters';
+import { PUG_DASHBOARD_JOB_LIST_SUMMARY, PUG_DASHBOARD_MOCK_JOBS } from '../data/jobs';
 import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
 
 const { Text } = Typography;
-
-const MY_JOBS_COUNT = 6;
-const ALL_JOBS_COUNT = 2456;
 
 const columnOptions = [
   { key: 'createdAt', label: 'Created Date' },
@@ -32,7 +29,6 @@ const columnOptions = [
   { key: 'status', label: 'Status' },
   { key: 'targetSub', label: 'Target Sub' },
   { key: 'pipeline', label: 'Pipeline' },
-  { key: 'actions', label: 'Actions' },
 ];
 
 const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
@@ -81,13 +77,21 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView() {
+export default function ListView({
+  jobs = PUG_DASHBOARD_MOCK_JOBS,
+  summary = PUG_DASHBOARD_JOB_LIST_SUMMARY,
+  initialSelectedRowKeys,
+}) {
   const navigate = useNavigate();
+  const myJobsCount = summary.myJobsCount ?? jobs.length;
+  const allJobsCount = summary.allJobsCount ?? jobs.length;
+  const defaultSelectedRowKeys = initialSelectedRowKeys
+    ?? jobs.slice(0, 2).map((job) => job.key);
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
+  const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
@@ -106,7 +110,7 @@ export default function ListView() {
   //   ];
 
   //   return fields.reduce((options, field) => {
-  //     const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
+  //     const uniqueValues = [...new Set(jobs.map((job) => getComparableValue(job, field)).filter(Boolean))];
 
   //     return {
   //       ...options,
@@ -118,8 +122,8 @@ export default function ListView() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
-      ? MOCK_JOBS
-      : MOCK_JOBS.filter(
+      ? jobs
+      : jobs.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -147,7 +151,7 @@ export default function ListView() {
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, search]);
+  }, [appliedFilterRows, jobs, search]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
@@ -282,48 +286,10 @@ export default function ListView() {
         </Space>
       ),
     },
-    {
-      title: 'Actions',
-      key: 'actions',
-      fixed: 'right',
-      width: 90,
-      align: 'center',
-      render: () => (
-        <Dropdown
-          menu={{
-            items: [
-              {
-                key: 'view',
-                label: 'View',
-                onClick: () => navigate('/pugazh-detail-listview'),
-              },
-              {
-                key: 'edit',
-                label: 'Edit',
-                onClick: () => navigate('/pugazh-edit-job'),
-              },
-              {
-                key: 'delete',
-                label: 'Delete',
-                danger: true,
-              },
-            ],
-          }}
-          trigger={['click']}
-        >
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
-      ),
-    },
   ], [navigate]);
 
   const visibleColumns = useMemo(
-    () =>
-      columns.filter(
-        (column) =>
-          column.key === 'actions' ||
-          visibleColumnKeys.includes(column.visibilityKey || column.key)
-      ),
+    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
     [columns, visibleColumnKeys],
   );
 
@@ -377,8 +343,8 @@ export default function ListView() {
   );
 
   const tabItems = [
-    { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
-    { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
+    { key: 'my', label: tabLabel('My Jobs', myJobsCount) },
+    { key: 'all', label: tabLabel('All Jobs', allJobsCount) },
   ];
 
   return (
