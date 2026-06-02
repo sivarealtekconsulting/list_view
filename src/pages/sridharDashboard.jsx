@@ -88,7 +88,7 @@ useEffect(() => {
                 layout="vertical"
                 onFinish={handleQuickJobSubmit}
                 autoComplete="off"
-              >
+              >bgf
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={12}>
                     <Form.Item
