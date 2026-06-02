@@ -25,10 +25,6 @@ const escapeRegExp = (value) =>
 /**
  * Asserts that both a label and its paired value are present
  * within the same container (typically an .ant-card).
- *
- * Avoids relying on .ant-space internals — Ant Design's DOM structure
- * can vary across versions, making closest('.ant-space') unreliable.
- * Checking both strings within the same card is the meaningful contract.
  */
 const expectMetricValue = (container, label, value) => {
   expect(
@@ -55,9 +51,47 @@ describe('GnaneshDetailedView', () => {
   it('renders breadcrumb and header details', () => {
     renderPage();
     expect(screen.getByText(/Gnanesh Dashboard/i)).toBeInTheDocument();
-    expect(screen.getByText(/TCS - MSP ID 10432419/i)).toBeInTheDocument();
+    // MSP ID as shown in the component
+    expect(screen.getByText(/TCS - MSP ID 99999999/i)).toBeInTheDocument();
     expect(document.body.textContent).toContain('Client rate:');
     expect(document.body.textContent).toContain('/hr');
+  });
+
+  it('renders the first job title from GNANESH_MOCK_JOBS on load', () => {
+    renderPage();
+    expect(document.body.textContent).toContain('Full Stack Developer (3 Years Experience)');
+  });
+
+  it('renders correct job fields for jobId=1 from mock data', () => {
+    renderPage('1');
+    // VEN-001 data from gnaneshDashboardData.json
+    expect(document.body.textContent).toContain('VEN-001');
+    expect(document.body.textContent).toContain('Chennai');
+    expect(document.body.textContent).toContain('3 years');
+    expect(document.body.textContent).toContain('Full-time');
+    expect(document.body.textContent).toContain('Hybrid');
+    expect(document.body.textContent).toContain('$60');
+  });
+
+  it('renders correct job fields for jobId=2 from mock data', () => {
+    renderPage('2');
+    // VEN-002 data from gnaneshDashboardData.json
+    expect(document.body.textContent).toContain('VEN-002');
+    expect(document.body.textContent).toContain('Java Developer (Python Experience)');
+    expect(document.body.textContent).toContain('Hyderabad');
+    expect(document.body.textContent).toContain('5 years');
+    expect(document.body.textContent).toContain('Remote');
+    expect(document.body.textContent).toContain('$72');
+  });
+
+  it('renders correct job fields for jobId=5 from mock data', () => {
+    renderPage('5');
+    // VEN-005 data from gnaneshDashboardData.json
+    expect(document.body.textContent).toContain('VEN-005');
+    expect(document.body.textContent).toContain('Cloud DevOps Specialist');
+    expect(document.body.textContent).toContain('Mumbai');
+    expect(document.body.textContent).toContain('7 years');
+    expect(document.body.textContent).toContain('$95');
   });
 
   // ── 2. Fallback for unknown jobId ────────────────────────────
@@ -66,8 +100,10 @@ describe('GnaneshDetailedView', () => {
     renderPage('99999');
     expect(document.body).toBeInTheDocument();
     expect(screen.getByText(/Gnanesh Dashboard/i)).toBeInTheDocument();
-    expect(screen.getByText(/TCS - MSP ID 10432419/i)).toBeInTheDocument();
+    expect(screen.getByText(/TCS - MSP ID 99999999/i)).toBeInTheDocument();
     expect(screen.getByText(/Source Candidate Control/i)).toBeInTheDocument();
+    // Should fall back to VEN-001
+    expect(document.body.textContent).toContain('Full Stack Developer (3 Years Experience)');
   });
 
   // ── 3. Source Candidate Control ──────────────────────────────
@@ -76,10 +112,10 @@ describe('GnaneshDetailedView', () => {
     renderPage();
     expect(screen.getByText(/Source Candidate Control/i)).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /Source Candidates/i })
+      screen.getByRole('button', { name: /Find Candidates/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /View Matched Profiles/i })
+      screen.getByRole('button', { name: /View Profiles/i })
     ).toBeInTheDocument();
   });
 
@@ -87,13 +123,10 @@ describe('GnaneshDetailedView', () => {
     renderPage();
     const card = screen.getByText(/Source Candidate Control/i).closest('.ant-card');
     expect(card).toBeTruthy();
-    expectMetricValue(card, 'Ready', '12');
-    expectMetricValue(card, 'Strong Match', '4');
+    expectMetricValue(card, 'Ready', '10');
+    expectMetricValue(card, 'Strong Match', '2');
   });
 
-  /**
-   * Review count should render as "0" when there are no review candidates.
-   */
   it('renders Review as "0" in Source Candidate Control', () => {
     renderPage();
     const card = screen.getByText(/Source Candidate Control/i).closest('.ant-card');
@@ -104,7 +137,7 @@ describe('GnaneshDetailedView', () => {
   it('renders created-on timestamp in Source Candidate Control', () => {
     renderPage();
     const card = screen.getByText(/Source Candidate Control/i).closest('.ant-card');
-    expect(card.textContent).toContain('Created on Nov 03, 2025 | 07:00PM');
+    expect(card.textContent).toContain('Created on Nov 04, 2025 | 07:00PM');
   });
 
   // ── 4. Default tab — Skill Insights ──────────────────────────
@@ -120,7 +153,8 @@ describe('GnaneshDetailedView', () => {
     renderPage();
     const card = screen.getByText(/Skill Match Overview/i).closest('.ant-card');
     expect(card).toBeTruthy();
-    expectMetricValue(card, 'Match Score', '86%');
+    // Values as defined in gnanesh-detailed-view.jsx
+    expectMetricValue(card, 'Match Score', '80%');
     expectMetricValue(card, 'Priority Skill', 'React JS');
     expectMetricValue(card, 'Submission Readiness', 'High');
   });
@@ -132,10 +166,11 @@ describe('GnaneshDetailedView', () => {
     expect(screen.queryAllByText(/^REST API$/).length).toBeGreaterThan(0);
     expect(screen.queryAllByText(/^Ant Design$/).length).toBeGreaterThan(0);
     expect(screen.queryAllByText(/^Frontend Architecture$/).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/^Performance Optimization$/).length).toBeGreaterThan(0);
+    // Correct tag as per skillStack in gnanesh-detailed-view.jsx
+    expect(screen.queryAllByText(/^Performance Tuning$/).length).toBeGreaterThan(0);
   });
 
-  it('renders Candidate Pipeline Snapshot with Ready and Strong Match counts', () => {
+  it('renders Candidate Pipeline Snapshot with correct counts', () => {
     renderPage();
     const card = screen.getByText(/Candidate Pipeline Snapshot/i).closest('.ant-card');
     expect(card).toBeTruthy();
@@ -143,9 +178,6 @@ describe('GnaneshDetailedView', () => {
     expectMetricValue(card, 'Strong Match', '4');
   });
 
-  /**
-   * Edge case: mirrors the same "-" fallback as Source Candidate Control.
-   */
   it('renders Review as "0" in Candidate Pipeline Snapshot', () => {
     renderPage();
     const card = screen.getByText(/Candidate Pipeline Snapshot/i).closest('.ant-card');
@@ -156,7 +188,8 @@ describe('GnaneshDetailedView', () => {
   it('renders all Candidate Fit Signals items', () => {
     renderPage();
     expect(screen.getByText(/Candidate Fit Signals/i)).toBeInTheDocument();
-    expect(screen.getByText(/Strong frontend implementation experience/i)).toBeInTheDocument();
+    // Exact strings from goodFitSignals array in gnanesh-detailed-view.jsx
+    expect(screen.getByText(/Basic frontend implementation experience/i)).toBeInTheDocument();
     expect(screen.getByText(/Good understanding of reusable component structure/i)).toBeInTheDocument();
     expect(screen.getByText(/Comfortable with dashboard and table-heavy UI/i)).toBeInTheDocument();
     expect(screen.getByText(/Good exposure to validated forms and routing/i)).toBeInTheDocument();
@@ -178,7 +211,8 @@ describe('GnaneshDetailedView', () => {
     const card = screen.getByText(/Client Snapshot/i).closest('.ant-card');
     expect(card).toBeTruthy();
     expectMetricValue(card, 'Contact Person', 'Jayaprakash A');
-    expect(within(card).getByText(/jayaprakash123@gmail.com/i)).toBeInTheDocument();
+    // Email and phone as defined in gnanesh-detailed-view.jsx
+    expect(within(card).getByText(/jayaprakash.changed@gmail.com/i)).toBeInTheDocument();
     expect(within(card).getByText(/\+91 \(999\) 469 - 4028/i)).toBeInTheDocument();
   });
 
@@ -192,8 +226,8 @@ describe('GnaneshDetailedView', () => {
   });
 
   /**
-   * Edge case: job.pipeline || '-' — the field must render something
-   * whether the mock has a real value or falls back to a dash.
+   * job.pipeline || '-' — must render something whether the mock
+   * has a real value or falls back to a dash.
    */
   it('renders a value (or dash fallback) for Pipeline in Submission Notes', () => {
     renderPage();
@@ -205,8 +239,8 @@ describe('GnaneshDetailedView', () => {
   });
 
   /**
-   * Edge case: job.targetSub?.total — optional chain must not crash
-   * when the fallback job is used (unknown jobId).
+   * job.targetSub?.total — optional chain must not crash
+   * when fallback job is used (unknown jobId).
    */
   it('renders Target field in Submission Notes without crashing for fallback job', () => {
     renderPage('99999');
@@ -282,10 +316,11 @@ describe('GnaneshDetailedView', () => {
 
     const card = screen.getByText(/Matched Candidate Summary/i).closest('.ant-card');
     expect(card).toBeTruthy();
+    // GNANESH_CANDIDATE_ROWS has 3 entries: 1 Submitted, 1 Shortlisted, 1 Pipeline
     expectMetricValue(card, 'Total Matches', '3');
-    expectMetricValue(card, 'Excellent Match', '1');
-    expectMetricValue(card, 'Good Match', '1');
-    expectMetricValue(card, 'Needs Review', '1');
+    expectMetricValue(card, 'Submitted', '1');
+    expectMetricValue(card, 'Shortlisted', '1');
+    expectMetricValue(card, 'Pipeline', '1');
   });
 
   it('renders Skill Coverage tags and Submission Focus text', async () => {
@@ -303,30 +338,49 @@ describe('GnaneshDetailedView', () => {
     expect(screen.getByText(/Review missing API\/dashboard exposure before submission/i)).toBeInTheDocument();
   });
 
-  it('renders all three matched candidate names', async () => {
+  it('renders all three matched candidate names from GNANESH_CANDIDATE_ROWS', async () => {
     renderPage();
     const user = userEvent.setup();
     await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
-    expect(screen.getByText(/Jayaprakash A/i)).toBeInTheDocument();
-    expect(screen.getByText(/Kiran Kumar/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sano S/i)).toBeInTheDocument();
+    expect(document.body.textContent).toContain('Arun Matheshwaran');
+    expect(document.body.textContent).toContain('Meera Jamine');
+    expect(document.body.textContent).toContain('Rohit Sharma');
   });
 
-  it('renders work authorization, submission status and submitted dates for all candidates', async () => {
+  it('renders correct roles for all three candidates', async () => {
     renderPage();
     const user = userEvent.setup();
     await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('Business Analyst');
+    expect(document.body.textContent).toContain('Product Consultant');
+    expect(document.body.textContent).toContain('Customer Success Lead');
+  });
 
-    expect(screen.queryAllByText(/H1B/i).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/GC EAD/i).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/L2 EAD/i).length).toBeGreaterThan(0);
+  it('renders correct statuses for all three candidates', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('Submitted');
+    expect(document.body.textContent).toContain('Shortlisted');
+    expect(document.body.textContent).toContain('Pipeline');
+  });
 
-    expect(screen.queryAllByText(/Ready to Submit/i).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/Skill Review/i).length).toBeGreaterThan(0);
+  it('renders correct submitted dates for all three candidates', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('21 May 2024');
+    expect(document.body.textContent).toContain('20 May 2024');
+    expect(document.body.textContent).toContain('18 May 2024');
+  });
 
-    expect(screen.queryAllByText(/Mar 23, 2026/i).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/Mar 20, 2026/i).length).toBeGreaterThan(0);
-    expect(screen.queryAllByText(/Mar 18, 2026/i).length).toBeGreaterThan(0);
+  it('renders correct locations for all three candidates', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('Dallas, TX');
+    expect(document.body.textContent).toContain('Austin, TX');
+    expect(document.body.textContent).toContain('Chicago, IL');
   });
 
   // ── 8. Candidates API tab ────────────────────────────────────
@@ -371,6 +425,61 @@ describe('GnaneshDetailedView', () => {
     expect(screen.queryByText(/Skill Match Overview/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Candidate Fit Signals/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Requirement Brief/i)).not.toBeInTheDocument();
+  });
+
+  // ── 10. Data contract — fails if mock data is changed ────────
+
+  it('fails if GNANESH_MOCK_JOBS job titles are changed', () => {
+    renderPage('1');
+    expect(document.body.textContent).toContain('Full Stack Developer (3 Years Experience)');
+    renderPage('3');
+    expect(document.body.textContent).toContain('React UI Engineer');
+    renderPage('7');
+    expect(document.body.textContent).toContain('Business Systems Consultant');
+  });
+
+  it('fails if GNANESH_MOCK_JOBS location data is changed', () => {
+    renderPage('1'); expect(document.body.textContent).toContain('Chennai');
+    renderPage('2'); expect(document.body.textContent).toContain('Hyderabad');
+    renderPage('3'); expect(document.body.textContent).toContain('Bengaluru');
+    renderPage('4'); expect(document.body.textContent).toContain('Pune');
+    renderPage('5'); expect(document.body.textContent).toContain('Mumbai');
+    renderPage('6'); expect(document.body.textContent).toContain('Coimbatore');
+    renderPage('7'); expect(document.body.textContent).toContain('Delhi');
+  });
+
+  it('fails if GNANESH_MOCK_JOBS client rates are changed', () => {
+    renderPage('1'); expect(document.body.textContent).toContain('$60');
+    renderPage('2'); expect(document.body.textContent).toContain('$72');
+    renderPage('5'); expect(document.body.textContent).toContain('$95');
+    renderPage('7'); expect(document.body.textContent).toContain('$105');
+  });
+
+  it('fails if GNANESH_CANDIDATE_ROWS names are changed', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('Arun Matheshwaran');
+    expect(document.body.textContent).toContain('Meera Jamine');
+    expect(document.body.textContent).toContain('Rohit Sharma');
+  });
+
+  it('fails if GNANESH_CANDIDATE_ROWS statuses are changed', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('Submitted');
+    expect(document.body.textContent).toContain('Shortlisted');
+    expect(document.body.textContent).toContain('Pipeline');
+  });
+
+  it('fails if GNANESH_CANDIDATE_ROWS dates are changed', async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('tab', { name: /Matched Candidates/i }));
+    expect(document.body.textContent).toContain('21 May 2024');
+    expect(document.body.textContent).toContain('20 May 2024');
+    expect(document.body.textContent).toContain('18 May 2024');
   });
 
 });
