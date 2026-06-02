@@ -3,7 +3,7 @@ import { Row, Col, Space, Card, Form, Input, Button, Select, Affix, Breadcrumb }
 import { validationRules, formatters } from '../components/form/validation';
 import StatsCards from '../components/cards/StatsCards';
 import JobListView from '../components/pugalistView';
-import ListView from '../components/sridharListView';
+import ListView from '../components/ListView';
 import CalendarCard from '../components/cards/CalendarCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
