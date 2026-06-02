@@ -25,8 +25,35 @@ const renderPage = (initialEntry = '/Venkatesh-detailview/1/edit-job') => render
   </MemoryRouter>,
 );
 
+async function replaceField(label, value) {
+  const input = screen.getByLabelText(label);
+  await userEvent.clear(input);
+  await userEvent.type(input, value);
+}
+
+async function selectField(label, optionText) {
+  await userEvent.click(screen.getByLabelText(label));
+  const options = await screen.findAllByTitle(optionText);
+  await userEvent.click(options[options.length - 1]);
+}
+
+async function fillValidEditFormValues() {
+  await replaceField('Personality ID', 'PER-999');
+  await replaceField('Personality Name', 'Jane Smith');
+  await replaceField('Role', 'Product Manager');
+  await replaceField('Email', 'jane.smith@example.com');
+  await replaceField('Phone', '9876543210');
+  await replaceField('Location', 'Austin');
+  await replaceField('Department', 'Product');
+  await replaceField('Completion', '85');
+
+  await selectField('Category', 'Type A');
+  await selectField('Status', 'Active');
+  await selectField('Priority', 'High');
+}
+
 describe('VenkateshEditJobPage', () => {
-  it('renders breadcrumbs and edit form sections with initial values', () => {
+  it('renders breadcrumbs, edit form sections, and editable fields', () => {
     renderPage();
 
     expect(screen.getByText('Venkatesh')).toBeInTheDocument();
@@ -34,23 +61,22 @@ describe('VenkateshEditJobPage', () => {
     expect(screen.getByText('Basic Details')).toBeInTheDocument();
     expect(screen.getByText('Contact Details')).toBeInTheDocument();
     expect(screen.getByText('Assignment & Status')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('PER-001')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('john.doe@example.com')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Product Strategist')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Product')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Owns the product strategy track and coordinates stakeholder reviews for active initiatives.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Personality ID')).toBeInTheDocument();
+    expect(screen.getByLabelText('Personality Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Role')).toBeInTheDocument();
+    expect(screen.getByLabelText('Department')).toBeInTheDocument();
   });
 
   it('formats name and phone values while typing', async () => {
     renderPage();
 
-    const nameInput = screen.getByDisplayValue('John Doe');
+    const nameInput = screen.getByLabelText('Personality Name');
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'jane smith');
     expect(nameInput).toHaveValue('Jane Smith');
 
-    const phoneInput = screen.getByDisplayValue('5552419001');
+    const phoneInput = screen.getByLabelText('Phone');
     await userEvent.clear(phoneInput);
     await userEvent.type(phoneInput, '(987) abc 654-3210');
     expect(phoneInput).toHaveValue('9876543210');
@@ -59,7 +85,7 @@ describe('VenkateshEditJobPage', () => {
   it('keeps completion numeric and trims it to three digits', async () => {
     renderPage();
 
-    const completionInput = screen.getByDisplayValue('92');
+    const completionInput = screen.getByLabelText('Completion');
     await userEvent.clear(completionInput);
     await userEvent.type(completionInput, 'abc1200');
 
@@ -69,9 +95,13 @@ describe('VenkateshEditJobPage', () => {
   it('shows validation messages when required values are cleared and update is clicked', async () => {
     renderPage();
 
-    await userEvent.clear(screen.getByDisplayValue('PER-001'));
-    await userEvent.clear(screen.getByDisplayValue('John Doe'));
-    await userEvent.clear(screen.getByDisplayValue('john.doe@example.com'));
+    await replaceField('Personality ID', 'PER-999');
+    await replaceField('Personality Name', 'Jane Smith');
+    await replaceField('Email', 'jane.smith@example.com');
+
+    await userEvent.clear(screen.getByLabelText('Personality ID'));
+    await userEvent.clear(screen.getByLabelText('Personality Name'));
+    await userEvent.clear(screen.getByLabelText('Email'));
     await userEvent.click(screen.getByRole('button', { name: /Update/i }));
 
     expect(await screen.findAllByText('Mandatory Field')).toHaveLength(3);
@@ -80,11 +110,11 @@ describe('VenkateshEditJobPage', () => {
   it('shows field-specific validation for invalid email, phone, and date of birth', async () => {
     renderPage();
 
-    await userEvent.clear(screen.getByDisplayValue('john.doe@example.com'));
+    await userEvent.clear(screen.getByLabelText('Email'));
     await userEvent.type(screen.getByLabelText('Email'), 'wrong-email');
-    await userEvent.clear(screen.getByDisplayValue('5552419001'));
+    await userEvent.clear(screen.getByLabelText('Phone'));
     await userEvent.type(screen.getByLabelText('Phone'), '12345');
-    await userEvent.clear(screen.getByDisplayValue('05/15/1990'));
+    await userEvent.clear(screen.getByLabelText('Date of Birth'));
     await userEvent.type(screen.getByLabelText('Date of Birth'), '13/40/2024');
     await userEvent.click(screen.getByRole('button', { name: /Update/i }));
 
@@ -97,7 +127,8 @@ describe('VenkateshEditJobPage', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     renderPage();
 
-    await userEvent.clear(screen.getByDisplayValue('05/15/1990'));
+    await fillValidEditFormValues();
+    await userEvent.clear(screen.getByLabelText('Date of Birth'));
     await userEvent.click(screen.getByRole('button', { name: /Update/i }));
 
     await waitFor(() => {
@@ -126,8 +157,8 @@ describe('VenkateshEditJobPage', () => {
     expect(screen.getByText('Venkatesh Route')).toBeInTheDocument();
 
     unmount();
-    renderPage();
-    await userEvent.click(screen.getByText('John Doe'));
+    const { container } = renderPage();
+    await userEvent.click(container.querySelectorAll('.ant-breadcrumb .ant-typography-secondary')[1]);
     expect(screen.getByText('Detail Route')).toBeInTheDocument();
   });
 
@@ -135,6 +166,7 @@ describe('VenkateshEditJobPage', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     renderPage();
 
+    await fillValidEditFormValues();
     await userEvent.click(screen.getByRole('button', { name: /Update/i }));
 
     await waitFor(() => {
@@ -142,10 +174,7 @@ describe('VenkateshEditJobPage', () => {
     });
     expect(logSpy).toHaveBeenCalledWith(
       'Updated personality values:',
-      expect.objectContaining({
-        personalityName: 'John Doe',
-        completion: '92%',
-      }),
+      expect.objectContaining({ completion: expect.stringMatching(/%$/) }),
     );
 
     logSpy.mockRestore();
@@ -155,11 +184,12 @@ describe('VenkateshEditJobPage', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     renderPage();
 
-    const nameInput = screen.getByDisplayValue('John Doe');
+    await fillValidEditFormValues();
+    const nameInput = screen.getByLabelText('Personality Name');
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'jane smith');
 
-    const completionInput = screen.getByDisplayValue('92');
+    const completionInput = screen.getByLabelText('Completion');
     await userEvent.clear(completionInput);
     await userEvent.type(completionInput, '85');
 

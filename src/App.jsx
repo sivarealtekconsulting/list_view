@@ -40,6 +40,7 @@ import CandidateOnboardingListView from './components/CandidateOnboardingListVie
 import DetailPages from './pages/suryaDetailview';
 import JobEditPage from './pages/suryaJobEditPage';
 import ZinnextDetailedView from './pages/zinnext-detailedView';
+import UsersListPage from './pages/UsersListPage';
 
 export default function App() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/users" element={<UsersListPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -102,7 +104,7 @@ export default function App() {
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/gnanesh-dashboard" element={<GnaneshDashboard />} />
           <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
-          <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
+          <Route path="/subha-detailview/:jobId" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
           <Route
             path="/candidate-onboarding"
