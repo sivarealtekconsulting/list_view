@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:9009/v1';
+const BASE_URL = 'http://192.168.1.66/v1';
 const AUTH_URL = 'http://192.168.1.66/authapi/v1';
 
 const LOGIN_CREDENTIALS = {
