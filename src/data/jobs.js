@@ -1,6 +1,9 @@
+import gnaneshDashboardData from './gnaneshDashboardData.json';
+import gnaneshDetailData from './gnaneshDetailData.json';
 import sridharDashboardData from './sridharDashboardData.json';
 import pugalDashboard from './pug-data.json'
 import { SONY_MOCK_JOBS } from './sonyMockData';
+
 
 export const MOCK_JOBS = SONY_MOCK_JOBS;
 
@@ -19,6 +22,24 @@ export const PUG_DASHBOARD_JOB_LIST_SUMMARY = pugalDashboard.summary;
 export const PUG_DASHBOARD_DASHBOARD_CARDS = pugalDashboard.cards;
 export const PUG_DASHBOARD_STATS = pugalDashboard.stats;
 export const PUG_DASHBOARD_DETAIL_DATA = pugalDashboard.detail;
+
+
+export const GNANESH_JOBS_DATA = gnaneshDashboardData;
+export const GNANESH_MOCK_JOBS = gnaneshDashboardData.jobs || [];
+export const GNANESH_JOB_LIST_SUMMARY = gnaneshDashboardData.summary || {
+  myJobsCount: 0,
+  allJobsCount: 0,
+};
+export const GNANESH_DASHBOARD_CARDS = gnaneshDashboardData.cards || [];
+export const GNANESH_DASHBOARD_STATS = gnaneshDashboardData.stats || [];
+export const GNANESH_DETAIL_DATA = gnaneshDashboardData.detail || {};
+
+export const GNANESH_CANDIDATE_ROWS =
+  gnaneshDetailData.candidates ||
+  gnaneshDetailData.candidateRows ||
+  gnaneshDetailData.matchedCandidates ||
+  [];
+
 
 export const STATUS_TAG = {
   Fulfilled: { color: 'default' },

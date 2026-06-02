@@ -277,3 +277,89 @@ export async function getCandidate({
   candidatePromises.set(requestKey, promise);
   return promise;
 }
+
+export async function getSubmissions({
+  tenantId = '93c782a4aa626175e5d11afa',
+  businessId = '83c782a4aa626175e5d11afa',
+  businessUnitId = '63b57588fd768a839dbc0f63',
+  userId = 12,
+  sourceType = '',
+  submissionViewType = 'candidates',
+  offset = 0,
+  limit = 10,
+} = {}) {
+  const headers = await authHeaders();
+
+  const params = new URLSearchParams({
+    tenantId,
+    businessId,
+    businessUnitId,
+    userId: String(userId),
+    sourceType,
+    submissionViewType,
+    offset: String(offset),
+    limit: String(limit),
+  });
+
+  const response = await fetch(
+    `${BASE_URL}/submissions?${params.toString()}`,
+    {
+      method: 'GET',
+      headers,
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error(`API ${response.status}: ${response.statusText}`);
+    error.status = response.status;
+    throw error;
+  }
+
+  const json = await response.json();
+  const payload = json.data ?? json;
+
+  const rawSubmissions = Array.isArray(payload.submissionList)
+    ? payload.submissionList
+    : Array.isArray(payload)
+      ? payload
+      : [];
+
+  const submissions = rawSubmissions.map((item) => ({
+    key: item._id ?? item.submissionReferenceId ?? item.reqId,
+
+    submissionId: item._id ?? '',
+    submissionRefId: item.submissionReferenceId ?? '',
+    reqId: item.reqId ?? '',
+
+    candidateName: item.candidateName ?? '',
+    email: item.Email ?? item.email ?? '',
+    experience: item.experience ? `${item.experience} years` : '',
+    workAuthorisation: item.workAuthorisation ?? '',
+
+    jobTitle: item.jobTitle ?? '',
+    clientName: item.clientName ?? '',
+
+    acceptedRate: item.candidateRate?.candidateAcceptedRate ?? 0,
+    proposedRate: item.proposedRate?.candidateProposedRate ?? 0,
+    margin: item.margin ?? 0,
+
+    internalStatus: item.internalSubmissionStatus ?? '',
+    submissionStatus: item.submissionStatus ?? '',
+
+    submittedBy: item.submittedBy ?? '',
+    submittedAt: item.submittedAt ?? '',
+  }));
+
+  return {
+    submissions,
+    summary: {
+      totalSubmissionCount: payload.count?.totalSubmissionCount ?? submissions.length,
+      totalInternalSubmissionCount: payload.count?.totalInternalSubmissionCount ?? 0,
+      totalClientSubmissionCount: payload.count?.totalClientSubmissionCount ?? 0,
+    },
+    pagination: {
+      limit: payload.pagination?.limit ?? limit,
+      offset: payload.pagination?.offset ?? offset,
+    },
+  };
+}
