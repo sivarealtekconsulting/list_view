@@ -63,6 +63,28 @@ async function apiGet(path) {
   return json.data ?? json;
 }
 
+async function apiPut(path, body) {
+  const headers = await authHeaders();
+  let res = await fetch(`${BASE_URL}${path}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (res.status === 401) {
+    localStorage.removeItem('authToken');
+    const freshHeaders = await authHeaders();
+    res = await fetch(`${BASE_URL}${path}`, {
+      method: 'PUT',
+      headers: freshHeaders,
+      body: JSON.stringify(body),
+    });
+  }
+
+  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+  return res.json();
+}
+
 export async function getAllJobs() {
   return apiGet('/jobs');
 }
@@ -70,7 +92,10 @@ export async function getAllJobs() {
 export async function getJobById(id) {
   return apiGet(`/jobs/${id}`);
 }
-
+export async function updateJobDescription(id, rawDescription) {
+  return apiPut(`/jobs/${id}`, { rawDescription });
+}
+=======
 // export async function getJobDetailedView(){
 //   const response = await fetch.get(`${BASE_URL}/job-detailedView`,
 //     {
