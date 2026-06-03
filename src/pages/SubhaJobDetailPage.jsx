@@ -31,10 +31,10 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getJobById } from '../services/jobsApi';
+import DescriptionBlock from '../components/DescriptionBlock';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
-import DescriptionBlock from '../components/DescriptionBlock';
 import '../styles/SubhaJobDetailPage.css';
 
 const { Text, Title, Link } = Typography;
@@ -122,7 +122,7 @@ function DetailField({ label, value }) {
   );
 }
 
-function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLight = 'rgba(0,83,165,0.08)' }) {
+function SectionCard({ title, icon, children, extra, accentColor = '#0053A5', accentLight = 'rgba(0,83,165,0.08)' }) {
   return (
     <Card
       size="small"
@@ -134,6 +134,7 @@ function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLig
           <Text strong className="jdv-section-title">{title}</Text>
         </Space>
       }
+      extra={extra}
     >
       {children}
     </Card>
@@ -226,11 +227,11 @@ export default function JobDetailPage() {
                     <StatusBadge status={job.status} />
                   </Space>
                   <Space size={12} wrap>
-                    <span className="jdv-meta-item"><EnvironmentOutlined /> {job.location}</span>
-                    <span className="jdv-meta-item"><ClockCircleOutlined /> {job.experience}</span>
-                    <span className="jdv-meta-item"><BankOutlined /> {job.employmentType}</span>
-                    <span className="jdv-meta-item">{job.locationType}</span>
-                    <span className="jdv-meta-item"><DollarOutlined /> Client rate: ${job.clientRate}/hr</span>
+                    <span className="jdv-meta-item"><EnvironmentOutlined /> {job.location || '-'}</span>
+                    <span className="jdv-meta-item"><ClockCircleOutlined /> {job.experience || '-'}</span>
+                    <span className="jdv-meta-item"><BankOutlined /> {job.employmentType || '-'}</span>
+                    <span className="jdv-meta-item">{job.locationType || '-'}</span>
+                    <span className="jdv-meta-item"><DollarOutlined /> Client rate: {job.clientRate ? `$${job.clientRate}/hr` : '-'}</span>
                   </Space>
                 </Space>
               </Col>
@@ -329,9 +330,9 @@ export default function JobDetailPage() {
                   </Space>
                 </SectionCard>
 
-                {/* Description — rendered directly from DB data, no parsing needed */}
                 <SectionCard title="Description" icon={<FileTextOutlined />}>
                   <DescriptionBlock
+                    jobId={jobId}
                     sections={job.descriptionSections}
                     meta={(job.descriptionMeta ?? []).map(item => {
                       switch (item.fieldKey) {
@@ -341,6 +342,8 @@ export default function JobDetailPage() {
                         default:           return item;
                       }
                     })}
+                    rawDescription={job.rawDescription ?? ''}
+                    onSaved={setJob}
                   />
                 </SectionCard>
 

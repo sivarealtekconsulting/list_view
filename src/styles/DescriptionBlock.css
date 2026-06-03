@@ -1,55 +1,121 @@
-.jdv-ats-desc {
+/* ═══════════════════════════════════════════════════════════
+   DescriptionBlock.css  —  ATS description template + edit icon
+   Scoped rules rely on the parent .jdv class from the page wrapper.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Edit icon — no border, no button wrapper ── */
+
+.desc-block {
+  position: relative;
+}
+
+.desc-block-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  min-height: 20px;
+}
+
+.desc-edit-icon {
+  font-size: 14px;
+  color: #8c8c8c;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.desc-edit-icon:hover {
+  color: #0053A5;
+  background: rgba(0, 83, 165, 0.06);
+}
+
+/* ── ATS Description Template ─────────────────────────────── */
+
+.jdv .jdv-ats-desc {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-.jdv-ats-meta-grid {
+/* ── Metadata grid: extracted key-value pairs ── */
+.jdv .jdv-ats-meta-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid var(--jdv-border);
+  border-radius: var(--jdv-radius);
   overflow: hidden;
   background: #f8fafd;
 }
 
-.jdv-ats-meta-row {
+.jdv .jdv-ats-meta-row {
   display: flex;
   flex-direction: column;
   gap: 3px;
   padding: 10px 14px;
-  border-bottom: 1px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--jdv-border);
+  border-right: 1px solid var(--jdv-border);
 }
 
-.jdv-ats-meta-key {
+.jdv .jdv-ats-meta-key {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #64748b;
+  color: var(--jdv-text-sub);
 }
 
-.jdv-ats-meta-val {
+.jdv .jdv-ats-meta-val {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--jdv-text);
   line-height: 1.4;
 }
 
-.jdv-ats-sections {
+/* Multi-value cell */
+.jdv .jdv-ats-meta-bullet-list {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jdv .jdv-ats-meta-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--jdv-text);
+  line-height: 1.45;
+}
+
+.jdv .jdv-ats-meta-bullet::before {
+  content: '·';
+  flex-shrink: 0;
+  color: #0053A5;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ── Sections: heading + bullet list ── */
+.jdv .jdv-ats-sections {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.jdv-ats-section {
+.jdv .jdv-ats-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.jdv-ats-section-hd {
+/* Section heading with full-width trailing rule */
+.jdv .jdv-ats-section-hd {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -60,7 +126,7 @@
   color: #0053A5;
 }
 
-.jdv-ats-section-hd::after {
+.jdv .jdv-ats-section-hd::after {
   content: '';
   flex: 1;
   height: 1.5px;
@@ -68,7 +134,8 @@
   border-radius: 2px;
 }
 
-.jdv-ats-bullets {
+/* ── Bullet list ── */
+.jdv .jdv-ats-bullets {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -77,15 +144,15 @@
   gap: 6px;
 }
 
-.jdv-ats-bullet-item {
+.jdv .jdv-ats-bullet-item {
   display: flex;
   gap: 9px;
   font-size: 13px;
-  color: #64748b;
+  color: var(--jdv-text-sub);
   line-height: 1.65;
 }
 
-.jdv-ats-bullet-item::before {
+.jdv .jdv-ats-bullet-item::before {
   content: '›';
   flex-shrink: 0;
   color: #0053A5;
@@ -94,31 +161,9 @@
   line-height: 1.4;
 }
 
-.jdv-skill-tag.ant-tag {
-  margin: 0;
-  border: none;
-  border-radius: 8px;
-  background: #e0f0ff;
-  color: #0053A5;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 12px;
-  cursor: default;
-  display: inline-flex;
-  align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 83, 165, 0.12);
-  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-.jdv-skill-tag.ant-tag:hover {
-  background: #bfdbfe;
-  box-shadow: 0 4px 10px rgba(0, 83, 165, 0.2);
-  transform: translateY(-1px);
-}
-
-.jdv-desc-toggle {
+.jdv .jdv-desc-toggle {
   font-size: 13px;
-  color: #0053A5;
+  color: var(--jdv-primary);
   cursor: pointer;
   margin-top: 2px;
   display: inline-block;
