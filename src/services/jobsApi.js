@@ -70,3 +70,34 @@ export async function getAllJobs() {
 export async function getJobById(id) {
   return apiGet(`/jobs/${id}`);
 }
+
+// export async function getJobDetailedView(){
+//   const response = await fetch.get(`${BASE_URL}/job-detailedView`,
+//     {
+//       headers: {
+//         Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inppbm5leHRAcmVhbHRla2NvbnN1bHRpbmcubmV0Iiwicm9sZV9pZCI6NSwidXNlcklkIjoyLCJ0ZW5hbnRJZCI6IjkzYzc4MmE0YWE2MjYxNzVlNWQxMWFmYSIsImJ1c2luZXNzSWQiOiI2N2FjODBkNDBmZDU1OWM0NDM0NWJkMzAiLCJidXNpbmVzc1VuaXRJZCI6IjY3YWM4MTFmMGZkNTU5YzQ0MzQ1YmQzMSIsInByZWZlcnJlZF91c2VybmFtZSI6Inppbm5leHRAcmVhbHRla2NvbnN1bHRpbmcubmV0IiwibmFtZSI6ImFkbWluX3JlYWx0ZWtoIiwiZmFtaWx5TmFtZSI6ImFkbWluX3JlYWx0ZWtoIiwidXNlck5hbWUiOiJhZG1pbiByZWFsdGVraCIsInJlcG9ydGluZ0lkIjowLCJwZXJtaXNzaW9uVmVyc2lvbiI6MzEsImV4cCI6MTc4MDU1Nzc5OH0.7mXVeindrHB839WToiMgKx3yiZUwgH50q86KYQ1PxAw`, // if your API requires auth
+//       },
+//     }
+//   );
+
+//   return response.data;
+// };
+
+
+export async function getJobDetailedView(module) {
+  const response = await fetch(`${BASE_URL}/detailedView?module=${module}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Inppbm5leHRAcmVhbHRla2NvbnN1bHRpbmcubmV0Iiwicm9sZV9pZCI6NSwidXNlcklkIjoyLCJ0ZW5hbnRJZCI6IjkzYzc4MmE0YWE2MjYxNzVlNWQxMWFmYSIsImJ1c2luZXNzSWQiOiI2N2FjODBkNDBmZDU1OWM0NDM0NWJkMzAiLCJidXNpbmVzc1VuaXRJZCI6IjY3YWM4MTFmMGZkNTU5YzQ0MzQ1YmQzMSIsInByZWZlcnJlZF91c2VybmFtZSI6Inppbm5leHRAcmVhbHRla2NvbnN1bHRpbmcubmV0IiwibmFtZSI6ImFkbWluX3JlYWx0ZWtoIiwiZmFtaWx5TmFtZSI6ImFkbWluX3JlYWx0ZWtoIiwidXNlck5hbWUiOiJhZG1pbiByZWFsdGVraCIsInJlcG9ydGluZ0lkIjowLCJwZXJtaXNzaW9uVmVyc2lvbiI6MzEsImV4cCI6MTc4MDU1Nzc5OH0.7mXVeindrHB839WToiMgKx3yiZUwgH50q86KYQ1PxAw`, // preferably from localStorage/session
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  return data;
+}
