@@ -34,6 +34,7 @@ import { getJobById } from '../services/jobsApi';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
+import DescriptionBlock from '../components/DescriptionBlock';
 import '../styles/SubhaJobDetailPage.css';
 
 const { Text, Title, Link } = Typography;
@@ -136,64 +137,6 @@ function SectionCard({ title, icon, children, accentColor = '#0053A5', accentLig
     >
       {children}
     </Card>
-  );
-}
-
-// ── Description renderer — reads pre-structured data from DB ──
-function DescriptionBlock({ sections = [], meta = [] }) {
-  const [expanded, setExpanded] = useState(false);
-  const PREVIEW = 2;
-  const visible = expanded ? sections : sections.slice(0, PREVIEW);
-  const hasMore = sections.length > PREVIEW;
-
-  if (!sections.length && !meta.length) {
-    return <Text type="secondary">No description available.</Text>;
-  }
-
-  return (
-    <div className="jdv-ats-desc">
-
-      {/* Metadata grid — Bill Rate, Location, Duration, etc. */}
-      {meta.length > 0 && (
-        <div className="jdv-ats-meta-grid">
-          {meta.map(({ fieldKey, fieldLabel, value }) => (
-            <div key={fieldKey} className="jdv-ats-meta-row">
-              <span className="jdv-ats-meta-key">{fieldLabel}</span>
-              <span className="jdv-ats-meta-val">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Content sections — Key Responsibilities, Required Skills, etc. */}
-      <div className="jdv-ats-sections">
-        {visible.map(({ sectionKey, sectionTitle, renderType, content = [] }) => (
-          <div key={sectionKey} className="jdv-ats-section">
-            <div className="jdv-ats-section-hd"><span>{sectionTitle}</span></div>
-
-            {renderType === 'chips' ? (
-              <Space size={[6, 6]} wrap style={{ marginTop: 8 }}>
-                {content.map((item, i) => (
-                  <Tag key={i} className="jdv-skill-tag">{item}</Tag>
-                ))}
-              </Space>
-            ) : (
-              <ul className="jdv-ats-bullets">
-                {content.map((item, i) => (
-                  <li key={i} className="jdv-ats-bullet-item">{item}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {hasMore && (
-        <span className="jdv-desc-toggle" onClick={() => setExpanded((p) => !p)}>
-          {expanded ? 'Show less' : `Show more (${sections.length - PREVIEW} more sections)`}
-        </span>
-      )}
-    </div>
   );
 }
 

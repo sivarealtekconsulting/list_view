@@ -1,9 +1,9 @@
-  {
+{
   "candidateRows": [
     {
       "key": "1",
       "candidateId": "CAND-001",
-      "name": "Arun Kumar",
+      "name": "Arun Matheshwaran",
       "role": "Business Analyst",
       "experience": "6 years",
       "location": "Dallas, TX",
@@ -13,7 +13,7 @@
     {
       "key": "2",
       "candidateId": "CAND-002",
-      "name": "Meera Iyer",
+      "name": "Meera Jamine",
       "role": "Product Consultant",
       "experience": "5 years",
       "location": "Austin, TX",
@@ -23,7 +23,7 @@
     {
       "key": "3",
       "candidateId": "CAND-003",
-      "name": "Rahul Sharma",
+      "name": "Rohit Sharma",
       "role": "Customer Success Lead",
       "experience": "7 years",
       "location": "Chicago, IL",

@@ -27,7 +27,6 @@ import {
   updateUserModuleFieldConfig,
   updateUserModuleFields,
 } from '../services/usersApi';
-import '../styles/UsersListPage.css';
 
 const { Text } = Typography;
 
@@ -90,6 +89,11 @@ function moduleLabel(module) {
   return module[0].toUpperCase() + module.slice(1);
 }
 
+const moduleFieldsTableStyle = { border: '1px solid #e6ebf2', borderRadius: 6, background: '#ffffff', overflow: 'hidden' };
+const moduleFieldsHeadStyle = { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px', alignItems: 'center', minHeight: 36, padding: '0 16px', borderBottom: '1px solid #dce2ea', background: '#f7f8fa', color: '#8a92a0', fontSize: 12, fontWeight: 600, position: 'sticky', top: 0, zIndex: 1 };
+const moduleFieldsScrollStyle = { maxHeight: 320, overflowY: 'auto', overflowX: 'hidden' };
+const moduleFieldsRowStyle = { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 100px 100px', alignItems: 'center', minHeight: 38, padding: '0 16px', borderBottom: '1px solid #edf0f4' };
+
 export default function UsersListPage() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -141,8 +145,8 @@ export default function UsersListPage() {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (_, record) => (
         <Space size={12}>
-          <Avatar className="users-list-avatar">{record.initials}</Avatar>
-          <Text className="users-list-name">{record.name}</Text>
+          <Avatar>{record.initials}</Avatar>
+          <Text className="job-cell-primary">{record.name}</Text>
         </Space>
       ),
     },
@@ -164,8 +168,8 @@ export default function UsersListPage() {
       width: 250,
       render: (_, record) => (
         <Space direction="vertical" size={0}>
-          <Text ellipsis className="users-list-contact">{record.email}</Text>
-          <Text className="users-list-phone">{record.phone}</Text>
+          <Text ellipsis style={{ maxWidth: 210 }}>{record.email}</Text>
+          <Text className="job-cell-primary">{record.phone}</Text>
         </Space>
       ),
     },
@@ -193,7 +197,7 @@ export default function UsersListPage() {
       width: 160,
       sorter: false,
       render: (_, record) => (
-        <Space size={14} className="users-list-actions">
+        <Space size={14}>
           <Tooltip title="Edit user">
             <Button type="text" icon={<EditOutlined />} aria-label="Edit user" />
           </Tooltip>
@@ -259,21 +263,36 @@ export default function UsersListPage() {
     ));
     const saveKey = `${module}:${fieldKey}`;
 
-    setModuleFields((current) => ({
-      ...current,
-      [module]: nextFields,
-    }));
+    setModuleFields((current) => ({ ...current, [module]: nextFields }));
     setSavingFieldKey(saveKey);
 
     try {
       await updateUserModuleFieldConfig(customizingUser, module, nextFields);
       message.success('Field visibility updated');
     } catch (err) {
-      setModuleFields((current) => ({
-        ...current,
-        [module]: previousFields,
-      }));
+      setModuleFields((current) => ({ ...current, [module]: previousFields }));
       message.error(err.message || 'Could not update field visibility');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  async function toggleFieldEditable(module, fieldKey, checked) {
+    const previousFields = moduleFields[module] ?? [];
+    const nextFields = previousFields.map((field) => (
+      field.fieldKey === fieldKey ? { ...field, isEditable: checked } : field
+    ));
+    const saveKey = `${module}:${fieldKey}`;
+
+    setModuleFields((current) => ({ ...current, [module]: nextFields }));
+    setSavingFieldKey(saveKey);
+
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, nextFields);
+      message.success('Field editable updated');
+    } catch (err) {
+      setModuleFields((current) => ({ ...current, [module]: previousFields }));
+      message.error(err.message || 'Could not update field');
     } finally {
       setSavingFieldKey('');
     }
@@ -290,21 +309,31 @@ export default function UsersListPage() {
       key: module,
       label: moduleLabel(module),
       children: (
-        <div className="module-fields-table">
-          <div className="module-fields-head">
+        <div style={moduleFieldsTableStyle}>
+          <div style={moduleFieldsHeadStyle}>
             <span>Field Name</span>
-            <span>Show / Hide</span>
+            <span style={{ justifySelf: 'center' }}>Show / Hide</span>
+            <span style={{ justifySelf: 'center' }}>Editable</span>
           </div>
-          <div className="module-fields-scroll">
+          <div style={moduleFieldsScrollStyle}>
             {visibleFields.map((field) => (
-              <div className="module-fields-row" key={field.fieldKey}>
-                <span>{field.fieldName}</span>
+              <div style={moduleFieldsRowStyle} key={field.fieldKey}>
+                <span style={{ fontSize: 13 }}>{field.fieldName}</span>
                 <Switch
                   size="small"
                   checked={field.isVisible}
                   loading={savingFieldKey === `${module}:${field.fieldKey}`}
                   disabled={Boolean(savingFieldKey)}
                   onChange={(checked) => toggleField(module, field.fieldKey, checked)}
+                  style={{ justifySelf: 'center' }}
+                />
+                <Switch
+                  size="small"
+                  checked={field.isEditable ?? false}
+                  loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                  disabled={Boolean(savingFieldKey)}
+                  onChange={(checked) => toggleFieldEditable(module, field.fieldKey, checked)}
+                  style={{ justifySelf: 'center' }}
                 />
               </div>
             ))}
@@ -322,36 +351,34 @@ export default function UsersListPage() {
   });
 
   return (
-    <main className="users-list-page">
-      <section className="users-list-shell">
-        {error && (
-          <Alert
-            type="error"
-            showIcon
-            message="Could not load users"
-            description={error}
-            className="users-list-alert"
-          />
-        )}
-
-        <ParamListView
-          listName="Users"
-          fields={userFields}
-          dataSource={users}
-          loading={loading}
-          total={total}
-          current={currentPage}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          }}
-          rowSelection={false}
-          className="users-param-list"
-          tableClassName="job-list-table users-list-table"
+    <main style={{ minHeight: '100vh', padding: 18, background: '#f3f5f8' }}>
+      {error && (
+        <Alert
+          type="error"
+          showIcon
+          message="Could not load users"
+          description={error}
+          style={{ marginBottom: 8 }}
         />
-      </section>
+      )}
+
+      <ParamListView
+        listName="Users"
+        fields={userFields}
+        dataSource={users}
+        loading={loading}
+        total={total}
+        current={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+        rowSelection={false}
+        className="users-param-list"
+        tableClassName="job-list-table"
+      />
 
       <Modal
         open={Boolean(customizingUser)}
@@ -360,14 +387,13 @@ export default function UsersListPage() {
           <Button key="cancel" onClick={closeCustomizeModal}>Cancel</Button>,
           <Button key="save" type="primary" loading={fieldsSaving} onClick={saveModuleFields}>Save Changes</Button>,
         ]}
-        width={620}
+        width={700}
         title={(
           <Space direction="vertical" size={2}>
             <Text strong>Customize Module Fields</Text>
-            <Text className="users-list-modal-subtitle">User: {customizingUser?.name}</Text>
+            <Text className="job-cell-secondary">User: {customizingUser?.name}</Text>
           </Space>
         )}
-        className="users-list-modal"
       >
         {fieldsError && (
           <Alert
@@ -375,11 +401,11 @@ export default function UsersListPage() {
             showIcon
             message="Could not load module fields"
             description={fieldsError}
-            className="users-list-fields-alert"
+            style={{ marginBottom: 8 }}
           />
         )}
         <Input
-          className="module-fields-search"
+          style={{ margin: '10px 0 4px', borderRadius: 7 }}
           placeholder="Search fields..."
           prefix={<SearchOutlined />}
           value={fieldSearch}

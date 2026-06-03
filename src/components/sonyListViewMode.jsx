@@ -9,8 +9,7 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-// import { MOCK_JOBS } from '../data/jobs';
-import jobsData from '../data/suryaJobs.json';
+import { SONY_MOCK_JOBS } from '../data/sonyMockData';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -21,13 +20,8 @@ import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg
 
 const { Text } = Typography;
 
-const JOBS = jobsData.jobs;
-
-// const MY_JOBS_COUNT = 6;
-// const ALL_JOBS_COUNT = 2456;
-
-const MY_JOBS_COUNT = jobsData.summary.myJobsCount;
-const ALL_JOBS_COUNT = jobsData.summary.allJobsCount;
+const MY_JOBS_COUNT = 6;
+const ALL_JOBS_COUNT = 2456;
 
 const columnOptions = [
   { key: 'createdAt', label: 'Created Date' },
@@ -86,14 +80,14 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListViews() {
+export default function SonyListViewMode() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
@@ -123,8 +117,8 @@ export default function ListViews() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
-      ? JOBS
-      : JOBS.filter(
+      ? SONY_MOCK_JOBS
+      : SONY_MOCK_JOBS.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||
@@ -194,7 +188,7 @@ export default function ListViews() {
       render: (title, record) => (
         <Space align="start" size={6} className="job-title-cell">
           <Space direction="vertical" size={2}>
-            <RouterLink className="job-cell-link" to={`/Surya-detailview/${record.id}`}>
+            <RouterLink className="job-cell-link" to={`/sony-detailedview/${record.id}`}>
               {title}
             </RouterLink>
             <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
@@ -349,82 +343,7 @@ export default function ListViews() {
   ];
 
   return (
-    <div className="antd">
-
-      {/* Top toolbar */}
-      <Card>
-        <Flex align="center" justify="space-between">
-          <Tabs
-            activeKey={activeTab}
-            items={tabItems}
-            onChange={(key) => {
-              setActiveTab(key);
-              setPagination({ ...pagination, current: 1 });
-            }}
-          />
-          <Flex align="center" gap={8}>
-            <Input
-              prefix={<SearchOutlined className="job-search-icon" />}
-              placeholder="Min 3 Chars to search"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
-              allowClear
-              className="job-search-input"
-            />
-            <Tooltip title="Filter">
-              <Button
-                className="job-toolbar-icon-button"
-                icon={<FilterOutlined />}
-                onClick={() => setFiltersOpen(true)}
-              />
-            </Tooltip>
-            <Tooltip title="Add">
-              <a href='/add'>
-                <Button className="job-toolbar-icon-button" icon={<PlusOutlined />} />
-              </a>
-            </Tooltip>
-            <Button type="primary" className="job-summary-button">
-              View Summary
-            </Button>
-          </Flex>
-        </Flex>
-      </Card>
-
-      {/* Actions toolbar */}
-      <Card>
-        <Flex align="center" gap={3}>
-          <Dropdown
-            open={columnMenuOpen}
-            onOpenChange={setColumnMenuOpen}
-            trigger={['click']}
-            dropdownRender={() => columnVisibilityContent}
-            placement="bottomLeft"
-            overlayClassName="column-visibility-dropdown"
-          >
-            <Button
-              type="text"
-              icon={<img src={unorderedListOutlinedIcon} alt="" className="job-action-list-icon" />}
-              size="small"
-              className="job-actions-button"
-            />
-          </Dropdown>
-          <Dropdown menu={actionsMenu} trigger={['click']}>
-            <Button
-              type="text"
-              size="small"
-              className="job-actions-button job-actions-menu-button"
-            >
-              <img src={frameIcon} alt="" className="job-actions-frame-icon" />
-              Actions <DownOutlined className="job-actions-caret" />
-            </Button>
-          </Dropdown>
-          {selectedRowKeys.length > 0 && (
-            <Text className="job-selected-count">
-              Selected ({selectedRowKeys.length})
-            </Text>
-          )}
-        </Flex>
-      </Card>
+    <div className="">
 
       {/* Table grid */}
       <Table

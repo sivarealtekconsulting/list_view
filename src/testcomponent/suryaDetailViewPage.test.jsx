@@ -13,7 +13,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useParams: () => ({ jobId: '1' }),
+    useParams: () => ({ jobId: '102' }),
   };
 });
 
@@ -256,3 +256,8 @@ it('renders shortlisted status', () => {
     screen.getByText('Shortlisted')
   ).toBeInTheDocument();
 });
+
+
+
+
+

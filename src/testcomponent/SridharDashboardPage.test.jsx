@@ -40,7 +40,7 @@ const PAGE_LABELS = [
 const PAGE_COMPONENT_SLOTS = [
   { name: 'StatsCards', selector: '.stats-inner-card', line: 48 },
   { name: 'CalendarCard', selector: '.calendar-card', line: 171 },
-  { name: 'SridharListView', selector: '.job-list-table', line: 185 },
+  { name: 'ListView', selector: '.job-list-table', line: 185 },
   { name: 'ClientSubmissionCard', selector: '.submission-card', line: 193 },
   { name: 'OnboardingCard', selector: '.onboarding-card', line: 194 },
   { name: 'StickyNotesCard', selector: '.sticky-card', line: 200 },
@@ -164,7 +164,7 @@ describe.skipIf(!sridharDashboardValid)('sridharDashboard page shell', () => {
     PAGE_COMPONENT_SLOTS.forEach((slot) => expectPageSelector(container, slot));
   });
 
-  it('mounts SridharListView inside the Jobs List card', () => {
+  it('mounts ListView inside the Jobs List card', () => {
     renderDashboard();
 
     const jobsCard = screen.getByText('Jobs List').closest('.ant-card');

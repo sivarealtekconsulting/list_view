@@ -29,7 +29,7 @@ import StickyNotesCard from '../components/cards/StickyNotesCard';
 import UserForm from '../components/form/forms';
 import { formatters, validationRules } from '../components/form/validation';
 import ParamListView from '../components/ParamListView';
-import SridharListView from '../components/sridharListView';
+import ListView from '../components/ListView';
 import {
   SRIDHAR_DASHBOARD_CARDS,
   SRIDHAR_DASHBOARD_STATS,
@@ -170,7 +170,7 @@ export default function SridharDetailPage() {
         <Row>
           <Col span={24}>
             <Card title="Submitted Candidates">
-              <SridharListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
+              <ListView jobs={SRIDHAR_MOCK_JOBS} summary={SRIDHAR_JOB_LIST_SUMMARY} />
             </Card>
           </Col>
         </Row>

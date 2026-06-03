@@ -10,7 +10,7 @@ import {
   Typography,
 } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
-import ListView from '../components/sridharListView';
+import ListView from '../components/ListView';
 import CalendarCard from '../components/cards/CalendarCard';
 import ClientDetailsCard from '../components/cards/ClientDetailsCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
