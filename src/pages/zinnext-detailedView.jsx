@@ -53,6 +53,7 @@ import SectionCard from "../components/cards/SectionCard";
 import { candidateSections } from "../../candidate.config";
 import CalendarCard from "../components/cards/CalendarCard";
 import SonyListViewMode from "../components/sonyListViewMode";
+import { getJobDetailedView } from "../services/jobsApi";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -100,28 +101,40 @@ const data = [
 ];
 
 
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState("1");
   const [tabContent, setTabContent] = useState("");
   const [theme, setTheme] = useState("theme-light");
-  useEffect(() => {
-    fetchTabContent(activeTab);
-  }, [activeTab]);
+  const [activeTab, setActiveTab] = useState("jobs");
+  const [detailedView, setDetailedView] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const fetchTabContent = async (tabKey) => {
-    // Example API call
-    // const response = await fetch(`/api/tab/${tabKey}`);
-    // const data = await response.json();
 
-    // Mock data
-    if (tabKey === "1") {
-      setTabContent("Details content fetched");
-    } else if (tabKey === "2") {
-      setTabContent("Candidates content fetched");
+
+  const fetchDetailedView = async (module) => {
+    try {
+      setLoading(true);
+
+      const response = await getJobDetailedView(module);
+      console.log("module", module);
+      console.log("API Response", response);
+
+      if (module === "jobs") {
+        setDetailedView(response.data.jobDetailedView || []);
+      } else if (module === "candidates") {
+        setDetailedView(response.data.candidateDetailedView || []);
+      } else if (module === "submission") {
+        setDetailedView(response.data.submissionDetailedView || []);
+      }
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to load data");
+    } finally {
+      setLoading(false);
     }
   };
-
+  useEffect(() => {
+    fetchDetailedView(activeTab);
+  }, [activeTab]);
 
   const items = [
     {
@@ -208,24 +221,33 @@ export default function App() {
                   defaultActiveKey="1"
                   className="custom-tabs"
                   activeKey={activeTab}
-                  onChange={(key) => setActiveTab(key)}
+                  onChange={setActiveTab}
                   items={[
                     {
-                      key: "1",
+                      key: "jobs",
                       label: (
                         <div className="tab-label">
                           <GlobalOutlined />
-                          Details
+                          Job
                         </div>
                       ),
                     },
 
                     {
-                      key: "2",
+                      key: "candidates",
                       label: (
                         <div className="tab-label">
                           <DeploymentUnitOutlined />
                           Candidates
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "submission",
+                      label: (
+                        <div className="tab-label">
+                          <DeploymentUnitOutlined />
+                          Submission
                         </div>
                       ),
                     }
@@ -269,30 +291,35 @@ export default function App() {
           {/* </Row> */}
         </Card>
         <div style={{ marginTop: "10px" }}>
-          {activeTab === "1" && <DetailPageLayout
+         <DetailPageLayout
             leftContent={
               <>
                 <Row gutter={[16, 16]}>
-                  {candidateSections.map((section) => (
-                    <Col span={24} key={section.header}>
-                      <Card>
-                        <div className="sectionHeader">
-                          {section.header}
-                        </div>
+                  {Array.isArray(detailedView) &&
+                    detailedView.map((section) => {
+                      console.log("section", section);
+                      return (
+                        <Col span={24} key={section.header}>
+                          <Card>
+                            <div className="sectionHeader">
+                              {section.header}
+                            </div>
 
-                        <Row gutter={[16, 16]}>
-                          {section.items.map((item) => (
-                            <SectionCard
-                              key={item.title}
-                              title={item.title}
-                            >
-                              {item.value}
-                            </SectionCard>
-                          ))}
-                        </Row>
-                      </Card>
-                    </Col>
-                  ))}
+                            <Row gutter={[16, 16]}>
+                              {section.items.map((item) => (
+                                <SectionCard
+                                  key={item.title}
+                                  title={item.title}
+                                >
+                                  {item.value}
+                                </SectionCard>
+                              ))}
+                            </Row>
+                          </Card>
+                        </Col>
+                      )
+                    })
+                  }
                 </Row>
               </>
             }
@@ -304,23 +331,13 @@ export default function App() {
 
               </>
             }
-            fullcontent={
-              <div style={{ marginTop: "10px" }}>
-                <SonyListViewMode />
-              </div>
-            }
-          />}
-          {/* {activeTab === "2" && <CandidatesComponent />} */}
+            // fullcontent={
+            //   <div style={{ marginTop: "10px" }}>
+            //     <SonyListViewMode />
+            //   </div>
+            // }
+          />
         </div>
-        {/* PIPELINE TABS */}
-
-
-
-        {/* TABLE */}
-
-        {/* <div className="table-card">
-          <SonyListView />
-        </div> */}
       </Content>
     </div>
   );
