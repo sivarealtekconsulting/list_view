@@ -109,6 +109,7 @@ function normalizeModuleField(field, index) {
   const fieldName = firstValue(field, ['label', 'Label', 'fieldName', 'field_name', 'name', 'fieldLabel', 'value'], `Field ${index + 1}`);
   const fieldKey = firstValue(field, ['field', 'Field', 'fieldKey', 'field_key', 'key', 'value', 'fieldName', 'name'], fieldName);
   const showValue = firstValue(field, ['isVisible', 'is_visible', 'visible', 'show', 'is_show', 'isShow', 'enabled'], true);
+  const orderValue = firstValue(field, ['order', 'Order', 'sortOrder', 'position'], index);
 
   return {
     ...field,
@@ -118,32 +119,33 @@ function normalizeModuleField(field, index) {
     isVisible: typeof showValue === 'string'
       ? !['false', '0', 'hide', 'hidden', 'no'].includes(showValue.toLowerCase())
       : Boolean(showValue),
+    order: typeof orderValue === 'number' ? orderValue : index,
   };
 }
 
-async function fetchFieldConfigModule(apiModule, idParam, idValue) {
-  const params = new URLSearchParams({ module: apiModule, userId: '0', [idParam]: String(idValue) });
+async function fetchFieldConfigModule(apiModule, idParam, idValue, configType = 'listView') {
+  const params = new URLSearchParams({ module: apiModule, userId: '0', [idParam]: String(idValue), configType });
   const json = await fetchJsonWithAuth(AUTH_URL, `${FIELD_CONFIG_PATH}?${params}`);
   const payload = json.data ?? json;
   return firstArray(payload, payload?.visibleFields, json?.visibleFields);
 }
 
-export async function getRoleModuleFields(role) {
+export async function getRoleModuleFields(role, configType = 'listView') {
   const roleId = getRoleId(role);
   const entries = await Promise.all(
     CUSTOMIZABLE_MODULES.map(async ({ key, apiModule }) => {
-      const fields = await fetchFieldConfigModule(apiModule, 'roleId', roleId);
+      const fields = await fetchFieldConfigModule(apiModule, 'roleId', roleId, configType);
       return [key, fields.map((f, i) => ({ ...normalizeModuleField(f, i), module: key, apiModule, roleId }))];
     })
   );
   return Object.fromEntries(entries);
 }
 
-export async function getTeamModuleFields(team) {
+export async function getTeamModuleFields(team, configType = 'listView') {
   const teamId = getTeamId(team);
   const entries = await Promise.all(
     CUSTOMIZABLE_MODULES.map(async ({ key, apiModule }) => {
-      const fields = await fetchFieldConfigModule(apiModule, 'teamId', teamId);
+      const fields = await fetchFieldConfigModule(apiModule, 'teamId', teamId, configType);
       return [key, fields.map((f, i) => ({ ...normalizeModuleField(f, i), module: key, apiModule, teamId }))];
     })
   );
@@ -151,31 +153,30 @@ export async function getTeamModuleFields(team) {
 }
 
 function visibleFieldPayload(fields) {
-  return fields.map((field) => ({
+  return fields.map((field, index) => ({
     label: field.fieldName,
     field: field.fieldKey,
     isVisible: field.isVisible,
     type: field.type ?? 'text',
     isEditable: field.isEditable ?? false,
+    order: field.order ?? index,
   }));
 }
 
-export async function updateRoleModuleFieldConfig(role, module, fields) {
+export async function updateRoleModuleFieldConfig(role, module, fields, configType = 'listView') {
   const roleId = getRoleId(role);
   const apiModule = CUSTOMIZABLE_MODULES.find((m) => m.key === module)?.apiModule ?? module;
-  // Uses /admin/field-config/role which saves the role doc AND propagates to all users with this roleId
   return fetchJsonWithAuth(AUTH_URL, `${FIELD_CONFIG_PATH}/role`, {
     method: 'PUT',
-    body: JSON.stringify({ module: apiModule, roleId, visibleFields: visibleFieldPayload(fields) }),
+    body: JSON.stringify({ module: apiModule, roleId, configType, visibleFields: visibleFieldPayload(fields) }),
   });
 }
 
-export async function updateTeamModuleFieldConfig(team, module, fields) {
+export async function updateTeamModuleFieldConfig(team, module, fields, configType = 'listView') {
   const teamId = getTeamId(team);
   const apiModule = CUSTOMIZABLE_MODULES.find((m) => m.key === module)?.apiModule ?? module;
-  // Uses /admin/field-config/team which saves the team doc AND propagates to all team members
   return fetchJsonWithAuth(AUTH_URL, `${FIELD_CONFIG_PATH}/team`, {
     method: 'PUT',
-    body: JSON.stringify({ module: apiModule, teamId, visibleFields: visibleFieldPayload(fields) }),
+    body: JSON.stringify({ module: apiModule, teamId, configType, visibleFields: visibleFieldPayload(fields) }),
   });
 }
