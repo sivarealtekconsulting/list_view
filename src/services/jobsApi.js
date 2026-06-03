@@ -95,7 +95,7 @@ export async function getJobById(id) {
 export async function updateJobDescription(id, rawDescription) {
   return apiPut(`/jobs/${id}`, { rawDescription });
 }
-=======
+
 // export async function getJobDetailedView(){
 //   const response = await fetch.get(`${BASE_URL}/job-detailedView`,
 //     {
