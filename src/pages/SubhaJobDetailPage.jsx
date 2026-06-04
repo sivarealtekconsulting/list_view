@@ -230,8 +230,7 @@ export default function JobDetailPage() {
                   <Space size={12} wrap>
                     <span className="jdv-meta-item"><EnvironmentOutlined /> {job.location || '-'}</span>
                     <span className="jdv-meta-item"><ClockCircleOutlined /> {job.experience || '-'}</span>
-                    <span className="jdv-meta-item"><BankOutlined /> {job.employmentType || '-'}</span>
-                    <span className="jdv-meta-item">{job.locationType || '-'}</span>
+                    <span className="jdv-meta-item"><BankOutlined /> {[job.employmentType, job.locationType].filter(Boolean).join(' · ') || '-'}</span>
                     <span className="jdv-meta-item"><DollarOutlined /> Client rate: {job.clientRate ? `$${job.clientRate}/hr` : '-'}</span>
                   </Space>
                 </Space>
@@ -281,11 +280,11 @@ export default function JobDetailPage() {
 
         {/* ── Tab content ── */}
         {activeDetailTab === 'candidates-api' ? (
-          <Col span={24}>
+          <Col span={24} key="candidates-api" className="jdv-tab-panel">
             <DynamicListView moduleName="candidates" />
           </Col>
         ) : activeDetailTab === 'candidate' ? (
-          <Col span={24}>
+          <Col span={24} key="candidate" className="jdv-tab-panel">
             <ParamListView
               listName="candidate"
               fields={candidateFields}
@@ -295,7 +294,7 @@ export default function JobDetailPage() {
         ) : (
           <>
             {/* ── Left: detail sections ── */}
-            <Col xs={24} lg={17}>
+            <Col xs={24} lg={17} className="jdv-tab-panel">
               <Space direction="vertical" size={12} style={{ width: '100%', display: 'flex' }}>
 
                 <SectionCard title="Client" icon={<FileSearchOutlined />}>
@@ -363,7 +362,7 @@ export default function JobDetailPage() {
             </Col>
 
             {/* ── Right: Activity & Notes ── */}
-            <Col xs={24} lg={7}>
+            <Col xs={24} lg={7} className="jdv-tab-panel">
               <Card size="small" className="jdv-activity-card" style={{ height: '100%' }}>
                 <Space direction="vertical" style={{ width: '100%' }} size={12}>
 

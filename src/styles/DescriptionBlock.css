@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    DescriptionBlock.css  —  ATS description template + edit icon
-   Scoped rules rely on the parent .jdv class from the page wrapper.
+   Fully self-contained — no parent .jdv scope required.
 ═══════════════════════════════════════════════════════════ */
 
 /* ── Edit icon — no border, no button wrapper ── */
@@ -32,48 +32,48 @@
 
 /* ── ATS Description Template ─────────────────────────────── */
 
-.jdv .jdv-ats-desc {
+.jdv-ats-desc {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
 /* ── Metadata grid: extracted key-value pairs ── */
-.jdv .jdv-ats-meta-grid {
+.jdv-ats-meta-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border: 1px solid #d6e4f0;
+  border-radius: 8px;
   overflow: hidden;
   background: #f8fafd;
 }
 
-.jdv .jdv-ats-meta-row {
+.jdv-ats-meta-row {
   display: flex;
   flex-direction: column;
   gap: 3px;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--jdv-border);
-  border-right: 1px solid var(--jdv-border);
+  border-bottom: 1px solid #d6e4f0;
+  border-right: 1px solid #d6e4f0;
 }
 
-.jdv .jdv-ats-meta-key {
+.jdv-ats-meta-key {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--jdv-text-sub);
+  color: #586888;
 }
 
-.jdv .jdv-ats-meta-val {
+.jdv-ats-meta-val {
   font-size: 13px;
   font-weight: 600;
-  color: var(--jdv-text);
+  color: #1a1a2e;
   line-height: 1.4;
 }
 
 /* Multi-value cell */
-.jdv .jdv-ats-meta-bullet-list {
+.jdv-ats-meta-bullet-list {
   margin: 2px 0 0;
   padding: 0;
   list-style: none;
@@ -82,17 +82,17 @@
   gap: 4px;
 }
 
-.jdv .jdv-ats-meta-bullet {
+.jdv-ats-meta-bullet {
   display: flex;
   align-items: flex-start;
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--jdv-text);
+  color: #1a1a2e;
   line-height: 1.45;
 }
 
-.jdv .jdv-ats-meta-bullet::before {
+.jdv-ats-meta-bullet::before {
   content: '·';
   flex-shrink: 0;
   color: #0053A5;
@@ -102,20 +102,20 @@
 }
 
 /* ── Sections: heading + bullet list ── */
-.jdv .jdv-ats-sections {
+.jdv-ats-sections {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.jdv .jdv-ats-section {
+.jdv-ats-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 /* Section heading with full-width trailing rule */
-.jdv .jdv-ats-section-hd {
+.jdv-ats-section-hd {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -126,7 +126,7 @@
   color: #0053A5;
 }
 
-.jdv .jdv-ats-section-hd::after {
+.jdv-ats-section-hd::after {
   content: '';
   flex: 1;
   height: 1.5px;
@@ -135,7 +135,7 @@
 }
 
 /* ── Bullet list ── */
-.jdv .jdv-ats-bullets {
+.jdv-ats-bullets {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -144,15 +144,15 @@
   gap: 6px;
 }
 
-.jdv .jdv-ats-bullet-item {
+.jdv-ats-bullet-item {
   display: flex;
   gap: 9px;
   font-size: 13px;
-  color: var(--jdv-text-sub);
+  color: #586888;
   line-height: 1.65;
 }
 
-.jdv .jdv-ats-bullet-item::before {
+.jdv-ats-bullet-item::before {
   content: '›';
   flex-shrink: 0;
   color: #0053A5;
@@ -161,9 +161,9 @@
   line-height: 1.4;
 }
 
-.jdv .jdv-desc-toggle {
+.jdv-desc-toggle {
   font-size: 13px;
-  color: var(--jdv-primary);
+  color: #0053A5;
   cursor: pointer;
   margin-top: 2px;
   display: inline-block;
