@@ -3,6 +3,7 @@ import gnaneshDetailData from './gnaneshDetailData.json';
 import sridharDashboardData from './sridharDashboardData.json';
 import pugalDashboard from './pug-data.json'
 import { SONY_MOCK_JOBS } from './sonyMockData';
+import { Ashick_Mock_Data } from './ashickMockData';
 
 
 export const MOCK_JOBS = SONY_MOCK_JOBS;
@@ -13,6 +14,7 @@ export const SRIDHAR_JOB_LIST_SUMMARY = sridharDashboardData.summary;
 export const SRIDHAR_DASHBOARD_CARDS = sridharDashboardData.cards;
 export const SRIDHAR_DASHBOARD_STATS = sridharDashboardData.stats;
 export const SRIDHAR_DETAIL_DATA = sridharDashboardData.detail;
+export const ASHICK_DETAILED_DATA = Ashick_Mock_Data;
 
 // export const PUG_DASHBOARD_STATS = pugalDashboard.stats;
 

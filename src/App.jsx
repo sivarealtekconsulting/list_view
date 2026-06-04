@@ -30,6 +30,8 @@ import CandidateAddFormV3 from './pages/CandidateAddFormV3';
 import VenkateshEditJobPage from './pages/VenkateshEditJobPage';
 import PugalDetailedView from './pages/pugal-detail-view-page';
 import PugazhEditJob from './pages/PugazhEditJob';
+
+
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
 import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 import SonyDashboard from './pages/SonyDashboard';
@@ -106,6 +108,8 @@ export default function App() {
           <Route path="/gnanesh-submissions" element={<GnaneshSubmissionsPage />} />
           <Route path="/subha-detailview/:jobId" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
+          <Route path="/ask-dashboard" element={<AshickDashboard />} />
+          <Route path="/ask-detailedview/:jobId" element={<AshickDetailedView />} />
           <Route
             path="/candidate-onboarding"
             element={<CandidateOnboardingListView />}
