@@ -20,6 +20,8 @@
   --jdv-radius:     8px;
   --jdv-radius-sm:  6px;
   font-family: var(--jdv-font);
+  background: #f5f6fa;
+  min-height: 100vh;
 }
 
 /* ─────────────────────────────────────────
@@ -49,7 +51,7 @@
 ───────────────────────────────────────── */
 .jdv .jdv-hero-card.ant-card {
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border-radius: var(--jdv-radius) !important;
   box-shadow: none;
 }
 .jdv .jdv-hero-card > .ant-card-body { padding: 16px 20px; }
@@ -136,7 +138,7 @@
 ───────────────────────────────────────── */
 .jdv .jdv-toolbar-card.ant-card {
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border-radius: var(--jdv-radius) !important;
   box-shadow: none;
 }
 .jdv .jdv-toolbar-card > .ant-card-body { padding: 10px 16px; }
@@ -212,7 +214,7 @@
 ───────────────────────────────────────── */
 .jdv .jdv-section-card.ant-card {
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border-radius: var(--jdv-radius) !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
@@ -307,7 +309,7 @@
 
 .jdv .jdv-activity-card.ant-card {
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border-radius: var(--jdv-radius) !important;
   box-shadow: none;
 }
 .jdv .jdv-activity-card > .ant-card-body { padding: 14px 16px; }
