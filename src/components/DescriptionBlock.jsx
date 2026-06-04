@@ -13,8 +13,9 @@ export default function DescriptionBlock({ jobId, sections = [], meta = [], rawD
   const [rawDesc, setRawDesc]     = useState('');
   const [saving, setSaving]       = useState(false);
 
-  const visible = expanded ? sections : sections.slice(0, PREVIEW);
-  const hasMore = sections.length > PREVIEW;
+  const sorted  = [...sections].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+  const visible  = expanded ? sorted : sorted.slice(0, PREVIEW);
+  const hasMore  = sorted.length > PREVIEW;
 
   function startEdit() {
     setRawDesc(rawDescription);
@@ -87,24 +88,40 @@ export default function DescriptionBlock({ jobId, sections = [], meta = [], rawD
           )}
 
           <div className="jdv-ats-sections">
-            {visible.map(({ sectionKey, sectionTitle, renderType, content = [] }) => (
-              <div key={sectionKey} className="jdv-ats-section">
-                <div className="jdv-ats-section-hd"><span>{sectionTitle}</span></div>
-                {renderType === 'chips' ? (
-                  <Space size={[6, 6]} wrap style={{ marginTop: 8 }}>
+            {visible.map(({ sectionKey, sectionTitle, renderType, content = [] }) =>
+              renderType === 'education' ? (
+                /* ── Education: green accent card at the bottom ── */
+                <div key={sectionKey} className="education-block">
+                  <div className="education-header">
+                    <span>🎓</span>
+                    <span>{sectionTitle}</span>
+                  </div>
+                  <ul className="education-list">
                     {content.map((item, i) => (
-                      <Tag key={i} className="jdv-skill-tag">{item}</Tag>
-                    ))}
-                  </Space>
-                ) : (
-                  <ul className="jdv-ats-bullets">
-                    {content.map((item, i) => (
-                      <li key={i} className="jdv-ats-bullet-item">{item}</li>
+                      <li key={i} className="education-list-item">{item}</li>
                     ))}
                   </ul>
-                )}
-              </div>
-            ))}
+                </div>
+              ) : (
+                /* ── Regular section ── */
+                <div key={sectionKey} className="jdv-ats-section">
+                  <div className="jdv-ats-section-hd"><span>{sectionTitle}</span></div>
+                  {renderType === 'chips' ? (
+                    <Space size={[6, 6]} wrap style={{ marginTop: 8 }}>
+                      {content.map((item, i) => (
+                        <Tag key={i} className="jdv-skill-tag">{item}</Tag>
+                      ))}
+                    </Space>
+                  ) : (
+                    <ul className="jdv-ats-bullets">
+                      {content.map((item, i) => (
+                        <li key={i} className="jdv-ats-bullet-item">{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )
+            )}
           </div>
 
           {hasMore && (
