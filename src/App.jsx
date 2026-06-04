@@ -16,6 +16,7 @@ import SridharDashboardPage from './pages/sridharDashboard';
 import SridharDetailPage from './pages/sridharDetailePage';
 import GnaneshDashboard from './pages/gnanesh-dashboard';
 import GnaneshDetailedView from './pages/gnanesh-detailed-view';
+import GnaneshSubmissionsPage from './pages/gnanesh-submissions';
 import StickyNotesCard from './components/cards/StickyNotesCard';
 import StudentDashboardPage from './pages/suryaDashboardPage';
 import NaveenDashboardPage from './pages/NaveenDashboardPage';
@@ -27,10 +28,8 @@ import CandidateAddForm from './pages/AddFormPage';
 import CandidateAddFormV1 from './pages/CandidateAddFormV1';
 import CandidateAddFormV3 from './pages/CandidateAddFormV3';
 import VenkateshEditJobPage from './pages/VenkateshEditJobPage';
-import PugalDetailedView from './pages/pugal-detail-view-page'
+import PugalDetailedView from './pages/pugal-detail-view-page';
 import PugazhEditJob from './pages/PugazhEditJob';
-import AshickDashboard from './pages/AshickDashboardPage'
-import AshickDetailedView from './pages/AshickDetailedPage'
 
 
 import SubhaDashboardPage from './pages/SubhaDashboardPage';
@@ -38,10 +37,13 @@ import SubhaJobDetailPage from './pages/SubhaJobDetailPage';
 import SonyDashboard from './pages/SonyDashboard';
 import SonyDetailedView from './pages/SonyDetailedView';
 import CandidateOnboardingListView from './components/CandidateOnboardingListView';
-// import ListViews from './components/suryaListView';
 import DetailPages from './pages/suryaDetailview';
 import JobEditPage from './pages/suryaJobEditPage';
+import ZinnextDetailedView from './pages/zinnext-detailedView';
 import UsersListPage from './pages/UsersListPage';
+import RolesListPage from './pages/RolesListPage';
+import TeamsListPage from './pages/TeamsListPage';
+import AdminSetupPage from './pages/AdminSetupPage';
 
 export default function App() {
   return (
@@ -73,7 +75,10 @@ export default function App() {
           <Route path="/new-dashboard" element={<NewDashboard />} />
           <Route path="/jobs/:jobId" element={<DetailPage />} />
           <Route path="/candidates" element={<CandidatesPage />} />
+          <Route path="/admin" element={<AdminSetupPage />} />
           <Route path="/users" element={<UsersListPage />} />
+          <Route path="/roles" element={<RolesListPage />} />
+          <Route path="/teams" element={<TeamsListPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />
@@ -88,24 +93,20 @@ export default function App() {
 
           <Route path="/add" element={<StickyNotesCard />} />
           <Route path="/pugazh-dashboard" element={<PugazhDashboard />} />
-          {/* <Route path="/Surya-dashboard" element={<ListViews />} /> */}
           <Route path="/Surya-dashboard" element={<StudentDashboardPage />} />
           <Route path="/Surya-detailview/:jobId" element={<DetailPages />} />
-          <Route
-            path="/Surya-job-edit"
-            element={<JobEditPage />}
-          />
+          <Route path="/Surya-job-edit" element={<JobEditPage />} />
 
           <Route path="/pugazh-listview" element={<PugazhListView />} />
           <Route path="/pugazh-detail-listview" element={<PugazhDetailListView />} />
           <Route path="/pugazh-edit-job" element={<PugazhEditJob />} />
-          {/* <Route path="/jobs" element={<JobCollapsePage />} /> */}
           <Route path="/sri-dashboard" element={<SridharDashboardPage />} />
           <Route path="/sri-detailview" element={<SridharDetailPage />} />
           <Route path="/sri-detailview/:jobId" element={<SridharDetailPage />} />
           <Route path="/gnanesh-dashboard" element={<GnaneshDashboard />} />
           <Route path="/gnanesh-detailed-view/:jobId" element={<GnaneshDetailedView />} />
-          <Route path="/subha-detailview" element={<SubhaJobDetailPage />} />
+          <Route path="/gnanesh-submissions" element={<GnaneshSubmissionsPage />} />
+          <Route path="/subha-detailview/:jobId" element={<SubhaJobDetailPage />} />
           <Route path="/subha-dashboard" element={<SubhaDashboardPage />} />
           <Route path="/ask-dashboard" element={<AshickDashboard />} />
           <Route path="/ask-detailedview/:jobId" element={<AshickDetailedView />} />
@@ -113,6 +114,8 @@ export default function App() {
             path="/candidate-onboarding"
             element={<CandidateOnboardingListView />}
           />
+          <Route path="/zinnext-DetailedView" element={<ZinnextDetailedView />} />
+
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

@@ -9,7 +9,7 @@ import {
     SearchOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
+import { GNANESH_MOCK_JOBS, GNANESH_JOB_LIST_SUMMARY } from '../data/jobs';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -19,9 +19,6 @@ import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
 
 const { Text } = Typography;
-
-const MY_JOBS_COUNT = 6;
-const ALL_JOBS_COUNT = 2456;
 
 const columnOptions = [
     { key: 'createdAt', label: 'Created Date' },
@@ -91,34 +88,11 @@ export default function GnaneshListView() {
     const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
     const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
-    // const valueOptionsByField = useMemo(() => {
-    //   const fields = [
-    //     'title',
-    //     'client',
-    //     'location',
-    //     'locationType',
-    //     'experience',
-    //     'employmentType',
-    //     'clientRate',
-    //     'status',
-    //     'createdAt',
-    //   ];
-
-    //   return fields.reduce((options, field) => {
-    //     const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
-
-    //     return {
-    //       ...options,
-    //       [field]: uniqueValues.map((value) => ({ label: value, value })),
-    //     };
-    //   }, {});
-    // }, []);
-
     const filtered = useMemo(() => {
         const q = search.toLowerCase();
         const searchableJobs = !q || q.length < 3
-            ? MOCK_JOBS
-            : MOCK_JOBS.filter(
+            ? GNANESH_MOCK_JOBS
+            : GNANESH_MOCK_JOBS.filter(
                 (j) =>
                     j.title.toLowerCase().includes(q) ||
                     j.location.toLowerCase().includes(q) ||
@@ -158,7 +132,6 @@ export default function GnaneshListView() {
             dataIndex: 'icons',
             key: 'icons',
             visibilityKey: 'jobsGroup',
-            //width: '100%',
             width: 60,
             render: (title, record) => (
                 <Space size={4} className="job-row-icons">
@@ -338,8 +311,8 @@ export default function GnaneshListView() {
     );
 
     const tabItems = [
-        { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
-        { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
+        { key: 'my', label: tabLabel('My Jobs', GNANESH_JOB_LIST_SUMMARY.myJobsCount) },
+        { key: 'all', label: tabLabel('All Jobs', GNANESH_JOB_LIST_SUMMARY.allJobsCount) },
     ];
 
     return (
@@ -445,7 +418,6 @@ export default function GnaneshListView() {
             <JobFilters
                 open={filtersOpen}
                 onClose={() => setFiltersOpen(false)}
-                // valueOptionsByField={valueOptionsByField}
                 onApply={({ filters }) => {
                     setAppliedFilterRows(filters);
                     setPagination((current) => ({ ...current, current: 1 }));

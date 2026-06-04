@@ -1,7 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Badge,
   Button,
   Card,
   Checkbox,
@@ -14,15 +12,13 @@ import {
   Select,
   Space,
   Table,
-  Tabs,
+  Tag,
   Tooltip,
   Typography,
 } from 'antd';
 import {
-  BookFilled,
   DownOutlined,
   FilterOutlined,
-  LinkedinFilled,
   PlusOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -33,14 +29,11 @@ import { formatters, validationRules } from '../components/form/validation';
 import StickyNotesCard from '../components/cards/StickyNotesCard';
 import ClientSubmissionCard from '../components/cards/ClientSubmissionCard';
 import OnboardingCard from '../components/cards/OnboardingCard';
-import venkateshJobsData from '../data/venkateshJobs.json';
-import StatusBadge from '../components/StatusBadge';
-import AssigneeAvatars from '../components/AssigneeAvatars';
 import CustomPagination from '../components/CustomPagination';
 import JobFilters from '../components/filters';
-import eyeOutlinedIcon from '../components/images/common/eyeoutlined.svg';
 import frameIcon from '../components/images/common/frame.svg';
 import unorderedListOutlinedIcon from '../components/images/common/unorderedlistoutlined.svg';
+import { getCandidate, getHeaderFields } from '../services/dropdownApi';
 
 const { Text } = Typography;
 
@@ -63,23 +56,46 @@ const assigneeOptions = [
   { value: 'David Wilson', label: 'David Wilson' },
 ];
 
-const VENKATESH_JOBS = venkateshJobsData.jobs;
-const MY_JOBS_COUNT = venkateshJobsData.summary.myJobsCount;
-const ALL_JOBS_COUNT = venkateshJobsData.summary.allJobsCount;
 const EMPTY_VALUE = '-';
+const HEADER_USER_ID = 2;
+const HEADER_ROLE_ID = 5;
+const HEADER_MODULE = 'Candidate';
 
 const columnOptions = [
-  { key: 'createdAt', label: 'Created Date' },
-  { key: 'jobsGroup', label: 'Jobs' },
-  { key: 'location', label: 'Location' },
-  { key: 'experience', label: 'Experience' },
-  { key: 'clientRate', label: 'Client Rate' },
-  { key: 'status', label: 'Status' },
-  { key: 'targetSub', label: 'Target Sub' },
-  { key: 'pipeline', label: 'Pipeline' },
+  { key: 'candidate', label: 'Candidates' },
+  { key: 'contact', label: 'Contact' },
+  { key: 'locationExp', label: 'Location / Exp' },
+  { key: 'createdDate', label: 'Created Date' },
+  { key: 'skills', label: 'Skills' },
+  { key: 'workAuth', label: 'Work Auth' },
+  { key: 'source', label: 'Source' },
 ];
 
 const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
+
+const headerFieldColumnMap = {
+  firstName: 'candidate',
+  middleName: 'candidate',
+  lastName: 'candidate',
+  fullName: 'candidate',
+  name: 'candidate',
+  designation: 'candidate',
+  email: 'contact',
+  contactCountryCode: 'contact',
+  contactNumber: 'contact',
+  currentLocation: 'locationExp',
+  location: 'locationExp',
+  yearOfExperience: 'locationExp',
+  yearsOfExperience: 'locationExp',
+  createdAt: 'createdDate',
+  createdDate: 'createdDate',
+  skills: 'skills',
+  relevantSkills: 'skills',
+  workAuthorisation: 'workAuth',
+  workAuthorization: 'workAuth',
+  source: 'source',
+  profileSource: 'source',
+};
 
 const actionsMenu = {
   items: [
@@ -104,10 +120,6 @@ function displayValue(value) {
 function getTextValue(value) {
   const displayed = displayValue(value);
   return displayed === EMPTY_VALUE ? '' : String(displayed);
-}
-
-function hasDisplayValue(value) {
-  return displayValue(value) !== EMPTY_VALUE;
 }
 
 function getComparableValue(record, field) {
@@ -146,37 +158,233 @@ function filterMatches(record, filterRow) {
   ));
 }
 
+function getCandidateItems(response) {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.items)) return response.items;
+  if (Array.isArray(response?.applicant)) return response.applicant;
+  if (Array.isArray(response?.data?.items)) return response.data.items;
+  if (Array.isArray(response?.data?.applicant)) return response.data.applicant;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.candidates)) return response.candidates;
+  return [];
+}
+
+function getHeaderFieldItems(response) {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.fields)) return response.fields;
+  if (Array.isArray(response?.data?.fields)) return response.data.fields;
+  return [];
+}
+
+function getHeaderColumnKey(fieldConfig) {
+  const field = fieldConfig?.field ?? fieldConfig?.value ?? fieldConfig?.name;
+  if (!field) return null;
+
+  const normalizedField = String(field).trim();
+  return headerFieldColumnMap[normalizedField]
+    ?? headerFieldColumnMap[normalizedField.split('.').at(-1)]
+    ?? null;
+}
+
+function getVisibleColumnKeysFromHeaderFields(headerFields) {
+  const keys = headerFields
+    .filter((field) => field?.isVisible === true)
+    .map(getHeaderColumnKey)
+    .filter(Boolean);
+
+  return [...new Set(keys)];
+}
+
+function getCandidateTotal(response, fallbackCount) {
+  return response?.totalCount
+    ?? response?.data?.totalCount
+    ?? response?.count
+    ?? response?.data?.count
+    ?? fallbackCount;
+}
+
+function formatCount(count) {
+  return Number(count || 0).toLocaleString('en-US');
+}
+
+function formatCandidateDate(value) {
+  if (!value) return EMPTY_VALUE;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
+}
+
+function getCandidateName(candidate) {
+  const fullName = [
+    candidate.firstName,
+    candidate.middleName,
+    candidate.lastName,
+  ].filter(Boolean).join(' ');
+
+  return candidate.name
+    ?? candidate.candidateName
+    ?? candidate.fullName
+    ?? (fullName || undefined)
+    ?? EMPTY_VALUE;
+}
+
+function cleanApiValue(value) {
+  if (value === null || value === undefined) return EMPTY_VALUE;
+  if (typeof value === 'string' && value.trim() === '') return EMPTY_VALUE;
+  return value;
+}
+
+function formatExperience(value) {
+  const cleaned = cleanApiValue(value);
+  if (cleaned === EMPTY_VALUE) return EMPTY_VALUE;
+
+  const text = String(cleaned);
+  return /year/i.test(text) ? text : `${text} Years`;
+}
+
+function formatSource(value) {
+  const cleaned = cleanApiValue(value);
+  if (cleaned === EMPTY_VALUE) return EMPTY_VALUE;
+
+  return String(cleaned)
+    .split('_')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function normalizeCandidate(candidate, index) {
+  const skills = candidate.skills ?? candidate.skillSet ?? candidate.primarySkills ?? [];
+  const normalizedSkills = Array.isArray(skills)
+    ? skills.map((skill) => (
+      typeof skill === 'string' ? skill : skill.name ?? skill.skillName ?? String(skill)
+    ))
+    : String(skills).split(',').map((skill) => skill.trim()).filter(Boolean);
+
+  return {
+    key: candidate.key ?? candidate.id ?? candidate._id ?? String(index + 1),
+    name: getCandidateName(candidate),
+    role: cleanApiValue(candidate.role ?? candidate.designation ?? candidate.jobTitle ?? candidate.title),
+    email: cleanApiValue(candidate.email ?? candidate.emailId ?? candidate.primaryEmail),
+    phone: candidate.phone
+      || [candidate.contactCountryCode, candidate.contactNumber].filter(Boolean).join(' ')
+      || candidate.mobileNumber
+      || candidate.primaryPhone
+      || EMPTY_VALUE,
+    location: cleanApiValue(candidate.location ?? candidate.currentLocation ?? candidate.city),
+    experience: formatExperience(candidate.experience
+      ?? candidate.totalExperience
+      ?? candidate.yearsOfExperience
+      ?? candidate.yearOfExperience),
+    createdDate: formatCandidateDate(candidate.createdDate ?? candidate.createdAt ?? candidate.createdOn),
+    skills: normalizedSkills,
+    skillsExtra: candidate.skillsExtra ?? candidate.extraSkillsCount ?? 0,
+    workAuth: cleanApiValue(candidate.workAuth
+      ?? candidate.workAuthorization
+      ?? candidate.workAuthorisation
+      ?? candidate.visaStatus),
+    source: formatSource(candidate.source ?? candidate.candidateSource ?? candidate.createdSource),
+  };
+}
+
 function VenkateshListView() {
-  const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [candidateHeaderFields, setCandidateHeaderFields] = useState(null);
+  const [candidateRows, setCandidateRows] = useState([]);
+  const [candidateTotal, setCandidateTotal] = useState(0);
+  const hasFetchedCandidateHeaderFields = useRef(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
-  const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [visibleColumnKeys, setVisibleColumnKeys] = useState(null);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const { current, pageSize } = pagination;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchCandidateHeaderFields() {
+      try {
+        const fields = await getHeaderFields(HEADER_USER_ID, HEADER_ROLE_ID, HEADER_MODULE);
+
+        if (!cancelled) {
+          setCandidateHeaderFields(getHeaderFieldItems(fields));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching Candidate header fields:', error);
+        }
+      }
+    }
+
+    async function fetchCandidateList() {
+      try {
+        const offset = (current - 1) * pageSize;
+        const response = await getCandidate({
+          offset,
+          limit: pageSize,
+          sortBy: 'createdAt',
+        });
+        const candidates = getCandidateItems(response).map(normalizeCandidate);
+        const total = getCandidateTotal(response, candidates.length);
+
+        if (!cancelled) {
+          setCandidateRows(candidates);
+          setCandidateTotal(total);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching Candidate list:', error);
+          setCandidateRows([]);
+          setCandidateTotal(0);
+        }
+      }
+    }
+
+    if (!hasFetchedCandidateHeaderFields.current) {
+      hasFetchedCandidateHeaderFields.current = true;
+      fetchCandidateHeaderFields();
+    }
+
+    fetchCandidateList();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [current, pageSize]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    const searchableJobs = !q || q.length < 3
-      ? VENKATESH_JOBS
-      : VENKATESH_JOBS.filter(
-        (job) => (
-          getTextValue(job.title).toLowerCase().includes(q)
-          || getTextValue(job.location).toLowerCase().includes(q)
-          || getTextValue(job.status).toLowerCase().includes(q)
+    const searchableCandidates = !q || q.length < 3
+      ? candidateRows
+      : candidateRows.filter(
+        (candidate) => (
+          getTextValue(candidate.name).toLowerCase().includes(q)
+          || getTextValue(candidate.email).toLowerCase().includes(q)
+          || getTextValue(candidate.phone).toLowerCase().includes(q)
+          || getTextValue(candidate.location).toLowerCase().includes(q)
+          || getTextValue(candidate.source).toLowerCase().includes(q)
+          || candidate.skills.some((skill) => skill.toLowerCase().includes(q))
         ),
       );
 
     const validFilterRows = appliedFilterRows.filter((row) => row.field);
 
     if (!validFilterRows.length) {
-      return searchableJobs;
+      return searchableCandidates;
     }
 
-    return searchableJobs.filter((job) => (
+    return searchableCandidates.filter((candidate) => (
       validFilterRows.reduce((matches, row, index) => {
-        const rowMatches = filterMatches(job, row);
+        const rowMatches = filterMatches(candidate, row);
 
         if (index === 0 || row.operator === 'and') {
           return matches && rowMatches;
@@ -189,202 +397,147 @@ function VenkateshListView() {
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, search]);
+  }, [appliedFilterRows, candidateRows, search]);
+
+  const hasLocalFilters = search.length >= 3 || appliedFilterRows.some((row) => row.field);
 
   const pagedData = useMemo(() => {
-    const start = (pagination.current - 1) * pagination.pageSize;
-    return filtered.slice(start, start + pagination.pageSize);
-  }, [filtered, pagination]);
+    if (!hasLocalFilters && candidateTotal > candidateRows.length) {
+      return filtered;
+    }
+
+    const start = (current - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [candidateRows.length, candidateTotal, current, filtered, hasLocalFilters, pageSize]);
 
   const columns = useMemo(() => [
     {
-      dataIndex: 'icons',
-      key: 'icons',
-      visibilityKey: 'jobsGroup',
-      width: 60,
-      render: (_, record) => {
-        const showPreview = hasDisplayValue(record.id) && hasDisplayValue(record.title);
-        const showBookmark = Boolean(record.hasBookmark);
-        const showLinkedIn = Boolean(record.hasLinkedIn);
-
-        if (!showPreview && !showBookmark && !showLinkedIn) {
-          return null;
-        }
-
-        return (
-          <Space size={4} className="job-row-icons">
-            {showPreview && (
-              <Tooltip title="Preview">
-                <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
-              </Tooltip>
-            )}
-            {showBookmark && (
-              <Tooltip title="Bookmarked">
-                <BookFilled className="job-row-bookmark-icon" />
-              </Tooltip>
-            )}
-            {showLinkedIn && (
-              <Tooltip title="LinkedIn">
-                <LinkedinFilled className="job-row-linkedin-icon" />
-              </Tooltip>
-            )}
-          </Space>
-        );
-      },
+      title: 'Candidates',
+      dataIndex: 'name',
+      key: 'candidate',
+      sorter: (a, b) => getTextValue(a.name).localeCompare(getTextValue(b.name)),
+      render: (name, record) => (
+        <Space direction="vertical" size={2}>
+          <Text className="job-cell-link">{displayValue(name)}</Text>
+          <Text type="secondary" className="job-cell-primary">
+            {displayValue(record.role)}
+          </Text>
+        </Space>
+      ),
     },
     {
-      title: 'Jobs',
-      dataIndex: 'title',
-      key: 'title',
-      visibilityKey: 'jobsGroup',
-      sorter: (a, b) => getTextValue(a.title).localeCompare(getTextValue(b.title)),
-      width: 190,
-      render: (title, record) => {
-        const titleText = displayValue(title);
-        const canOpenDetail = hasDisplayValue(title) && hasDisplayValue(record.id);
-
-        return (
-          <Space align="start" size={6} className="job-title-cell">
-            <Space direction="vertical" size={2}>
-              {canOpenDetail ? (
-                <RouterLink className="job-cell-link" to={`/Venkatesh-detailview/${record.id}`}>
-                  {titleText}
-                </RouterLink>
-              ) : (
-                <Text className="job-cell-primary">{titleText}</Text>
-              )}
-              <Text type="secondary" className="job-cell-secondary">
-                {displayValue(record.client)}
-              </Text>
-            </Space>
-          </Space>
-        );
-      },
+      title: 'Contact',
+      dataIndex: 'email',
+      key: 'contact',
+      sorter: (a, b) => getTextValue(a.email).localeCompare(getTextValue(b.email)),
+      render: (email, record) => (
+        <Space direction="vertical" size={2}>
+          <Text className="job-cell-link">{displayValue(email)}</Text>
+          <Text className="job-cell-link">{displayValue(record.phone)}</Text>
+        </Space>
+      ),
     },
     {
-      title: 'Location',
+      title: 'Location / Exp',
       dataIndex: 'location',
-      key: 'location',
+      key: 'locationExp',
       sorter: (a, b) => getTextValue(a.location).localeCompare(getTextValue(b.location)),
-      width: '100%',
       render: (location, record) => (
         <Space direction="vertical" size={2}>
           <Text className="job-cell-primary">{displayValue(location)}</Text>
           <Text type="secondary" className="job-cell-secondary">
-            {displayValue(record.locationType)}
+            {displayValue(record.experience)}
           </Text>
         </Space>
       ),
     },
     {
-      title: 'Experience',
-      dataIndex: 'experience',
-      key: 'experience',
-      sorter: (a, b) => getTextValue(a.experience).localeCompare(getTextValue(b.experience)),
-      width: '100%',
-      render: (experience, record) => (
-        <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{displayValue(experience)}</Text>
-          <Text type="secondary" className="job-cell-secondary">
-            {displayValue(record.employmentType)}
-          </Text>
-        </Space>
-      ),
+      title: 'Created Date',
+      dataIndex: 'createdDate',
+      key: 'createdDate',
+      sorter: (a, b) => new Date(getTextValue(a.createdDate)) - new Date(getTextValue(b.createdDate)),
+      render: (date) => <Text type="secondary" className="job-cell-secondary">{displayValue(date)}</Text>,
     },
     {
-      title: 'Client Rate (hr)',
-      dataIndex: 'clientRate',
-      key: 'clientRate',
-      sorter: (a, b) => (Number(a.clientRate) || 0) - (Number(b.clientRate) || 0),
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (rate) => (
-        <Text className="job-cell-primary">
-          {hasDisplayValue(rate) ? `$${rate}` : EMPTY_VALUE}
-        </Text>
-      ),
-    },
-    {
-      title: 'Target Sub',
-      dataIndex: 'targetSub',
-      key: 'targetSub',
-      sorter: (a, b) => (a.targetSub?.filled ?? 0) - (b.targetSub?.filled ?? 0),
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (targetSub) => {
-        const hasTargetSub = hasDisplayValue(targetSub?.filled) && hasDisplayValue(targetSub?.total);
+      title: 'Skills',
+      dataIndex: 'skills',
+      key: 'skills',
+      sorter: (a, b) => getTextValue(a.skills).localeCompare(getTextValue(b.skills)),
+      render: (skills = [], record) => {
+        const visibleSkills = skills.slice(0, 2);
+        const extraSkillsCount = Math.max(
+          skills.length - visibleSkills.length,
+          Number(record.skillsExtra) || 0,
+        );
+
+        if (!visibleSkills.length) {
+          return <Text>{EMPTY_VALUE}</Text>;
+        }
 
         return (
-          <Text className="job-cell-primary">
-            {hasTargetSub ? `${targetSub.filled} of ${targetSub.total}` : EMPTY_VALUE}
-          </Text>
+          <Space size={[2, 2]} wrap>
+            {visibleSkills.map((skill) => (
+              <Tag key={skill} color="default">
+                {skill}
+              </Tag>
+            ))}
+            {extraSkillsCount > 0 && (
+              <Text className="job-cell-link">
+                +{extraSkillsCount}
+              </Text>
+            )}
+          </Space>
         );
       },
     },
     {
-      title: 'Pipeline',
-      dataIndex: 'pipeline',
-      key: 'pipeline',
-      sorter: (a, b) => (Number(a.pipeline) || 0) - (Number(b.pipeline) || 0),
-      width: '100%',
-      render: (pipeline) => <Text className="job-cell-primary">{displayValue(pipeline)}</Text>,
+      title: 'Work Auth',
+      dataIndex: 'workAuth',
+      key: 'workAuth',
+      sorter: (a, b) => getTextValue(a.workAuth).localeCompare(getTextValue(b.workAuth)),
+      render: (workAuth) => <Text type="secondary" className="job-cell-secondary">{displayValue(workAuth)}</Text>,
     },
     {
-      title: 'Assignee',
-      dataIndex: 'assignees',
-      key: 'assignees',
-      width: '100%',
-      render: (assignees, record) => (
-        Array.isArray(assignees) && assignees.length > 0
-          ? <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
-          : <Text className="job-cell-primary">{EMPTY_VALUE}</Text>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      sorter: (a, b) => getTextValue(a.status).localeCompare(getTextValue(b.status)),
-      onHeaderCell: () => ({ className: 'col-header-left' }),
-      width: '100%',
-      render: (status) => (
-        hasDisplayValue(status)
-          ? <StatusBadge status={status} />
-          : <Text className="job-cell-primary">{EMPTY_VALUE}</Text>
-      ),
-    },
-    {
-      title: 'Created date',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      sorter: (a, b) => new Date(getTextValue(a.createdAt)) - new Date(getTextValue(b.createdAt)),
-      width: '100%',
-      render: (date, record) => (
-        <Space direction="vertical" size={2}>
-          <Text className="job-cell-primary">{displayValue(date)}</Text>
-          <Text type="secondary" className="job-cell-secondary">
-            {displayValue(record.createdAgo)}
-          </Text>
-        </Space>
-      ),
+      title: 'Source',
+      dataIndex: 'source',
+      key: 'source',
+      sorter: (a, b) => getTextValue(a.source).localeCompare(getTextValue(b.source)),
+      render: (source) => <Text type="secondary" className="job-cell-secondary">{displayValue(source)}</Text>,
     },
   ], []);
 
-  const visibleColumns = useMemo(
-    () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
-    [columns, visibleColumnKeys],
+  const apiVisibleColumnKeys = useMemo(() => {
+    if (!candidateHeaderFields) {
+      return defaultVisibleColumnKeys;
+    }
+
+    return getVisibleColumnKeysFromHeaderFields(candidateHeaderFields);
+  }, [candidateHeaderFields]);
+
+  const availableColumnOptions = useMemo(
+    () => columnOptions.filter((column) => apiVisibleColumnKeys.includes(column.key)),
+    [apiVisibleColumnKeys],
   );
 
-  const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
-  const someColumnsVisible = visibleColumnKeys.length > 0 && !allColumnsVisible;
+  const currentVisibleColumnKeys = visibleColumnKeys ?? apiVisibleColumnKeys;
+
+  const visibleColumns = useMemo(
+    () => columns.filter((column) => currentVisibleColumnKeys.includes(column.visibilityKey || column.key)),
+    [columns, currentVisibleColumnKeys],
+  );
+
+  const allColumnsVisible = currentVisibleColumnKeys.length === apiVisibleColumnKeys.length;
+  const someColumnsVisible = currentVisibleColumnKeys.length > 0 && !allColumnsVisible;
 
   const toggleColumn = (key, checked) => {
     setVisibleColumnKeys((current) => {
+      const currentKeys = current ?? apiVisibleColumnKeys;
+
       if (checked) {
-        return current.includes(key) ? current : [...current, key];
+        return currentKeys.includes(key) ? currentKeys : [...currentKeys, key];
       }
 
-      return current.filter((columnKey) => columnKey !== key);
+      return currentKeys.filter((columnKey) => columnKey !== key);
     });
   };
 
@@ -394,15 +547,15 @@ function VenkateshListView() {
         checked={allColumnsVisible}
         indeterminate={someColumnsVisible}
         onChange={(event) => {
-          setVisibleColumnKeys(event.target.checked ? defaultVisibleColumnKeys : []);
+          setVisibleColumnKeys(event.target.checked ? apiVisibleColumnKeys : []);
         }}
       >
         Select All
       </Checkbox>
-      {columnOptions.map((column) => (
+      {availableColumnOptions.map((column) => (
         <Checkbox
           key={column.key}
-          checked={visibleColumnKeys.includes(column.key)}
+          checked={currentVisibleColumnKeys.includes(column.key)}
           onChange={(event) => toggleColumn(column.key, event.target.checked)}
         >
           {column.label}
@@ -417,34 +570,15 @@ function VenkateshListView() {
     onChange: setSelectedRowKeys,
   };
 
-  const tabLabel = (label, count) => (
-    <Space size={6}>
-      <span>{label}</span>
-      <Badge count={count} overflowCount={9999} />
-    </Space>
-  );
-
-  const tabItems = [
-    { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
-    { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
-  ];
-
   return (
     <div className="antd">
       <Card>
         <Flex align="center" justify="space-between">
-          <Tabs
-            activeKey={activeTab}
-            items={tabItems}
-            onChange={(key) => {
-              setActiveTab(key);
-              setPagination({ ...pagination, current: 1 });
-            }}
-          />
+          <Text strong>All Candidate ({formatCount(candidateTotal)})</Text>
           <Flex align="center" gap={8}>
             <Input
               prefix={<SearchOutlined className="job-search-icon" />}
-              placeholder="Min 3 Chars to search"
+              placeholder="Search by candidate, source, job title, location..."
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
@@ -512,7 +646,7 @@ function VenkateshListView() {
         columns={visibleColumns}
         dataSource={pagedData}
         size="middle"
-        scroll={{ x: '100%' }}
+        // scroll={{ x: 1280 }}
         showSorterTooltip={false}
         tableLayout="fixed"
         pagination={false}
@@ -522,12 +656,13 @@ function VenkateshListView() {
       <CustomPagination
         current={pagination.current}
         pageSize={pagination.pageSize}
-        total={filtered.length}
+        total={hasLocalFilters ? filtered.length : candidateTotal}
         onChange={(page) => setPagination((current) => ({ ...current, current: page }))}
         onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
       />
 
       <JobFilters
+        moduleName="Candidate"
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         onApply={({ filters }) => {
@@ -666,7 +801,7 @@ export default function DemoSamplePage() {
               <Flex align="center" justify="space-between">
                 <Space>
                   <TeamOutlined />
-                  <Text strong>Personality List</Text>
+                  <Text strong>Candidate List</Text>
                 </Space>
                 {/* <Space>
                   <Button type="text"  icon={<FilterOutlined />} onClick={() => setFiltersOpen(true)} />

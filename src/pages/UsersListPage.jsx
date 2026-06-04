@@ -7,6 +7,7 @@ import {
   Input,
   message,
   Modal,
+  Radio,
   Space,
   Spin,
   Switch,
@@ -16,6 +17,7 @@ import {
 } from 'antd';
 import {
   EditOutlined,
+  HolderOutlined,
   SearchOutlined,
   SettingOutlined,
   UserAddOutlined,
@@ -27,7 +29,6 @@ import {
   updateUserModuleFieldConfig,
   updateUserModuleFields,
 } from '../services/usersApi';
-import '../styles/UsersListPage.css';
 
 const { Text } = Typography;
 
@@ -90,6 +91,12 @@ function moduleLabel(module) {
   return module[0].toUpperCase() + module.slice(1);
 }
 
+const GRID_COLS = '28px minmax(0, 1fr) 100px 100px';
+const moduleFieldsTableStyle = { border: '1px solid #e6ebf2', borderRadius: 6, background: '#ffffff', overflow: 'hidden' };
+const moduleFieldsHeadStyle = { display: 'grid', gridTemplateColumns: GRID_COLS, alignItems: 'center', minHeight: 36, padding: '0 16px', borderBottom: '1px solid #dce2ea', background: '#f7f8fa', color: '#8a92a0', fontSize: 12, fontWeight: 600, position: 'sticky', top: 0, zIndex: 1 };
+const moduleFieldsScrollStyle = { maxHeight: 320, overflowY: 'auto', overflowX: 'hidden' };
+const moduleFieldsRowStyle = { display: 'grid', gridTemplateColumns: GRID_COLS, alignItems: 'center', minHeight: 38, padding: '0 16px', borderBottom: '1px solid #edf0f4' };
+
 export default function UsersListPage() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -98,6 +105,7 @@ export default function UsersListPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [customizingUser, setCustomizingUser] = useState(null);
+  const [configType, setConfigType] = useState('listView');
   const [activeModule, setActiveModule] = useState('job');
   const [moduleFields, setModuleFields] = useState({});
   const [fieldsLoading, setFieldsLoading] = useState(false);
@@ -105,6 +113,7 @@ export default function UsersListPage() {
   const [fieldsSaving, setFieldsSaving] = useState(false);
   const [savingFieldKey, setSavingFieldKey] = useState('');
   const [fieldSearch, setFieldSearch] = useState('');
+  const [dragState, setDragState] = useState({ srcModule: null, srcIndex: null, hoverIndex: null });
 
   useEffect(() => {
     let ignore = false;
@@ -141,8 +150,8 @@ export default function UsersListPage() {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (_, record) => (
         <Space size={12}>
-          <Avatar className="users-list-avatar">{record.initials}</Avatar>
-          <Text className="users-list-name">{record.name}</Text>
+          <Avatar>{record.initials}</Avatar>
+          <Text className="job-cell-primary">{record.name}</Text>
         </Space>
       ),
     },
@@ -164,8 +173,8 @@ export default function UsersListPage() {
       width: 250,
       render: (_, record) => (
         <Space direction="vertical" size={0}>
-          <Text ellipsis className="users-list-contact">{record.email}</Text>
-          <Text className="users-list-phone">{record.phone}</Text>
+          <Text ellipsis style={{ maxWidth: 210 }}>{record.email}</Text>
+          <Text className="job-cell-primary">{record.phone}</Text>
         </Space>
       ),
     },
@@ -193,7 +202,7 @@ export default function UsersListPage() {
       width: 160,
       sorter: false,
       render: (_, record) => (
-        <Space size={14} className="users-list-actions">
+        <Space size={14}>
           <Tooltip title="Edit user">
             <Button type="text" icon={<EditOutlined />} aria-label="Edit user" />
           </Tooltip>
@@ -213,16 +222,13 @@ export default function UsersListPage() {
     },
   ], []);
 
-  async function openCustomizeModal(user) {
-    setCustomizingUser(user);
-    setActiveModule('job');
+  async function loadModuleFields(user, type) {
     setFieldsLoading(true);
     setFieldsError('');
     setModuleFields({});
     setFieldSearch('');
-
     try {
-      const fields = await getUserModuleFields(user);
+      const fields = await getUserModuleFields(user, type);
       setModuleFields(fields);
       setActiveModule(moduleOrder.find((module) => fields[module]?.length) ?? 'job');
     } catch (err) {
@@ -230,6 +236,20 @@ export default function UsersListPage() {
     } finally {
       setFieldsLoading(false);
     }
+  }
+
+  async function openCustomizeModal(user) {
+    const defaultType = 'listView';
+    setCustomizingUser(user);
+    setConfigType(defaultType);
+    setActiveModule('job');
+    await loadModuleFields(user, defaultType);
+  }
+
+  async function handleConfigTypeChange(newType) {
+    setConfigType(newType);
+    setSavingFieldKey('');
+    await loadModuleFields(customizingUser, newType);
   }
 
   function closeCustomizeModal() {
@@ -242,7 +262,7 @@ export default function UsersListPage() {
     setFieldsSaving(true);
 
     try {
-      await updateUserModuleFields(customizingUser, moduleFields);
+      await updateUserModuleFields(customizingUser, moduleFields, configType);
       message.success('Module fields updated');
       closeCustomizeModal();
     } catch (err) {
@@ -259,21 +279,75 @@ export default function UsersListPage() {
     ));
     const saveKey = `${module}:${fieldKey}`;
 
-    setModuleFields((current) => ({
-      ...current,
-      [module]: nextFields,
-    }));
+    setModuleFields((current) => ({ ...current, [module]: nextFields }));
     setSavingFieldKey(saveKey);
 
     try {
-      await updateUserModuleFieldConfig(customizingUser, module, nextFields);
+      await updateUserModuleFieldConfig(customizingUser, module, nextFields, configType);
       message.success('Field visibility updated');
     } catch (err) {
-      setModuleFields((current) => ({
-        ...current,
-        [module]: previousFields,
-      }));
+      setModuleFields((current) => ({ ...current, [module]: previousFields }));
       message.error(err.message || 'Could not update field visibility');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  function handleDragStart(module, index) {
+    setDragState({ srcModule: module, srcIndex: index, hoverIndex: null });
+  }
+
+  function handleDragOver(module, index) {
+    if (dragState.srcModule === module && dragState.hoverIndex !== index) {
+      setDragState((s) => ({ ...s, hoverIndex: index }));
+    }
+  }
+
+  function handleDragEnd() {
+    setDragState({ srcModule: null, srcIndex: null, hoverIndex: null });
+  }
+
+  async function handleDrop(module, targetIndex) {
+    const { srcModule, srcIndex } = dragState;
+    setDragState({ srcModule: null, srcIndex: null, hoverIndex: null });
+    if (srcModule !== module || srcIndex === null || srcIndex === targetIndex) return;
+
+    const originalFields = moduleFields[module] ?? [];
+    const next = [...originalFields];
+    const [moved] = next.splice(srcIndex, 1);
+    next.splice(targetIndex, 0, moved);
+    const reordered = next.map((f, i) => ({ ...f, order: i }));
+
+    setModuleFields((cur) => ({ ...cur, [module]: reordered }));
+    const saveKey = `${module}:reorder`;
+    setSavingFieldKey(saveKey);
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, reordered, configType);
+      message.success('Field order updated');
+    } catch (err) {
+      setModuleFields((cur) => ({ ...cur, [module]: originalFields }));
+      message.error(err.message || 'Could not save field order');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  async function toggleFieldEditable(module, fieldKey, checked) {
+    const previousFields = moduleFields[module] ?? [];
+    const nextFields = previousFields.map((field) => (
+      field.fieldKey === fieldKey ? { ...field, isEditable: checked } : field
+    ));
+    const saveKey = `${module}:${fieldKey}`;
+
+    setModuleFields((current) => ({ ...current, [module]: nextFields }));
+    setSavingFieldKey(saveKey);
+
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, nextFields, configType);
+      message.success('Field editable updated');
+    } catch (err) {
+      setModuleFields((current) => ({ ...current, [module]: previousFields }));
+      message.error(err.message || 'Could not update field');
     } finally {
       setSavingFieldKey('');
     }
@@ -281,34 +355,72 @@ export default function UsersListPage() {
 
   const moduleItems = moduleOrder.map((module) => {
     const query = fieldSearch.trim().toLowerCase();
-    const allFields = moduleFields[module] ?? [];
-    const visibleFields = query
+    const allFields = [...(moduleFields[module] ?? [])].sort((a, b) => a.order - b.order);
+    const displayFields = query
       ? allFields.filter((f) => f.fieldName.toLowerCase().includes(query))
       : allFields;
+    const isDragging = dragState.srcModule === module;
+    const canDrag = !query && !Boolean(savingFieldKey);
 
     return {
       key: module,
       label: moduleLabel(module),
       children: (
-        <div className="module-fields-table">
-          <div className="module-fields-head">
+        <div style={moduleFieldsTableStyle}>
+          <div style={moduleFieldsHeadStyle}>
+            <span />
             <span>Field Name</span>
-            <span>Show / Hide</span>
+            <span style={{ justifySelf: 'center' }}>Show / Hide</span>
+            <span style={{ justifySelf: 'center' }}>Editable</span>
           </div>
-          <div className="module-fields-scroll">
-            {visibleFields.map((field) => (
-              <div className="module-fields-row" key={field.fieldKey}>
-                <span>{field.fieldName}</span>
-                <Switch
-                  size="small"
-                  checked={field.isVisible}
-                  loading={savingFieldKey === `${module}:${field.fieldKey}`}
-                  disabled={Boolean(savingFieldKey)}
-                  onChange={(checked) => toggleField(module, field.fieldKey, checked)}
-                />
-              </div>
-            ))}
-            {!fieldsLoading && !fieldsError && !visibleFields.length && (
+          <div style={moduleFieldsScrollStyle}>
+            {displayFields.map((field, index) => {
+              const isBeingDragged = isDragging && dragState.srcIndex === index;
+              const isDropTarget = isDragging && dragState.hoverIndex === index && dragState.srcIndex !== index;
+              return (
+                <div
+                  key={field.fieldKey}
+                  draggable={canDrag}
+                  onDragStart={() => handleDragStart(module, index)}
+                  onDragOver={(e) => { e.preventDefault(); handleDragOver(module, index); }}
+                  onDrop={() => handleDrop(module, index)}
+                  onDragEnd={handleDragEnd}
+                  style={{
+                    ...moduleFieldsRowStyle,
+                    opacity: isBeingDragged ? 0.4 : 1,
+                    background: isBeingDragged ? '#f0f5ff' : undefined,
+                    borderTop: isDropTarget ? '2px solid #1677ff' : undefined,
+                    transition: 'background 0.15s',
+                  }}
+                >
+                  <HolderOutlined
+                    style={{
+                      color: canDrag ? '#bbb' : '#e0e0e0',
+                      fontSize: 13,
+                      cursor: canDrag ? 'grab' : 'default',
+                    }}
+                  />
+                  <span style={{ fontSize: 13 }}>{field.fieldName}</span>
+                  <Switch
+                    size="small"
+                    checked={field.isVisible}
+                    loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                    disabled={Boolean(savingFieldKey)}
+                    onChange={(checked) => toggleField(module, field.fieldKey, checked)}
+                    style={{ justifySelf: 'center' }}
+                  />
+                  <Switch
+                    size="small"
+                    checked={field.isEditable ?? false}
+                    loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                    disabled={Boolean(savingFieldKey)}
+                    onChange={(checked) => toggleFieldEditable(module, field.fieldKey, checked)}
+                    style={{ justifySelf: 'center' }}
+                  />
+                </div>
+              );
+            })}
+            {!fieldsLoading && !fieldsError && !displayFields.length && (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 description={query ? `No fields matching "${fieldSearch}"` : `No ${moduleLabel(module)} fields`}
@@ -322,36 +434,34 @@ export default function UsersListPage() {
   });
 
   return (
-    <main className="users-list-page">
-      <section className="users-list-shell">
-        {error && (
-          <Alert
-            type="error"
-            showIcon
-            message="Could not load users"
-            description={error}
-            className="users-list-alert"
-          />
-        )}
-
-        <ParamListView
-          listName="Users"
-          fields={userFields}
-          dataSource={users}
-          loading={loading}
-          total={total}
-          current={currentPage}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          }}
-          rowSelection={false}
-          className="users-param-list"
-          tableClassName="job-list-table users-list-table"
+    <main style={{ minHeight: '100vh', padding: 18, background: '#f3f5f8' }}>
+      {error && (
+        <Alert
+          type="error"
+          showIcon
+          message="Could not load users"
+          description={error}
+          style={{ marginBottom: 8 }}
         />
-      </section>
+      )}
+
+      <ParamListView
+        listName="Users"
+        fields={userFields}
+        dataSource={users}
+        loading={loading}
+        total={total}
+        current={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+        rowSelection={false}
+        className="users-param-list"
+        tableClassName="job-list-table"
+      />
 
       <Modal
         open={Boolean(customizingUser)}
@@ -360,14 +470,13 @@ export default function UsersListPage() {
           <Button key="cancel" onClick={closeCustomizeModal}>Cancel</Button>,
           <Button key="save" type="primary" loading={fieldsSaving} onClick={saveModuleFields}>Save Changes</Button>,
         ]}
-        width={620}
+        width={700}
         title={(
           <Space direction="vertical" size={2}>
             <Text strong>Customize Module Fields</Text>
-            <Text className="users-list-modal-subtitle">User: {customizingUser?.name}</Text>
+            <Text className="job-cell-secondary">User: {customizingUser?.name}</Text>
           </Space>
         )}
-        className="users-list-modal"
       >
         {fieldsError && (
           <Alert
@@ -375,11 +484,26 @@ export default function UsersListPage() {
             showIcon
             message="Could not load module fields"
             description={fieldsError}
-            className="users-list-fields-alert"
+            style={{ marginBottom: 8 }}
           />
         )}
+
+        <div style={{ textAlign: 'center', margin: '14px 0 10px' }}>
+          <Radio.Group
+            value={configType}
+            onChange={(e) => handleConfigTypeChange(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+            disabled={fieldsLoading || Boolean(savingFieldKey)}
+            options={[
+              { label: 'List View Columns', value: 'listView' },
+              { label: 'Filter Dropdown', value: 'filter' },
+            ]}
+          />
+        </div>
+
         <Input
-          className="module-fields-search"
+          style={{ margin: '0 0 4px', borderRadius: 7 }}
           placeholder="Search fields..."
           prefix={<SearchOutlined />}
           value={fieldSearch}

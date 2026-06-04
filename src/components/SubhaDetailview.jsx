@@ -6,21 +6,35 @@ import {
 import {
   BookFilled, LinkedinFilled,
   FilterOutlined, PlusOutlined, DownOutlined,
-  SearchOutlined,
+  SearchOutlined, UserAddOutlined, MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { getAllJobs } from '../services/jobsApi';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
 import JobFilters from './filters';
-import { SRIDHAR_JOB_LIST_SUMMARY, SRIDHAR_MOCK_JOBS } from '../data/jobs';
 import eyeOutlinedIcon from './images/common/eyeoutlined.svg';
 import frameIcon from './images/common/frame.svg';
 import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg';
 
 const { Text } = Typography;
 
+const MY_JOBS_COUNT = 6;
+const ALL_JOBS_COUNT = 2456;
 
+const columnOptions = [
+  { key: 'createdAt', label: 'Created Date' },
+  { key: 'jobsGroup', label: 'Jobs' },
+  { key: 'location', label: 'Location' },
+  { key: 'experience', label: 'Experience' },
+  { key: 'clientRate', label: 'Client Rate' },
+  { key: 'status', label: 'Status' },
+  { key: 'targetSub', label: 'Target Sub' },
+  { key: 'pipeline', label: 'Pipeline' },
+];
+
+const defaultVisibleColumnKeys = columnOptions.map(({ key }) => key);
 
 const actionsMenu = {
   items: [
@@ -66,40 +80,19 @@ function filterMatches(record, filterRow) {
   ));
 }
 
-export default function ListView({
-  jobs = SRIDHAR_MOCK_JOBS,
-  dropdownFields = [],
-  summary = SRIDHAR_JOB_LIST_SUMMARY,
-  initialSelectedRowKeys,
-}) {
+export default function ListView() {
   const navigate = useNavigate();
-  const myJobsCount = summary.myJobsCount ?? jobs.length;
-  const allJobsCount = summary.allJobsCount ?? jobs.length;
-  const defaultSelectedRowKeys = initialSelectedRowKeys
-    ?? jobs.slice(0, 2).map((job) => job.key);
   const [activeTab, setActiveTab] = useState('my');
   const [search, setSearch] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilterRows, setAppliedFilterRows] = useState([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRowKeys);
+  const [selectedRowKeys, setSelectedRowKeys] = useState(['1', '2']);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 7 });
-  const columnOptions = useMemo(() => {
-    if (!dropdownFields || dropdownFields.length === 0) return [];
-    return dropdownFields.map(f => ({ key: f.value, label: f.label }));
-  }, [dropdownFields]);
-
-  const defaultVisibleColumnKeys = useMemo(() => {
-    return columnOptions.map(({ key }) => key);
-  }, [columnOptions]);
-
-  const [visibleColumnKeys, setVisibleColumnKeys] = useState([]);
+  const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const [detailActiveTab, setDetailActiveTab] = useState('details');
 
-  useEffect(() => {
-    if (visibleColumnKeys.length === 0 && defaultVisibleColumnKeys.length > 0) {
-      setVisibleColumnKeys(defaultVisibleColumnKeys);
-    }
-  }, [defaultVisibleColumnKeys, visibleColumnKeys.length]);
+  const [jobs, setJobs] = useState([]);
 
   // const valueOptionsByField = useMemo(() => {
   //   const fields = [
@@ -115,7 +108,7 @@ export default function ListView({
   //   ];
 
   //   return fields.reduce((options, field) => {
-  //     const uniqueValues = [...new Set(jobs.map((job) => getComparableValue(job, field)).filter(Boolean))];
+  //     const uniqueValues = [...new Set(MOCK_JOBS.map((job) => getComparableValue(job, field)).filter(Boolean))];
 
   //     return {
   //       ...options,
@@ -124,14 +117,21 @@ export default function ListView({
   //   }, {});
   // }, []);
 
+  useEffect(() => {
+    getAllJobs()
+      .then(setJobs)
+      .catch(() => setJobs([]));
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
       ? jobs
       : jobs.filter(
-        (j) => Object.values(j).some(val => 
-            val && typeof val === 'string' && val.toLowerCase().includes(q)
-        )
+        (j) =>
+          j.title.toLowerCase().includes(q) ||
+          j.location.toLowerCase().includes(q) ||
+          j.status.toLowerCase().includes(q),
       );
 
     const validFilterRows = appliedFilterRows.filter((row) => row.field);
@@ -155,32 +155,142 @@ export default function ListView({
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, jobs, search]);
+  }, [appliedFilterRows, search, jobs]);
 
   const pagedData = useMemo(() => {
     const start = (pagination.current - 1) * pagination.pageSize;
     return filtered.slice(start, start + pagination.pageSize);
   }, [filtered, pagination]);
 
-  const columns = useMemo(() => {
-    if (!dropdownFields || dropdownFields.length === 0) return [];
-    return dropdownFields.map(field => {
-      const dataIndex = field.value.includes('.') ? field.value.split('.') : field.value;
-      return {
-        title: field.label,
-        dataIndex: dataIndex,
-        key: field.value,
-        visibilityKey: field.value,
-        width: 200,
-        render: (val) => {
-          if (typeof val === 'object' && val !== null) {
-            return <Text className="job-cell-primary">{JSON.stringify(val)}</Text>;
-          }
-          return <Text className="job-cell-primary">{val !== undefined && val !== null ? String(val) : '-'}</Text>;
-        }
-      };
-    });
-  }, [dropdownFields]);
+  const columns = useMemo(() => [
+    {
+      dataIndex: 'icons',
+      key: 'icons',
+      visibilityKey: 'jobsGroup',
+      //width: '100%',
+      width: 60,
+      render: (title, record) => (
+        <Space size={4} className="job-row-icons">
+          <Tooltip title="Preview">
+            <img src={eyeOutlinedIcon} alt="Preview" className="job-row-eye-icon" />
+          </Tooltip>
+          {record.hasBookmark && (
+            <Tooltip title="Bookmarked">
+              <BookFilled className="job-row-bookmark-icon" />
+            </Tooltip>
+          )}
+          {record.hasLinkedIn && (
+            <Tooltip title="LinkedIn">
+              <LinkedinFilled className="job-row-linkedin-icon" />
+            </Tooltip>
+          )}
+        </Space>
+      ),
+    },
+    {
+      title: 'Jobs',
+      dataIndex: 'title',
+      key: 'title',
+      visibilityKey: 'jobsGroup',
+      sorter: (a, b) => a.title.localeCompare(b.title),
+      width: 190,
+      render: (title, record) => (
+        <Space align="start" size={6} className="job-title-cell">
+          <Space direction="vertical" size={2}>
+            <RouterLink className="job-cell-link" to={`/subha-detailview/${record.jobId}`}>
+              {title}
+            </RouterLink>
+            <Text type="secondary" className="job-cell-secondary">{record.client}</Text>
+          </Space>
+        </Space>
+      ),
+    },
+    {
+      title: 'Location',
+      dataIndex: 'location',
+      key: 'location',
+      sorter: (a, b) => a.location.localeCompare(b.location),
+      width: '100%',
+      render: (loc, record) => (
+        <Space direction="vertical" size={2}>
+          <Text className="job-cell-primary">{loc}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.locationType}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Experience',
+      dataIndex: 'experience',
+      key: 'experience',
+      sorter: (a, b) => a.experience.localeCompare(b.experience),
+      width: '100%',
+      render: (exp, record) => (
+        <Space direction="vertical" size={2}>
+          <Text className="job-cell-primary">{exp}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.employmentType}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Client Rate (hr)',
+      dataIndex: 'clientRate',
+      key: 'clientRate',
+      sorter: (a, b) => a.clientRate - b.clientRate,
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
+      render: (rate) => <Text className="job-cell-primary">${rate}</Text>,
+    },
+    {
+      title: 'Target Sub',
+      dataIndex: 'targetSub',
+      key: 'targetSub',
+      sorter: (a, b) => a.targetSub.filled - b.targetSub.filled,
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
+      render: (sub) => (
+        <Text className="job-cell-primary">{sub.filled} of {sub.total}</Text>
+      ),
+    },
+    {
+      title: 'Pipeline',
+      dataIndex: 'pipeline',
+      key: 'pipeline',
+      sorter: (a, b) => a.pipeline - b.pipeline,
+      width: '100%',
+      render: (val) => <Text className="job-cell-primary">{val}</Text>,
+    },
+    {
+      title: 'Assignee',
+      dataIndex: 'assignees',
+      key: 'assignees',
+      width: '100%',
+      render: (assignees, record) => (
+        <AssigneeAvatars assignees={assignees} extraAssignees={record.extraAssignees} />
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      sorter: (a, b) => a.status.localeCompare(b.status),
+      onHeaderCell: () => ({ className: 'col-header-left' }),
+      width: '100%',
+      render: (status) => <StatusBadge status={status} />,
+    },
+    {
+      title: 'Created date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      width: '100%',
+      render: (date, record) => (
+        <Space direction="vertical" size={2}>
+          <Text className="job-cell-primary">{date}</Text>
+          <Text type="secondary" className="job-cell-secondary">{record.createdAgo}</Text>
+        </Space>
+      ),
+    },
+  ], [navigate]);
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => visibleColumnKeys.includes(column.visibilityKey || column.key)),
@@ -237,8 +347,8 @@ export default function ListView({
   );
 
   const tabItems = [
-    { key: 'my', label: tabLabel('My Jobs', myJobsCount) },
-    { key: 'all', label: tabLabel('All Jobs', allJobsCount) },
+    { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
+    { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
   ];
 
   return (
@@ -283,6 +393,43 @@ export default function ListView({
         </Flex>
       </Card>
 
+      {/* Job Detail Card */}
+      <Card style={{ marginTop: 8 }}>
+        <Flex justify="space-between" align="flex-start">
+            {/* Left: job info + tabs */}
+            <div style={{ flex: 1 }}>
+            <Text type="secondary" style={{ fontSize: 12 }}>TCS - MSP ID 10432419</Text>
+            <Flex align="center" gap={8} style={{ margin: '6px 0' }}>
+                <Text strong style={{ fontSize: 16 }}>Software Developer (3 Years Experience) - 38975</Text>
+                <Badge color="default" text="Fulfilled" style={{ background: '#333', color: '#fff', borderRadius: 4, padding: '2px 8px' }} />
+            </Flex>
+            <Flex gap={16} style={{ marginBottom: 12 }}>
+                <Text type="secondary">📍 North Davidfurt</Text>
+                <Text type="secondary">⏱ 5+ years</Text>
+                <Text type="secondary">🏛 Full-time</Text>
+                <Text type="secondary">On-site</Text>
+                <Text type="secondary">💲 Client rate: $78/hr</Text>
+            </Flex>
+            <Tabs
+                activeKey={detailActiveTab}
+                onChange={setDetailActiveTab}
+                items={[
+                { key: 'details', label: <Badge>Details</Badge> },
+                { key: 'candidatesApi', label: 'Candidates API' },
+                { key: 'candidate', label: <Badge count={3} offset={[10, 0]}>Candidate</Badge> },
+                ]}
+            />
+            </div>
+
+            {/* Right: actions */}
+            <Flex gap={8} align="center" style={{ paddingTop: 8 }}>
+            <Button icon={<UserAddOutlined />} type="link">Source Candidates</Button>
+            <Button icon={<MoreOutlined />} type="text" />
+            </Flex>
+        </Flex>
+      </Card>
+
+
       {/* Actions toolbar */}
       <Card>
         <Flex align="center" gap={3}>
@@ -321,6 +468,7 @@ export default function ListView({
 
       {/* Table grid */}
       <Table
+        rowKey="jobId" 
         rowSelection={rowSelection}
         columns={visibleColumns}
         dataSource={pagedData}
