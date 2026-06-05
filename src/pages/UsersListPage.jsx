@@ -16,10 +16,14 @@ import {
   Typography,
 } from 'antd';
 import {
+  CloseOutlined,
   EditOutlined,
   HolderOutlined,
+  LinkOutlined,
+  PlusOutlined,
   SearchOutlined,
   SettingOutlined,
+  UploadOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
 import ParamListView from '../components/ParamListView';
@@ -28,6 +32,7 @@ import {
   getUserModuleFields,
   updateUserModuleFieldConfig,
   updateUserModuleFields,
+  uploadListViewActionIcon,
 } from '../services/usersApi';
 
 const { Text } = Typography;
@@ -91,11 +96,10 @@ function moduleLabel(module) {
   return module[0].toUpperCase() + module.slice(1);
 }
 
-const GRID_COLS = '28px minmax(0, 1fr) 100px 100px';
+const GRID_COLS_LIST  = '28px minmax(0, 1fr) 92px 92px 120px';
+const GRID_COLS_OTHER = '28px minmax(0, 1fr) 92px 92px 100px';
 const moduleFieldsTableStyle = { border: '1px solid #e6ebf2', borderRadius: 6, background: '#ffffff', overflow: 'hidden' };
-const moduleFieldsHeadStyle = { display: 'grid', gridTemplateColumns: GRID_COLS, alignItems: 'center', minHeight: 36, padding: '0 16px', borderBottom: '1px solid #dce2ea', background: '#f7f8fa', color: '#8a92a0', fontSize: 12, fontWeight: 600, position: 'sticky', top: 0, zIndex: 1 };
-const moduleFieldsScrollStyle = { maxHeight: 320, overflowY: 'auto', overflowX: 'hidden' };
-const moduleFieldsRowStyle = { display: 'grid', gridTemplateColumns: GRID_COLS, alignItems: 'center', minHeight: 38, padding: '0 16px', borderBottom: '1px solid #edf0f4' };
+const moduleFieldsScrollStyle = { maxHeight: 380, overflowY: 'auto', overflowX: 'hidden' };
 
 export default function UsersListPage() {
   const [users, setUsers] = useState([]);
@@ -114,6 +118,8 @@ export default function UsersListPage() {
   const [savingFieldKey, setSavingFieldKey] = useState('');
   const [fieldSearch, setFieldSearch] = useState('');
   const [dragState, setDragState] = useState({ srcModule: null, srcIndex: null, hoverIndex: null });
+  const [actionPanelKey, setActionPanelKey] = useState(null); // "module:fieldKey"
+  const [iconUploadingKey, setIconUploadingKey] = useState(''); // "module:fieldKey:btnIndex"
 
   useEffect(() => {
     let ignore = false;
@@ -249,6 +255,7 @@ export default function UsersListPage() {
   async function handleConfigTypeChange(newType) {
     setConfigType(newType);
     setSavingFieldKey('');
+    setActionPanelKey(null);
     await loadModuleFields(customizingUser, newType);
   }
 
@@ -256,6 +263,8 @@ export default function UsersListPage() {
     setCustomizingUser(null);
     setModuleFields({});
     setFieldsError('');
+    setActionPanelKey(null);
+    setIconUploadingKey('');
   }
 
   async function saveModuleFields() {
@@ -353,6 +362,150 @@ export default function UsersListPage() {
     }
   }
 
+  async function toggleFieldMandatory(module, fieldKey, checked) {
+    const previousFields = moduleFields[module] ?? [];
+    const nextFields = previousFields.map((field) => (
+      field.fieldKey === fieldKey ? { ...field, ismandatory: checked } : field
+    ));
+    const saveKey = `${module}:${fieldKey}`;
+
+    setModuleFields((current) => ({ ...current, [module]: nextFields }));
+    setSavingFieldKey(saveKey);
+
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, nextFields, configType);
+      message.success('Field mandatory updated');
+    } catch (err) {
+      setModuleFields((current) => ({ ...current, [module]: previousFields }));
+      message.error(err.message || 'Could not update field');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  async function toggleFieldLinkable(module, fieldKey, checked) {
+    const previousFields = moduleFields[module] ?? [];
+    const nextFields = previousFields.map((f) => {
+      if (f.fieldKey !== fieldKey) return f;
+      const updated = { ...f, isLink: checked };
+      // Clear link metadata when turning off
+      if (!checked) {
+        updated.linkTemplate = '';
+        updated.linkType     = 'internal';
+        updated.linkTarget   = '_self';
+        updated.action       = 'navigate';
+      }
+      return updated;
+    });
+    setModuleFields((cur) => ({ ...cur, [module]: nextFields }));
+    setSavingFieldKey(`${module}:${fieldKey}`);
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, nextFields, configType);
+      message.success(checked ? 'Link enabled' : 'Link disabled');
+    } catch (err) {
+      setModuleFields((cur) => ({ ...cur, [module]: previousFields }));
+      message.error(err.message || 'Could not update field');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  function toggleActionPanel(module, fieldKey) {
+    const key = `${module}:${fieldKey}`;
+    setActionPanelKey((cur) => (cur === key ? null : key));
+  }
+
+  function patchActionButtons(module, fieldKey, updater) {
+    setModuleFields((cur) => ({
+      ...cur,
+      [module]: (cur[module] ?? []).map((f) => {
+        if (f.fieldKey !== fieldKey) return f;
+        const next = updater(f.actionButtons ?? []);
+        return { ...f, actionButtons: next };
+      }),
+    }));
+  }
+
+  function addActionButton(module, fieldKey) {
+    patchActionButtons(module, fieldKey, (buttons) => {
+      if (buttons.length >= 3) return buttons;
+      return [...buttons, { iconUrl: '', iconPath: '', type: 'page', routeUrl: '' }];
+    });
+  }
+
+  function removeActionButton(module, fieldKey, btnIndex) {
+    patchActionButtons(module, fieldKey, (buttons) => buttons.filter((_, i) => i !== btnIndex));
+  }
+
+  function updateActionButton(module, fieldKey, btnIndex, patch) {
+    patchActionButtons(module, fieldKey, (buttons) =>
+      buttons.map((btn, i) => (i === btnIndex ? { ...btn, ...patch } : btn))
+    );
+  }
+
+  async function handleIconUpload(module, fieldKey, btnIndex, file) {
+    const uploadKey = `${module}:${fieldKey}:${btnIndex}`;
+    setIconUploadingKey(uploadKey);
+    try {
+      const result = await uploadListViewActionIcon(file);
+      updateActionButton(module, fieldKey, btnIndex, {
+        iconPath: result.iconPath ?? '',
+        iconUrl: result.iconUrl ?? '',
+      });
+    } catch (err) {
+      message.error(err.message || 'Icon upload failed');
+    } finally {
+      setIconUploadingKey('');
+    }
+  }
+
+  async function saveActionButtons(module, fieldKey) {
+    const fields = moduleFields[module] ?? [];
+    const saveKey = `${module}:${fieldKey}:save`;
+    setSavingFieldKey(saveKey);
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, fields, configType);
+      message.success('Action buttons saved');
+    } catch (err) {
+      message.error(err.message || 'Could not save action buttons');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
+  // Update link config fields for one list-view field.
+  // Auto-detects linkType ("external" when URL starts with http) and sets action accordingly.
+  function updateFieldLinkConfig(module, fieldKey, patch) {
+    setModuleFields((cur) => ({
+      ...cur,
+      [module]: (cur[module] ?? []).map((f) => {
+        if (f.fieldKey !== fieldKey) return f;
+        const next = { ...f, ...patch };
+        // Auto-detect type from the URL template
+        if (patch.linkTemplate !== undefined) {
+          const isExternal = /^https?:\/\//i.test(patch.linkTemplate.trim());
+          next.linkType = isExternal ? 'external' : 'internal';
+          next.action   = isExternal ? 'openExternal' : 'navigate';
+        }
+        return next;
+      }),
+    }));
+  }
+
+  async function saveLinkConfig(module, fieldKey) {
+    const fields = moduleFields[module] ?? [];
+    const saveKey = `${module}:${fieldKey}:link`;
+    setSavingFieldKey(saveKey);
+    try {
+      await updateUserModuleFieldConfig(customizingUser, module, fields, configType);
+      message.success('Link config saved');
+    } catch (err) {
+      message.error(err.message || 'Could not save link config');
+    } finally {
+      setSavingFieldKey('');
+    }
+  }
+
   const moduleItems = moduleOrder.map((module) => {
     const query = fieldSearch.trim().toLowerCase();
     const allFields = [...(moduleFields[module] ?? [])].sort((a, b) => a.order - b.order);
@@ -361,65 +514,280 @@ export default function UsersListPage() {
       : allFields;
     const isDragging = dragState.srcModule === module;
     const canDrag = !query && !Boolean(savingFieldKey);
+    const isListView = configType === 'listView';
+    const gridCols = isListView ? GRID_COLS_LIST : GRID_COLS_OTHER;
+    const headStyle = { display: 'grid', gridTemplateColumns: gridCols, alignItems: 'center', minHeight: 36, padding: '0 16px', borderBottom: '1px solid #dce2ea', background: '#f7f8fa', color: '#8a92a0', fontSize: 12, fontWeight: 600, position: 'sticky', top: 0, zIndex: 1 };
+    const rowStyle = { display: 'grid', gridTemplateColumns: gridCols, alignItems: 'center', minHeight: 38, padding: '0 16px', borderBottom: '1px solid #edf0f4' };
 
     return {
       key: module,
       label: moduleLabel(module),
       children: (
         <div style={moduleFieldsTableStyle}>
-          <div style={moduleFieldsHeadStyle}>
+          {/* Table header — changes based on configType */}
+          <div style={headStyle}>
             <span />
             <span>Field Name</span>
             <span style={{ justifySelf: 'center' }}>Show / Hide</span>
-            <span style={{ justifySelf: 'center' }}>Editable</span>
+            {isListView
+              ? <span style={{ justifySelf: 'center' }}>Is Link</span>
+              : <span style={{ justifySelf: 'center' }}>Editable</span>
+            }
+            {isListView
+              ? <span style={{ justifySelf: 'center' }}>Actions</span>
+              : <span style={{ justifySelf: 'center' }}>Mandatory</span>
+            }
           </div>
+
           <div style={moduleFieldsScrollStyle}>
             {displayFields.map((field, index) => {
               const isBeingDragged = isDragging && dragState.srcIndex === index;
               const isDropTarget = isDragging && dragState.hoverIndex === index && dragState.srcIndex !== index;
+              const panelOpen = actionPanelKey === `${module}:${field.fieldKey}`;
+              const actionButtons = field.actionButtons ?? [];
+
               return (
-                <div
-                  key={field.fieldKey}
-                  draggable={canDrag}
-                  onDragStart={() => handleDragStart(module, index)}
-                  onDragOver={(e) => { e.preventDefault(); handleDragOver(module, index); }}
-                  onDrop={() => handleDrop(module, index)}
-                  onDragEnd={handleDragEnd}
-                  style={{
-                    ...moduleFieldsRowStyle,
-                    opacity: isBeingDragged ? 0.4 : 1,
-                    background: isBeingDragged ? '#f0f5ff' : undefined,
-                    borderTop: isDropTarget ? '2px solid #1677ff' : undefined,
-                    transition: 'background 0.15s',
-                  }}
-                >
-                  <HolderOutlined
+                <div key={field.fieldKey}>
+                  {/* Main row */}
+                  <div
+                    draggable={canDrag}
+                    onDragStart={() => handleDragStart(module, index)}
+                    onDragOver={(e) => { e.preventDefault(); handleDragOver(module, index); }}
+                    onDrop={() => handleDrop(module, index)}
+                    onDragEnd={handleDragEnd}
                     style={{
-                      color: canDrag ? '#bbb' : '#e0e0e0',
-                      fontSize: 13,
-                      cursor: canDrag ? 'grab' : 'default',
+                      ...rowStyle,
+                      opacity: isBeingDragged ? 0.4 : 1,
+                      background: isBeingDragged ? '#f0f5ff' : (field.isLink && isListView) ? '#f5f9ff' : panelOpen ? '#f7f9fc' : undefined,
+                      borderTop: isDropTarget ? '2px solid #1677ff' : undefined,
+                      transition: 'background 0.15s',
                     }}
-                  />
-                  <span style={{ fontSize: 13 }}>{field.fieldName}</span>
-                  <Switch
-                    size="small"
-                    checked={field.isVisible}
-                    loading={savingFieldKey === `${module}:${field.fieldKey}`}
-                    disabled={Boolean(savingFieldKey)}
-                    onChange={(checked) => toggleField(module, field.fieldKey, checked)}
-                    style={{ justifySelf: 'center' }}
-                  />
-                  <Switch
-                    size="small"
-                    checked={field.isEditable ?? false}
-                    loading={savingFieldKey === `${module}:${field.fieldKey}`}
-                    disabled={Boolean(savingFieldKey)}
-                    onChange={(checked) => toggleFieldEditable(module, field.fieldKey, checked)}
-                    style={{ justifySelf: 'center' }}
-                  />
+                  >
+                    <HolderOutlined
+                      style={{ color: canDrag ? '#bbb' : '#e0e0e0', fontSize: 13, cursor: canDrag ? 'grab' : 'default' }}
+                    />
+                    <span style={{ fontSize: 13 }}>{field.fieldName}</span>
+
+                    {/* Show / Hide — always present */}
+                    <Switch
+                      size="small"
+                      checked={field.isVisible}
+                      loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                      disabled={Boolean(savingFieldKey)}
+                      onChange={(checked) => toggleField(module, field.fieldKey, checked)}
+                      style={{ justifySelf: 'center' }}
+                    />
+
+                    {/* Column 4: Is Linkable (list view) | Editable (filter/form) */}
+                    {isListView ? (
+                      <Switch
+                        size="small"
+                        checked={field.isLink ?? false}
+                        loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                        disabled={Boolean(savingFieldKey)}
+                        onChange={(checked) => toggleFieldLinkable(module, field.fieldKey, checked)}
+                        style={{ justifySelf: 'center' }}
+                      />
+                    ) : (
+                      <Switch
+                        size="small"
+                        checked={field.isEditable ?? false}
+                        loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                        disabled={Boolean(savingFieldKey)}
+                        onChange={(checked) => toggleFieldEditable(module, field.fieldKey, checked)}
+                        style={{ justifySelf: 'center' }}
+                      />
+                    )}
+
+                    {/* Column 5: Action toggle (list view) | Mandatory (filter/form) */}
+                    {isListView ? (
+                      <Tooltip title={panelOpen ? 'Close actions' : 'Configure action buttons'}>
+                        <Button
+                          size="small"
+                          type={panelOpen ? 'primary' : 'default'}
+                          icon={<SettingOutlined />}
+                          onClick={() => toggleActionPanel(module, field.fieldKey)}
+                          style={{ justifySelf: 'center', fontSize: 11 }}
+                          disabled={Boolean(savingFieldKey)}
+                        >
+                          {actionButtons.length > 0 ? `Actions (${actionButtons.length})` : 'Action'}
+                        </Button>
+                      </Tooltip>
+                    ) : (
+                      <Switch
+                        size="small"
+                        checked={field.ismandatory ?? false}
+                        loading={savingFieldKey === `${module}:${field.fieldKey}`}
+                        disabled={Boolean(savingFieldKey)}
+                        onChange={(checked) => toggleFieldMandatory(module, field.fieldKey, checked)}
+                        style={{ justifySelf: 'center' }}
+                      />
+                    )}
+                  </div>
+
+                  {/* Inline link config panel — visible whenever isLink is ON */}
+                  {isListView && (field.isLink ?? false) && (
+                    <div style={{ background: '#f0f7ff', borderBottom: '1px solid #bcd4f5', padding: '10px 16px 12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Space size={6}>
+                          <LinkOutlined style={{ color: '#1677ff' }} />
+                          <Text style={{ fontSize: 12, fontWeight: 600, color: '#1677ff' }}>Link Configuration</Text>
+                          {field.linkType === 'external' && (
+                            <Text type="secondary" style={{ fontSize: 11 }}>External URL detected</Text>
+                          )}
+                        </Space>
+                        <Button
+                          size="small"
+                          type="primary"
+                          loading={savingFieldKey === `${module}:${field.fieldKey}:link`}
+                          disabled={Boolean(savingFieldKey) && savingFieldKey !== `${module}:${field.fieldKey}:link`}
+                          onClick={() => saveLinkConfig(module, field.fieldKey)}
+                        >
+                          Save Link
+                        </Button>
+                      </div>
+
+                      {/* URL Template */}
+                      <div style={{ marginBottom: 8 }}>
+                        <Text style={{ fontSize: 11, color: '#666', display: 'block', marginBottom: 4 }}>
+                          Link URL  <Text type="secondary" style={{ fontSize: 11 }}>— use <code>:fieldName</code> for row-value interpolation, e.g. <code>:_id</code></Text>
+                        </Text>
+                        <Input
+                          size="small"
+                          prefix={<LinkOutlined style={{ color: '#bbb' }} />}
+                          placeholder="/app/jobs/:_id  or  https://example.com/:_id"
+                          value={field.linkTemplate ?? ''}
+                          disabled={Boolean(savingFieldKey)}
+                          onChange={(e) => updateFieldLinkConfig(module, field.fieldKey, { linkTemplate: e.target.value })}
+                          style={{ fontFamily: 'monospace' }}
+                        />
+                      </div>
+
+                      {/* Open target */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                        <Space size={4}>
+                          <Text style={{ fontSize: 11, color: '#555' }}>Open in:</Text>
+                          <Radio.Group
+                            size="small"
+                            value={field.linkTarget ?? '_self'}
+                            disabled={Boolean(savingFieldKey)}
+                            onChange={(e) => updateFieldLinkConfig(module, field.fieldKey, { linkTarget: e.target.value })}
+                          >
+                            <Radio value="_self">Same tab</Radio>
+                            <Radio value="_blank">New tab</Radio>
+                          </Radio.Group>
+                        </Space>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Inline action buttons panel (list view only, when expanded) */}
+                  {isListView && panelOpen && (
+                    <div style={{ background: '#f7f9fc', borderBottom: '1px solid #e6ebf2', padding: '10px 16px 12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={{ fontSize: 12, fontWeight: 600, color: '#555' }}>
+                          Action Buttons <Text type="secondary" style={{ fontSize: 11, fontWeight: 400 }}>(max 3 icons)</Text>
+                        </Text>
+                        <Space size={6}>
+                          {actionButtons.length < 3 && (
+                            <Button
+                              size="small"
+                              icon={<PlusOutlined />}
+                              onClick={() => addActionButton(module, field.fieldKey)}
+                              disabled={Boolean(savingFieldKey)}
+                            >
+                              Add Icon
+                            </Button>
+                          )}
+                          <Button
+                            size="small"
+                            type="primary"
+                            loading={savingFieldKey === `${module}:${field.fieldKey}:save`}
+                            disabled={Boolean(savingFieldKey) && savingFieldKey !== `${module}:${field.fieldKey}:save`}
+                            onClick={() => saveActionButtons(module, field.fieldKey)}
+                          >
+                            Save
+                          </Button>
+                        </Space>
+                      </div>
+
+                      {actionButtons.length === 0 && (
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                          No action buttons yet. Click "Add Icon" to configure up to 3.
+                        </Text>
+                      )}
+
+                      {actionButtons.map((btn, btnIdx) => {
+                        const uploadKey = `${module}:${field.fieldKey}:${btnIdx}`;
+                        const isUploading = iconUploadingKey === uploadKey;
+                        return (
+                          <div
+                            key={btnIdx}
+                            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', marginBottom: 6, background: '#fff', border: '1px solid #e6ebf2', borderRadius: 6 }}
+                          >
+                            {/* Icon upload slot */}
+                            <Tooltip title="Click to upload icon">
+                              <label style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, border: '1px dashed #bbb', borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#fafafa' }}>
+                                {isUploading
+                                  ? <Spin size="small" />
+                                  : btn.iconUrl
+                                    ? <img src={btn.iconUrl} alt={`action-${btnIdx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    : <UploadOutlined style={{ color: '#aaa', fontSize: 16 }} />
+                                }
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }}
+                                  disabled={isUploading || Boolean(savingFieldKey)}
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleIconUpload(module, field.fieldKey, btnIdx, file);
+                                    e.target.value = '';
+                                  }}
+                                />
+                              </label>
+                            </Tooltip>
+
+                            {/* Page / Popup radio */}
+                            <Radio.Group
+                              size="small"
+                              value={btn.type || 'page'}
+                              onChange={(e) => updateActionButton(module, field.fieldKey, btnIdx, { type: e.target.value })}
+                              disabled={Boolean(savingFieldKey)}
+                            >
+                              <Radio value="page">Page</Radio>
+                              <Radio value="popup">Popup</Radio>
+                            </Radio.Group>
+
+                            {/* Route URL */}
+                            <Input
+                              size="small"
+                              placeholder="Route URL  (e.g. /app/jobs/:_id)"
+                              value={btn.routeUrl || ''}
+                              prefix={<LinkOutlined style={{ color: '#bbb' }} />}
+                              onChange={(e) => updateActionButton(module, field.fieldKey, btnIdx, { routeUrl: e.target.value })}
+                              disabled={Boolean(savingFieldKey)}
+                              style={{ flex: 1 }}
+                            />
+
+                            {/* Remove */}
+                            <Button
+                              size="small"
+                              type="text"
+                              danger
+                              icon={<CloseOutlined />}
+                              onClick={() => removeActionButton(module, field.fieldKey, btnIdx)}
+                              disabled={Boolean(savingFieldKey)}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
+
             {!fieldsLoading && !fieldsError && !displayFields.length && (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -498,6 +866,7 @@ export default function UsersListPage() {
             options={[
               { label: 'List View Columns', value: 'listView' },
               { label: 'Filter Dropdown', value: 'filter' },
+              { label: 'Forms List', value: 'form' },
             ]}
           />
         </div>
@@ -513,7 +882,7 @@ export default function UsersListPage() {
         <Spin spinning={fieldsLoading}>
           <Tabs
             activeKey={activeModule}
-            onChange={(key) => { setActiveModule(key); setFieldSearch(''); }}
+            onChange={(key) => { setActiveModule(key); setFieldSearch(''); setActionPanelKey(null); }}
             items={moduleItems}
             centered
           />

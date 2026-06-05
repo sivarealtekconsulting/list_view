@@ -109,6 +109,7 @@ function normalizeModuleField(field, index) {
   const fieldName = firstValue(field, ['label', 'Label', 'fieldName', 'field_name', 'name', 'fieldLabel', 'value'], `Field ${index + 1}`);
   const fieldKey = firstValue(field, ['field', 'Field', 'fieldKey', 'field_key', 'key', 'value', 'fieldName', 'name'], fieldName);
   const showValue = firstValue(field, ['isVisible', 'is_visible', 'visible', 'show', 'is_show', 'isShow', 'enabled'], true);
+  const mandatoryValue = firstValue(field, ['ismandatory', 'isMandatory', 'is_mandatory', 'mandatory', 'required', 'req'], false);
   const orderValue = firstValue(field, ['order', 'Order', 'sortOrder', 'position'], index);
 
   return {
@@ -119,6 +120,9 @@ function normalizeModuleField(field, index) {
     isVisible: typeof showValue === 'string'
       ? !['false', '0', 'hide', 'hidden', 'no'].includes(showValue.toLowerCase())
       : Boolean(showValue),
+    ismandatory: typeof mandatoryValue === 'string'
+      ? ['true', '1', 'yes', 'required'].includes(mandatoryValue.toLowerCase())
+      : Boolean(mandatoryValue),
     order: typeof orderValue === 'number' ? orderValue : index,
   };
 }
@@ -160,6 +164,7 @@ function visibleFieldPayload(fields) {
     type: field.type ?? 'text',
     isEditable: field.isEditable ?? false,
     order: field.order ?? index,
+    ismandatory: field.ismandatory ?? field.isMandatory ?? false,
   }));
 }
 

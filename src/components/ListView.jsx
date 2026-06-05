@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Table, Input, Button, Space, Typography, Tooltip, Dropdown, Tabs, Badge, Card, Flex, Checkbox,
@@ -84,6 +84,22 @@ export default function ListView({
   columns: customColumns,
   tabs: customTabs,
   initialActiveTab = 'my',
+  onTabChange,
+  loading = false,
+  // ── Server-side mode ───────────────────────────────────────────────────────
+  // When serverSide=true the component skips all client-side filtering /
+  // sorting / pagination and delegates those operations to the parent via the
+  // callbacks below.  The parent is responsible for re-fetching and passing
+  // updated dataSource / total / currentPage / pageSize on each change.
+  serverSide = false,
+  total: serverTotal,          // total record count from the server
+  currentPage: serverPage,     // controlled current page (1-based)
+  pageSize: serverPageSize,    // controlled page size
+  onPageChange,                // (page) => void
+  onPageSizeChange,            // (size) => void
+  onSearch,                    // (searchText) => void  — debounced 400 ms
+  onSort,                      // (field, 'asc'|'desc') => void
+  onFilter,                    // (filterConditions) => void
   searchPredicate,
   toolbarActions,
   showActionsToolbar = true,
@@ -113,6 +129,7 @@ export default function ListView({
   const [pagination, setPagination] = useState({ current: 1, pageSize: initialPageSize });
   const [visibleColumnKeys, setVisibleColumnKeys] = useState(defaultVisibleColumnKeys);
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const searchDebounceRef = useRef(null);
 
   // const valueOptionsByField = useMemo(() => {
   //   const fields = [
@@ -138,10 +155,12 @@ export default function ListView({
   // }, []);
 
   const filtered = useMemo(() => {
+    // Server-side mode: data already filtered by API — return as-is.
+    if (serverSide) return listDataSource;
+
     const q = search.toLowerCase();
     if (isCustomList) {
       if (!q || q.length < 3 || !searchPredicate) return listDataSource;
-
       return listDataSource.filter((record) => searchPredicate(record, q));
     }
 
@@ -155,32 +174,24 @@ export default function ListView({
       );
 
     const validFilterRows = appliedFilterRows.filter((row) => row.field);
-
-    if (!validFilterRows.length) {
-      return searchableJobs;
-    }
+    if (!validFilterRows.length) return searchableJobs;
 
     return searchableJobs.filter((job) => (
       validFilterRows.reduce((matches, row, index) => {
         const rowMatches = filterMatches(job, row);
-
-        if (index === 0 || row.operator === 'and') {
-          return matches && rowMatches;
-        }
-
-        if (row.operator === 'or') {
-          return matches || rowMatches;
-        }
-
+        if (index === 0 || row.operator === 'and') return matches && rowMatches;
+        if (row.operator === 'or')  return matches || rowMatches;
         return matches && rowMatches;
       }, true)
     ));
-  }, [appliedFilterRows, isCustomList, listDataSource, search, searchPredicate]);
+  }, [appliedFilterRows, isCustomList, listDataSource, search, searchPredicate, serverSide]);
 
   const pagedData = useMemo(() => {
+    // Server-side mode: API already sliced the page.
+    if (serverSide) return listDataSource;
     const start = (pagination.current - 1) * pagination.pageSize;
     return filtered.slice(start, start + pagination.pageSize);
-  }, [filtered, pagination]);
+  }, [filtered, listDataSource, pagination, serverSide]);
 
   const columns = useMemo(() => [
     {
@@ -324,6 +335,24 @@ export default function ListView({
   const allColumnsVisible = visibleColumnKeys.length === defaultVisibleColumnKeys.length;
   const someColumnsVisible = visibleColumnKeys.length > 0 && !allColumnsVisible;
 
+  function applyFilters(filterRows) {
+    setAppliedFilterRows(filterRows);
+    setPagination(p => ({ ...p, current: 1 }));
+    if (onFilter) {
+      // Map frontend filter rows → API FilterCondition format
+      const conditions = filterRows
+        .filter((row) => row.field)
+        .map((row) => {
+          if (row.operator === 'isEmpty')  return { field: row.field, op: 'isEmpty' };
+          if (row.operator === 'notEmpty') return { field: row.field, op: 'notEmpty' };
+          if (row.values?.length) return { field: row.field, op: 'in', values: row.values.map(String) };
+          return null;
+        })
+        .filter(Boolean);
+      onFilter(conditions);
+    }
+  }
+
   const toggleColumn = (key, checked) => {
     setVisibleColumnKeys((current) => {
       if (checked) {
@@ -371,10 +400,13 @@ export default function ListView({
     </Space>
   );
 
-  const tabItems = customTabs ?? [
-    { key: 'my', label: tabLabel('My Jobs', MY_JOBS_COUNT) },
-    { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
-  ];
+  // When customTabs come from the API they carry a `count` field; render it.
+  const tabItems = customTabs
+    ? customTabs.map((t) => ({ key: t.key, label: tabLabel(t.label ?? t.key, t.count ?? 0) }))
+    : [
+        { key: 'my',  label: tabLabel('My Jobs',  MY_JOBS_COUNT) },
+        { key: 'all', label: tabLabel('All Jobs', ALL_JOBS_COUNT) },
+      ];
 
   return (
     <div className={className}>
@@ -388,14 +420,23 @@ export default function ListView({
             onChange={(key) => {
               setActiveTab(key);
               setPagination({ ...pagination, current: 1 });
+              onTabChange?.(key);
             }}
           />
           <Flex align="center" gap={8}>
             <Input
               prefix={<SearchOutlined className={searchIconClassName} />}
-              placeholder="Min 3 Chars to search"
+              placeholder="Search..."
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPagination({ ...pagination, current: 1 }); }}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearch(val);
+                setPagination({ ...pagination, current: 1 });
+                if (onSearch) {
+                  clearTimeout(searchDebounceRef.current);
+                  searchDebounceRef.current = setTimeout(() => onSearch(val), 400);
+                }
+              }}
               allowClear
               className={searchInputClassName}
             />
@@ -469,6 +510,7 @@ export default function ListView({
         rowSelection={rowSelection}
         columns={visibleColumns}
         dataSource={pagedData}
+        loading={loading}
         size="middle"
         scroll={tableScroll}
         showSorterTooltip={false}
@@ -476,15 +518,33 @@ export default function ListView({
         pagination={false}
         className={tableClassName}
         rowKey={rowKey}
+        onChange={(_pagination, _filters, sorter) => {
+          if (onSort && sorter?.field) {
+            const dir = sorter.order === 'descend' ? 'desc' : 'asc';
+            onSort(String(sorter.field), dir);
+          }
+        }}
       />
 
       {/* Pagination */}
       <CustomPagination
-        current={pagination.current}
-        pageSize={pagination.pageSize}
-        total={filtered.length}
-        onChange={(page) => setPagination(p => ({ ...p, current: page }))}
-        onPageSizeChange={(size) => setPagination({ current: 1, pageSize: size })}
+        current={serverSide ? (serverPage ?? pagination.current) : pagination.current}
+        pageSize={serverSide ? (serverPageSize ?? pagination.pageSize) : pagination.pageSize}
+        total={serverSide ? (serverTotal ?? 0) : filtered.length}
+        onChange={(page) => {
+          if (serverSide) {
+            onPageChange?.(page);
+          } else {
+            setPagination(p => ({ ...p, current: page }));
+          }
+        }}
+        onPageSizeChange={(size) => {
+          if (serverSide) {
+            onPageSizeChange?.(size);
+          } else {
+            setPagination({ current: 1, pageSize: size });
+          }
+        }}
       />
 
       {filtersSlot ?? (!isCustomList && (
@@ -492,10 +552,7 @@ export default function ListView({
           open={filtersOpen}
           onClose={() => setFiltersOpen(false)}
           // valueOptionsByField={valueOptionsByField}
-          onApply={({ filters }) => {
-            setAppliedFilterRows(filters);
-            setPagination((current) => ({ ...current, current: 1 }));
-          }}
+          onApply={({ filters }) => applyFilters(filters)}
         />
       ))}
 

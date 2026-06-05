@@ -1,5 +1,24 @@
 import { AUTH_URL, SUBMISSIONS_URL, fetchJsonWithAuth } from './dropdownApi';
 
+export async function uploadListViewActionIcon(file) {
+  const token = localStorage.getItem('authToken');
+  const formData = new FormData();
+  formData.append('icon', file);
+
+  const res = await fetch(`${AUTH_URL}/admin/field-config/action-icon`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = new Error(`Upload failed: ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  const json = await res.json();
+  return json.data ?? json; // { iconPath, iconUrl }
+}
+
 const FIELD_CONFIG_PATH = '/admin/field-config';
 const CUSTOMIZABLE_MODULES = [
   { key: 'job', apiModule: 'jobs' },
@@ -79,6 +98,7 @@ function normalizeModuleField(field, index) {
   const fieldName = firstValue(field, ['label', 'Label', 'fieldName', 'field_name', 'name', 'fieldLabel', 'value'], `Field ${index + 1}`);
   const fieldKey = firstValue(field, ['field', 'Field', 'fieldKey', 'field_key', 'key', 'value', 'fieldName', 'name'], fieldName);
   const showValue = firstValue(field, ['isVisible', 'is_visible', 'visible', 'show', 'is_show', 'isShow', 'enabled'], true);
+  const mandatoryValue = firstValue(field, ['ismandatory', 'isMandatory', 'is_mandatory', 'mandatory', 'required', 'req'], false);
   const orderValue = firstValue(field, ['order', 'Order', 'sortOrder', 'position'], index);
 
   return {
@@ -87,7 +107,16 @@ function normalizeModuleField(field, index) {
     fieldName,
     type: firstValue(field, ['type', 'Type'], 'text'),
     isVisible: typeof showValue === 'string' ? !['false', '0', 'hide', 'hidden', 'no'].includes(showValue.toLowerCase()) : Boolean(showValue),
+    ismandatory: typeof mandatoryValue === 'string'
+      ? ['true', '1', 'yes', 'required'].includes(mandatoryValue.toLowerCase())
+      : Boolean(mandatoryValue),
     order: typeof orderValue === 'number' ? orderValue : index,
+    isLink:        Boolean(field.isLink),
+    linkTemplate:  field.linkTemplate  ?? '',
+    linkType:      field.linkType      ?? 'internal',
+    linkTarget:    field.linkTarget    ?? '_self',
+    action:        field.action        ?? 'navigate',
+    actionButtons: Array.isArray(field.actionButtons) ? field.actionButtons : [],
   };
 }
 
@@ -120,9 +149,33 @@ export async function getUserModuleFields(user, configType = 'listView') {
       try {
         fields = await getFieldConfigModule(apiModule, userId, roleId, configType);
       } catch (err) {
-        if (err.status !== 404) throw err;
+        if (err.status !== 404) {
+          // Non-404 error — try dropdown fallback before giving up
+          try {
+            source = 'dropdown-fields';
+            fields = await getDropdownModuleFields(apiModule);
+          } catch {
+            fields = [];
+          }
+        } else {
+          source = 'dropdown-fields';
+          try {
+            fields = await getDropdownModuleFields(apiModule);
+          } catch {
+            fields = [];
+          }
+        }
+      }
+
+      // When field config exists but is empty (user has no saved config),
+      // fall back to the full dropdown fields so the popup is never blank.
+      if ((fields?.length ?? 0) === 0) {
         source = 'dropdown-fields';
-        fields = await getDropdownModuleFields(apiModule);
+        try {
+          fields = await getDropdownModuleFields(apiModule);
+        } catch {
+          fields = [];
+        }
       }
 
       return [
@@ -142,15 +195,29 @@ export async function getUserModuleFields(user, configType = 'listView') {
   return Object.fromEntries(entries);
 }
 
-function visibleFieldPayload(fields) {
-  return fields.map((field, index) => ({
-    label: field.fieldName,
-    field: field.fieldKey,
-    isVisible: field.isVisible,
-    type: field.type ?? 'text',
-    isEditable: field.isEditable ?? false,
-    order: field.order ?? index,
-  }));
+function visibleFieldPayload(fields, configType) {
+  const isListView = !configType || configType === 'listView';
+  return fields.map((field, index) => {
+    const base = {
+      label: field.fieldName,
+      field: field.fieldKey,
+      isVisible: field.isVisible,
+      type: field.type ?? 'text',
+      order: field.order ?? index,
+    };
+    if (isListView) {
+      base.isLink        = field.isLink        ?? false;
+      base.linkTemplate  = field.linkTemplate  ?? '';
+      base.linkType      = field.linkType      ?? 'internal';
+      base.linkTarget    = field.linkTarget    ?? '_self';
+      base.action        = field.action        ?? 'navigate';
+      base.actionButtons = field.actionButtons ?? [];
+    } else {
+      base.isEditable = field.isEditable ?? false;
+      base.ismandatory = field.ismandatory ?? field.isMandatory ?? false;
+    }
+    return base;
+  });
 }
 
 export async function updateUserModuleFieldConfig(user, module, fields, configType = 'listView') {
@@ -165,7 +232,7 @@ export async function updateUserModuleFieldConfig(user, module, fields, configTy
       userId,
       roleId,
       configType,
-      visibleFields: visibleFieldPayload(fields),
+      visibleFields: visibleFieldPayload(fields, configType),
     }),
   });
 }

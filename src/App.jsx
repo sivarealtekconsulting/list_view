@@ -43,6 +43,8 @@ import UsersListPage from './pages/UsersListPage';
 import RolesListPage from './pages/RolesListPage';
 import TeamsListPage from './pages/TeamsListPage';
 import AdminSetupPage from './pages/AdminSetupPage';
+import FormGroupsPage from './pages/FormGroupsPage';
+import SubmissionFormPage from './pages/SubmissionFormPage';
 
 export default function App() {
   return (
@@ -78,6 +80,8 @@ export default function App() {
           <Route path="/users" element={<UsersListPage />} />
           <Route path="/roles" element={<RolesListPage />} />
           <Route path="/teams" element={<TeamsListPage />} />
+          <Route path="/form-groups" element={<FormGroupsPage />} />
+          <Route path="/submissions/new" element={<SubmissionFormPage />} />
           <Route path="/naveen-dashboard" element={<NaveenDashboardPage />} />
           <Route path="/candidates/add" element={<AddCandidatePage />} />
           <Route path="/add" element={<UserForm />} />

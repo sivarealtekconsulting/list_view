@@ -1,6 +1,7 @@
 import { Card, Col, Row, Space, Typography } from 'antd';
 import {
   ApartmentOutlined,
+  AppstoreOutlined,
   SafetyOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -29,6 +30,13 @@ const SECTIONS = [
     icon: <SafetyOutlined style={{ fontSize: 28, color: '#722ed1' }} />,
     title: 'Roles',
     description: 'Set default field visibility per role for all assigned users.',
+  },
+  {
+    key: 'form-groups',
+    path: '/form-groups',
+    icon: <AppstoreOutlined style={{ fontSize: 28, color: '#fa8c16' }} />,
+    title: 'Form Groups',
+    description: 'Define common field groups for forms. Some groups support dynamic add-row.',
   },
 ];
 
