@@ -13,13 +13,15 @@
   --jdv-text:       #1a1a2e;
   --jdv-text-sub:   #586888;
   --jdv-text-muted: #9ca3af;
-  --jdv-border:     #e8eef4;
+  --jdv-border:     #d6e4f0;
   --jdv-bg-light:   #f7fafd;
   --jdv-bg-stats:   #eff6ff;
   --jdv-bg-head:    #f2f4f8;
   --jdv-radius:     8px;
   --jdv-radius-sm:  6px;
   font-family: var(--jdv-font);
+  background: #ffffff;
+  min-height: 100vh;
 }
 
 /* ─────────────────────────────────────────
@@ -48,9 +50,10 @@
    Hero card  (job title + stats)
 ───────────────────────────────────────── */
 .jdv .jdv-hero-card.ant-card {
+  background: #ffffff !important;
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
-  box-shadow: none;
+  border-radius: var(--jdv-radius) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 .jdv .jdv-hero-card > .ant-card-body { padding: 16px 20px; }
 
@@ -135,9 +138,10 @@
    Toolbar card  (tabs + action buttons)
 ───────────────────────────────────────── */
 .jdv .jdv-toolbar-card.ant-card {
+  background: #ffffff !important;
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
-  box-shadow: none;
+  border-radius: var(--jdv-radius) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 .jdv .jdv-toolbar-card > .ant-card-body { padding: 10px 16px; }
 .jdv .jdv-toolbar-card .ant-tabs-nav    { margin-bottom: 0; }
@@ -146,9 +150,9 @@
 .jdv .jdv-toolbar-card .ant-tabs-nav::before { border: none !important; }
 .jdv .jdv-toolbar-card .ant-tabs-ink-bar     { display: none !important; }
 
-/* Track: transparent so a single tab doesn't look enclosed in a container */
+/* Track: frosted grey pill that wraps all tabs */
 .jdv .jdv-toolbar-card .ant-tabs-nav-list {
-  background: transparent;
+  background: #eef2fa;
   border-radius: 24px;
   padding: 3px;
 }
@@ -186,6 +190,22 @@
   font-weight: 600;
 }
 
+/* Tab content panel — smooth fade + lift on enter */
+@keyframes jdv-tab-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.jdv-tab-panel {
+  animation: jdv-tab-enter 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 /* Source Candidates button */
 .jdv .jdv-action-btn.ant-btn {
   border-radius: var(--jdv-radius);
@@ -211,8 +231,9 @@
    Section cards  (Client / Skills / Description / Additional)
 ───────────────────────────────────────── */
 .jdv .jdv-section-card.ant-card {
+  background: #ffffff !important;
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
+  border-radius: var(--jdv-radius) !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
@@ -306,9 +327,10 @@
 ───────────────────────────────────────── */
 
 .jdv .jdv-activity-card.ant-card {
+  background: #ffffff !important;
   border: 1px solid var(--jdv-border);
-  border-radius: var(--jdv-radius);
-  box-shadow: none;
+  border-radius: var(--jdv-radius) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 .jdv .jdv-activity-card > .ant-card-body { padding: 14px 16px; }
 
