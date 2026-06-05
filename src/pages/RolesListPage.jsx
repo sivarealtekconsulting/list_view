@@ -399,6 +399,7 @@ export default function RolesListPage() {
             options={[
               { label: 'List View Columns', value: 'listView' },
               { label: 'Filter Dropdown', value: 'filter' },
+              { label: 'Forms List', value: 'form' },
             ]}
           />
         </div>
