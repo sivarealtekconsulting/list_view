@@ -1,8 +1,9 @@
 import userEvent from '@testing-library/user-event';
 
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import NewDashboard from '../pages/suryaDashboardPage';
+import ListViews from '../components/suryaListView'
 
 // 1
 test('renders dashboard', () => {

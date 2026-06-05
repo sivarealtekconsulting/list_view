@@ -9,7 +9,8 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_JOBS } from '../data/jobs';
+// import { MOCK_JOBS } from '../data/jobs';
+import jobsData from '../data/suryaJobs.json';
 import StatusBadge from './StatusBadge';
 import AssigneeAvatars from './AssigneeAvatars';
 import CustomPagination from './CustomPagination';
@@ -20,8 +21,13 @@ import unorderedListOutlinedIcon from './images/common/unorderedlistoutlined.svg
 
 const { Text } = Typography;
 
-const MY_JOBS_COUNT = 6;
-const ALL_JOBS_COUNT = 2456;
+const JOBS = jobsData.jobs;
+
+// const MY_JOBS_COUNT = 6;
+// const ALL_JOBS_COUNT = 2456;
+
+const MY_JOBS_COUNT = jobsData.summary.myJobsCount;
+const ALL_JOBS_COUNT = jobsData.summary.allJobsCount;
 
 const columnOptions = [
   { key: 'createdAt', label: 'Created Date' },
@@ -117,8 +123,8 @@ export default function ListViews() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const searchableJobs = !q || q.length < 3
-      ? MOCK_JOBS
-      : MOCK_JOBS.filter(
+      ? JOBS
+      : JOBS.filter(
         (j) =>
           j.title.toLowerCase().includes(q) ||
           j.location.toLowerCase().includes(q) ||

@@ -30,7 +30,7 @@ import {
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { MOCK_JOBS } from '../data/jobs';
+import { GNANESH_MOCK_JOBS, GNANESH_CANDIDATE_ROWS } from '../data/jobs';
 import DynamicListView from '../components/DynamicListView';
 import ParamListView from '../components/ParamListView';
 import StatusBadge from '../components/StatusBadge';
@@ -44,11 +44,11 @@ const skillStack = [
   'REST API',
   'Ant Design',
   'Frontend Architecture',
-  'Performance Optimization',
+  'Performance Tuning',
 ];
 
 const goodFitSignals = [
-  'Strong frontend implementation experience',
+  'Basic frontend implementation experience',
   'Good understanding of reusable component structure',
   'Comfortable with dashboard and table-heavy UI',
   'Good exposure to validated forms and routing',
@@ -93,46 +93,12 @@ const activityItems = [
 ];
 
 const candidateFields = [
-  { label: 'Candidate Name', value: 'candidateName' },
-  { label: 'Primary Skill', value: 'primarySkill' },
-  { label: 'Match Level', value: 'matchLevel' },
+  { label: 'Candidate Name', value: 'name' },
+  { label: 'Role', value: 'role' },
   { label: 'Experience', value: 'experience' },
-  { label: 'Work Authorization', value: 'workAuthorization' },
-  { label: 'Submission Status', value: 'submissionStatus' },
+  { label: 'Location', value: 'location' },
+  { label: 'Status', value: 'status' },
   { label: 'Submitted Date', value: 'submittedDate' },
-];
-
-const candidateRows = [
-  {
-    id: 1,
-    candidateName: 'Jayaprakash A',
-    primarySkill: 'React JS',
-    matchLevel: 'Excellent Match',
-    experience: '6 years',
-    workAuthorization: 'H1B',
-    submissionStatus: 'Ready to Submit',
-    submittedDate: 'Mar 23, 2026',
-  },
-  {
-    id: 2,
-    candidateName: 'Kiran Kumar',
-    primarySkill: 'Frontend Architecture',
-    matchLevel: 'Good Match',
-    experience: '5 years',
-    workAuthorization: 'GC EAD',
-    submissionStatus: 'Pipeline',
-    submittedDate: 'Mar 20, 2026',
-  },
-  {
-    id: 3,
-    candidateName: 'Sano S',
-    primarySkill: 'JavaScript',
-    matchLevel: 'Needs Review',
-    experience: '7 years',
-    workAuthorization: 'L2 EAD',
-    submissionStatus: 'Skill Review',
-    submittedDate: 'Mar 18, 2026',
-  },
 ];
 
 function DetailField({ label, value }) {
@@ -168,7 +134,7 @@ function tabLabel(label, count) {
 export default function GnaneshDetailedView() {
   const navigate = useNavigate();
   const { jobId } = useParams();
-  const job = MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? MOCK_JOBS[0];
+  const job = GNANESH_MOCK_JOBS.find((item) => String(item.id) === String(jobId)) ?? GNANESH_MOCK_JOBS[0];
 
   const [activeDetailTab, setActiveDetailTab] = useState('details');
   const [activeActivityTab, setActiveActivityTab] = useState('activity');
@@ -202,10 +168,10 @@ export default function GnaneshDetailedView() {
             <Row justify="space-between" gutter={[16, 16]}>
               <Col xs={24} lg={15}>
                 <Space direction="vertical" size={6}>
-                  <Text type="secondary">TCS - MSP ID 10432419</Text>
+                  <Text type="secondary">TCS - MSP ID 99999999</Text>
 
                   <Space size={8} wrap>
-                    <Title level={4}>{job.title} - </Title>
+                    <Title level={4}>{job.title} - {job.key}</Title>
                     <StatusBadge status={job.status} />
                   </Space>
 
@@ -224,7 +190,7 @@ export default function GnaneshDetailedView() {
                     items={[
                       { key: 'details', label: tabLabel('Skill Insights', 1) },
                       { key: 'candidates-api', label: tabLabel('Candidates API', 0) },
-                      { key: 'candidate', label: tabLabel('Matched Candidates', candidateRows.length) },
+                      { key: 'candidate', label: tabLabel('Matched Candidates', GNANESH_CANDIDATE_ROWS.length) },
                     ]}
                   />
                 </Space>
@@ -240,22 +206,21 @@ export default function GnaneshDetailedView() {
 
                     <Space wrap>
                       <Button type="primary" icon={<TeamOutlined />}>
-                        Source Candidates
+                        Find Candidates
                       </Button>
                       <Button icon={<SafetyCertificateOutlined />}>
-                        View Matched Profiles
+                        View Profiles
                       </Button>
                       <Button type="text" icon={<MoreOutlined />} />
                     </Space>
 
                     <Row gutter={[16, 16]}>
-                      <Col span={8}><DetailField label="Ready" value="12" /></Col>
-                      <Col span={8}><DetailField label="Strong Match" value="4" /></Col>
+                      <Col span={8}><DetailField label="Ready" value="10" /></Col>
+                      <Col span={8}><DetailField label="Strong Match" value="2" /></Col>
                       <Col span={8}><DetailField label="Review" value="0" /></Col>
-                      
                     </Row>
 
-                    <Text type="secondary">Created on Nov 03, 2025 | 07:00PM</Text>
+                    <Text type="secondary">Created on Nov 04, 2025 | 07:00PM</Text>
                   </Space>
                 </Card>
               </Col>
@@ -273,16 +238,25 @@ export default function GnaneshDetailedView() {
               <SectionCard title="Matched Candidate Summary" icon={<TeamOutlined />}>
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={6}>
-                    <DetailField label="Total Matches" value={candidateRows.length} />
+                    <DetailField label="Total Matches" value={GNANESH_CANDIDATE_ROWS.length} />
                   </Col>
                   <Col xs={24} md={6}>
-                    <DetailField label="Excellent Match" value="1" />
+                    <DetailField
+                      label="Submitted"
+                      value={GNANESH_CANDIDATE_ROWS.filter(c => c.status === 'Submitted').length}
+                    />
                   </Col>
                   <Col xs={24} md={6}>
-                    <DetailField label="Good Match" value="1" />
+                    <DetailField
+                      label="Shortlisted"
+                      value={GNANESH_CANDIDATE_ROWS.filter(c => c.status === 'Shortlisted').length}
+                    />
                   </Col>
                   <Col xs={24} md={6}>
-                    <DetailField label="Needs Review" value="1" />
+                    <DetailField
+                      label="Pipeline"
+                      value={GNANESH_CANDIDATE_ROWS.filter(c => c.status === 'Pipeline').length}
+                    />
                   </Col>
                 </Row>
               </SectionCard>
@@ -311,7 +285,7 @@ export default function GnaneshDetailedView() {
               <ParamListView
                 listName="matched candidate"
                 fields={candidateFields}
-                dataSource={candidateRows}
+                dataSource={GNANESH_CANDIDATE_ROWS}
               />
             </Col>
           </>
@@ -320,7 +294,7 @@ export default function GnaneshDetailedView() {
             <Col span={24}>
               <SectionCard title="Skill Match Overview" icon={<ThunderboltOutlined />}>
                 <Row gutter={[16, 16]}>
-                  <Col xs={24} md={8}><DetailField label="Match Score" value="86%" /></Col>
+                  <Col xs={24} md={8}><DetailField label="Match Score" value="80%" /></Col>
                   <Col xs={24} md={8}><DetailField label="Priority Skill" value="React JS" /></Col>
                   <Col xs={24} md={8}><DetailField label="Submission Readiness" value="High" /></Col>
                 </Row>
@@ -377,7 +351,7 @@ export default function GnaneshDetailedView() {
                     <DetailField label="Contact Person" value="Jayaprakash A" />
                   </Col>
                   <Col xs={24} md={8}>
-                    <DetailField label="Email" value={<Link>jayaprakash123@gmail.com</Link>} />
+                    <DetailField label="Email" value={<Link>jayaprakash.changed@gmail.com</Link>} />
                   </Col>
                   <Col xs={24} md={8}>
                     <DetailField label="Phone Number" value={<Link>+91 (999) 469 - 4028</Link>} />

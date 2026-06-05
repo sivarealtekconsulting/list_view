@@ -112,7 +112,7 @@ const candidateRows = [
   {
     id: 2,
     candidateName: 'Kiran Kumar',
-    designation: 'Full Stack Developer',
+    designation: 'Software Developer',
     currentLocation: 'Texas',
     experience: '5 years',
     workAuthorization: 'GC EAD',

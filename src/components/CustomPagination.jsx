@@ -5,6 +5,7 @@ const { Text } = Typography;
 export default function CustomPagination({ current, pageSize, total, onChange, onPageSizeChange }) {
   const start = Math.min((current - 1) * pageSize + 1, total);
   const end = Math.min(current * pageSize, total);
+  const formattedTotal = Number(total || 0).toLocaleString('en-US');
 
   return (
     <Flex align="center" justify="space-between">
@@ -28,7 +29,7 @@ export default function CustomPagination({ current, pageSize, total, onChange, o
       </Space>
 
       <Space size={16} align="center">
-        <Text>{`Showing ${start} - ${end} of ${total}`}</Text>
+        <Text>{`Showing ${start} - ${end} of ${formattedTotal}`}</Text>
         <Pagination
           current={current}
           pageSize={pageSize}

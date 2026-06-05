@@ -1,0 +1,227 @@
+/* ═══════════════════════════════════════════════════════════
+   DescriptionBlock.css  —  ATS description template + edit icon
+   Fully self-contained — no parent .jdv scope required.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Edit icon — no border, no button wrapper ── */
+
+.desc-block {
+  position: relative;
+}
+
+.desc-block-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  min-height: 20px;
+}
+
+.desc-edit-icon {
+  font-size: 14px;
+  color: #8c8c8c;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.desc-edit-icon:hover {
+  color: #0053A5;
+  background: rgba(0, 83, 165, 0.06);
+}
+
+/* ── ATS Description Template ─────────────────────────────── */
+
+.jdv-ats-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Metadata grid: extracted key-value pairs ── */
+.jdv-ats-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  border: 1px solid #d6e4f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafd;
+}
+
+.jdv-ats-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #d6e4f0;
+  border-right: 1px solid #d6e4f0;
+}
+
+.jdv-ats-meta-key {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #586888;
+}
+
+.jdv-ats-meta-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.4;
+}
+
+/* Multi-value cell */
+.jdv-ats-meta-bullet-list {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jdv-ats-meta-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.45;
+}
+
+.jdv-ats-meta-bullet::before {
+  content: '·';
+  flex-shrink: 0;
+  color: #0053A5;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ── Sections: heading + bullet list ── */
+.jdv-ats-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.jdv-ats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Section heading with full-width trailing rule */
+.jdv-ats-section-hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #0053A5;
+}
+
+.jdv-ats-section-hd::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(to right, #bfdbfe, transparent);
+  border-radius: 2px;
+}
+
+/* ── Bullet list ── */
+.jdv-ats-bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jdv-ats-bullet-item {
+  display: flex;
+  gap: 9px;
+  font-size: 13px;
+  color: #586888;
+  line-height: 1.65;
+}
+
+.jdv-ats-bullet-item::before {
+  content: '›';
+  flex-shrink: 0;
+  color: #0053A5;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.jdv-desc-toggle {
+  font-size: 13px;
+  color: #0053A5;
+  cursor: pointer;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+/* ── Education section — blue accent card, always at the bottom ── */
+
+.education-block {
+  padding: 12px 16px;
+  background: #f0f7ff;
+  border: 1px solid #d6e4f0;
+  border-radius: 6px;
+}
+
+/* Header row: icon + title text + trailing blue rule (matches other section headings) */
+.education-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #0053A5;
+}
+
+.education-header::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(to right, #bfdbfe, transparent);
+  border-radius: 2px;
+}
+
+/* Bullet list inside education card */
+.education-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.education-list-item {
+  display: flex;
+  gap: 9px;
+  font-size: 13px;
+  color: #586888;
+  line-height: 1.65;
+}
+
+.education-list-item::before {
+  content: '›';
+  flex-shrink: 0;
+  color: #0053A5;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+}
